@@ -16,13 +16,17 @@ public class StudyPlace extends BaseDateTimeEntity {
     @Column(name = "study_place_id")
     private Long id;
 
-    @Column(nullable = false, length=30)
+    @Column(nullable = false, length = 30)
     private String title;
 
-    @Column(nullable = false, length=3)
+    @Column(nullable = false, length = 3)
     private int order_num;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(10)",nullable = false)
+    @Column(columnDefinition = "VARCHAR(10)", nullable = false)
     private CategoryStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 }

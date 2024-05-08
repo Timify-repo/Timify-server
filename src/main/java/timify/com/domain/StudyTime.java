@@ -28,4 +28,16 @@ public class StudyTime extends BaseDateTimeEntity {
 
     @Column(nullable = false)
     private Double temp;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "todo_id")
+    private Todo todo;
 }

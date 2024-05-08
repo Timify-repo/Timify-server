@@ -6,6 +6,8 @@ import timify.com.domain.common.BaseDateTimeEntity;
 import timify.com.domain.enums.TodoStatus;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,4 +29,28 @@ public class Todo extends BaseDateTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private TodoStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "study_type_id")
+    private StudyType studyType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "study_method_id")
+    private StudyMethod studyMethod;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "study_place_id")
+    private StudyPlace studyPlace;
+
+    // studyTime 양방향 매핑
+    @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL)
+    private List<StudyTime> studyTimeList = new ArrayList<>();
 }
