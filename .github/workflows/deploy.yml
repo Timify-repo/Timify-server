@@ -42,10 +42,10 @@ jobs:
       - name: Generate deployment package
         run: |
           mkdir -p deploy
-          cp -r build/libs/*.jar deploy/application.jar
-          cp -r Procfile deploy/Procfile
-          cp -r .ebextensions deploy/.ebextensions
-          cp -r .platform deploy/.platform
+          cp build/libs/*.jar deploy/
+          cp Procfile deploy/
+          cp -r .ebextensions deploy/
+          cp -r .platform deploy/
           cd deploy && zip -r deploy.zip . 
 
         # Beanstalk Deploy 플러그인 사용
