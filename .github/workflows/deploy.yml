@@ -7,7 +7,6 @@ on:
     types: [closed]
 
 # permissions: write-all
-
 jobs:
   my-action:
     if: ${{ github.event.pull_request.merged }}
