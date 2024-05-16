@@ -51,8 +51,8 @@ jobs:
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v14
         with:
-          DB_URL : ${{secrets.DB_PASSWORD}}
-          DB_USERNAME : ${{secrets.DB_URL}}
+          DB_URL : ${{secrets.DB_URL}}
+          DB_USERNAME : ${{secrets.DB.USERNAME}}
           DB_PASSWORD : ${{secrets.DB_PASSWORD}}
 
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
