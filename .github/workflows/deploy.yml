@@ -42,8 +42,8 @@ jobs:
       # AWS 인증 정보 구성
       - name: Configure AWS credentials
         run: |
-          aws configure set aws_access_key ${{ secrets.AWS_ACCESS_KEY }}
-          aws configure set aws_secret_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set region ap-northeast-2
 
       # 현재 배포된 버전 이름 가져오기
