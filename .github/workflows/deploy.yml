@@ -47,6 +47,12 @@ jobs:
           cd deploy && zip -r deploy.zip .
         shell: bash
 
+      - name: Get current version
+        id: get-version
+        run: |
+          VERSION=$(aws elasticbeanstalk describe-environments --application-name timify-springboot-application --environment-name Timify-springboot-application-env --query "Environments[0].VersionLabel" --output text)
+          echo "currentVersion=$VERSION" >> $GITHUB_ENV
+
       # Elastic Beanstalk에 배포
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v16
@@ -55,7 +61,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: timify-springboot-application
           environment_name: Timify-springboot-application-env
-          version_label: Github Action-${{ env.formattedTime }}
+          version_label: ${{ env.currentVersion }}
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
           wait_for_deployment: false
