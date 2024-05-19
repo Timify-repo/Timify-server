@@ -1,15 +1,12 @@
 name: CI/CD-For-Timify
 
 on:
-  push :
+  push:
     branches:
       - ci/19
-    # types: [closed]
 
-# permissions: write-all
 jobs:
   my-action:
-    # if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
 
     steps:
@@ -37,7 +34,6 @@ jobs:
           format: YYYY-MM-DDTHH-mm-ss
           utcOffset: "+09:00"
 
-        # grandle build를 통해 만들어진 jar를 beanstalk에 배포하기 위한 zip 파일로 만드는 것
       - name: Generate deployment package
         run: |
           mkdir -p deploy
@@ -45,15 +41,11 @@ jobs:
           cp Procfile deploy/
           cp -r .ebextensions deploy/
           cp -r .platform deploy/
-          cd deploy && zip -r deploy.zip . 
+          cd deploy && zip -r deploy.zip .
 
-        # Beanstalk Deploy 플러그인 사용
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v14
         with:
-          DB_URL : ${{ secrets.DB_URL }}
-          DB_USERNAME : ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD : ${{ secrets.DB_PASSWORD }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: timify-springboot-application
