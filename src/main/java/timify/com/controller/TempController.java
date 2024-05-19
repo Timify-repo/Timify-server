@@ -10,12 +10,16 @@ import timify.com.apiPayload.exception.handler.TempHandler;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
 @Slf4j
 public class TempController {
 
     @GetMapping("/test/error")
     public String apiResponseTest() {
         throw new TempHandler(ErrorStatus.TEMP_EXCEPTION);
+    }
+
+    @GetMapping("/health")
+    public String test(){
+        return "a";
     }
 }
