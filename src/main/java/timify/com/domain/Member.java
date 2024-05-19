@@ -2,6 +2,7 @@ package timify.com.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.Builder;
 import timify.com.domain.common.BaseDateTimeEntity;
 import timify.com.domain.enums.Gender;
 import timify.com.domain.enums.LoginType;
