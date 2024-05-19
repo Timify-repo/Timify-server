@@ -31,10 +31,10 @@ jobs:
         run: ./gradlew clean build
         shell: bash
 
-      # 버전 관리를 위한 현재 시간 생성
-      - name: Generate current time
-        id: current-time
-        run: echo "formattedTime=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+      # 현재 커밋 해시 가져오기
+      - name: Get commit hash
+        id: get-commit-hash
+        run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       # 배포 패키지 생성
       - name: Generate deployment package
@@ -55,7 +55,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: timify-springboot-application
           environment_name: Timify-springboot-application-env
-          version_label: Sample
+          version_label: "GitHubAction-${{ env.COMMIT_HASH }}"
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
           wait_for_deployment: false
