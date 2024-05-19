@@ -31,10 +31,41 @@ jobs:
         run: ./gradlew clean build
         shell: bash
 
-      # 현재 커밋 해시 가져오기
-      - name: Get commit hash
-        id: get-commit-hash
-        run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      # AWS CLI 설치
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip curl
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+          aws --version  # AWS CLI 버전 확인
+
+      # AWS 인증 정보 구성
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      # 현재 배포된 버전 이름 가져오기
+      - name: Get current version
+        id: get-version
+        run: |
+          VERSION=$(aws elasticbeanstalk describe-environments --application-name timify-springboot-application --environment-name Timify-springboot-application-env --query "Environments[0].VersionLabel" --output text)
+          echo "currentVersion=$VERSION" >> $GITHUB_ENV
+
+      # 현재 배포된 버전 이름 로그 출력 (디버깅 용도)
+      - name: Log current version
+        run: echo "Current version: ${{ env.currentVersion }}"
+
+      # 새로운 버전 라벨 생성 (현재 시간과 커밋 해시 사용)
+      - name: Generate new version label
+        id: generate-version-label
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "newVersionLabel=GitHubAction-${{ env.currentVersion }}-${COMMIT_HASH}-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
       # 배포 패키지 생성
       - name: Generate deployment package
@@ -55,7 +86,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: timify-springboot-application
           environment_name: Timify-springboot-application-env
-          version_label: "GitHubAction-${{ env.COMMIT_HASH }}"
+          version_label: ${{ env.newVersionLabel }}
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
           wait_for_deployment: false
