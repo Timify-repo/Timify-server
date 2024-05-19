@@ -54,24 +54,22 @@ jobs:
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set region ap-northeast-2
 
-      # 현재 배포된 버전 이름 가져오기
+      # 현재 배포된 버전 정보 가져오기
       - name: Get current version
         id: get-version
         run: |
-          VERSION=$(aws elasticbeanstalk describe-environments --application-name timify-springboot-application --environment-name Timify-springboot-application-env --query "Environments[0].VersionLabel" --output text)
-          echo "currentVersion=$VERSION" >> $GITHUB_ENV
-
-      # 현재 배포된 버전 이름 로그 출력 (디버깅 용도)
-      - name: Log current version
-        run: |
-          echo "Current version: ${{ env.currentVersion }}"
+          VERSION_LABEL=$(aws elasticbeanstalk describe-environments --application-name timify-springboot-application --environment-name Timify-springboot-application-env --query "Environments[0].VersionLabel" --output text)
+          echo "VERSION_LABEL=${VERSION_LABEL}" >> $GITHUB_ENV
+          echo "Current version label: ${VERSION_LABEL}"
 
       # 새로운 버전 라벨 생성 (현재 시간과 커밋 해시 사용)
       - name: Generate new version label
         id: generate-version-label
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          echo "newVersionLabel=GitHubAction-${{ env.currentVersion }}-${COMMIT_HASH}-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+          NEW_VERSION_LABEL=GitHubAction-${COMMIT_HASH}-$(date +'%Y%m%d%H%M%S')
+          echo "NEW_VERSION_LABEL=${NEW_VERSION_LABEL}" >> $GITHUB_ENV
+          echo "New version label: ${NEW_VERSION_LABEL}"
 
       # 배포 패키지 생성
       - name: Generate deployment package
@@ -91,7 +89,12 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: timify-springboot-application
           environment_name: Timify-springboot-application-env
-          version_label: ${{ env.newVersionLabel }}
+          version_label: ${{ env.NEW_VERSION_LABEL }}
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
           wait_for_deployment: false
+
+      # Elastic Beanstalk 환경 업데이트 (기존 버전으로 롤백 또는 새로운 버전으로 업데이트)
+      - name: Update Elastic Beanstalk environment
+        run: |
+          aws elasticbeanstalk update-environment --application-name timify-springboot-application --environment-name Timify-springboot-application-env --version-label ${{ env.NEW_VERSION_LABEL }}
