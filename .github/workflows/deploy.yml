@@ -55,11 +55,6 @@ jobs:
         run: |
           VERSION=$(aws elasticbeanstalk describe-environments --application-name timify-springboot-application --environment-name Timify-springboot-application-env --query "Environments[0].VersionLabel" --output text)
           echo "currentVersion=$VERSION" >> $GITHUB_ENV
-
-      # 현재 배포된 버전 이름 로그 출력 (디버깅 용도)
-      - name: Log current version
-        run: echo "Current version: ${{ env.currentVersion }}"
-
       # 새로운 버전 라벨 생성 (현재 시간과 커밋 해시 사용)
       - name: Generate new version label
         id: generate-version-label
