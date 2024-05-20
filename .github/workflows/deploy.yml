@@ -31,7 +31,6 @@ jobs:
         id: current-time
         run: echo "formattedTime=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
-      # 배포 패키지 생성
       - name: Generate deployment package
         run: |
           mkdir -p deploy
