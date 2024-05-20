@@ -49,7 +49,7 @@ jobs:
 
       # Elastic Beanstalk에 배포
       - name: Beanstalk Deploy
-        uses: einaregilsson/beanstalk-deploy@v16
+        uses: einaregilsson/beanstalk-deploy@v14
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
