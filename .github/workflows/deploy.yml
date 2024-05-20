@@ -48,7 +48,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: timify-springboot-application
           environment_name: Timify-springboot-application-env
-          version_label: Github Action-${{ env.formattedTime }}
+          version_label: Sample
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
           wait_for_deployment: false
