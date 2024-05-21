@@ -20,6 +20,6 @@ public class TempController {
 
     @GetMapping("/health")
     public String test(){
-        return "a";
+        return "check";
     }
 }
