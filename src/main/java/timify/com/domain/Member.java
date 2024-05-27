@@ -2,12 +2,12 @@ package timify.com.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.Builder;
 import timify.com.domain.common.BaseDateTimeEntity;
 import timify.com.domain.enums.Gender;
 import timify.com.domain.enums.LoginType;
 import timify.com.domain.enums.MemberStatus;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,9 +35,11 @@ public class Member extends BaseDateTimeEntity {
     @Column(nullable = false, length = 50)
     private String job;
 
+    private LocalDate birth;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
-    private LoginType login_type;
+    private LoginType loginType;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
