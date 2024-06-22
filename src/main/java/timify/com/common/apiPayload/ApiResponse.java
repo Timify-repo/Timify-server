@@ -1,11 +1,11 @@
-package timify.com.apiPayload;
+package timify.com.common.apiPayload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import timify.com.apiPayload.code.BaseCode;
-import timify.com.apiPayload.code.status.SuccessStatus;
+import timify.com.common.apiPayload.code.BaseCode;
+import timify.com.common.apiPayload.code.status.SuccessStatus;
 
 @Getter
 @AllArgsConstructor

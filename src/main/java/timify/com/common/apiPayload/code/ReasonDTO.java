@@ -1,4 +1,4 @@
-package timify.com.apiPayload.code;
+package timify.com.common.apiPayload.code;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @Builder
-public class ErrorReasonDTO {
+public class ReasonDTO {
 
-    private final HttpStatus httpStatus;
+    private HttpStatus httpStatus;
 
     private final boolean isSuccess;
     private final String code;

@@ -1,10 +1,10 @@
-package timify.com.apiPayload.code.status;
+package timify.com.common.apiPayload.code.status;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import timify.com.apiPayload.code.BaseCode;
-import timify.com.apiPayload.code.ReasonDTO;
+import timify.com.common.apiPayload.code.BaseCode;
+import timify.com.common.apiPayload.code.ReasonDTO;
 
 @Getter
 @AllArgsConstructor

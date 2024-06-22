@@ -1,11 +1,9 @@
-package timify.com.domain;
+package timify.com.member.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import timify.com.domain.*;
 import timify.com.domain.common.BaseDateTimeEntity;
-import timify.com.domain.enums.Gender;
-import timify.com.domain.enums.LoginType;
-import timify.com.domain.enums.MemberStatus;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
