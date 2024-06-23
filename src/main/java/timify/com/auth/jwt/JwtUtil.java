@@ -1,4 +1,4 @@
-package timify.com.auth;
+package timify.com.auth.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

@@ -1,4 +1,4 @@
-package timify.com.auth;
+package timify.com.auth.jwt;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

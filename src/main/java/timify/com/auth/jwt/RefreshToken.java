@@ -1,4 +1,4 @@
-package timify.com.auth;
+package timify.com.auth.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,5 +15,5 @@ public class RefreshToken {
     @Id
     private String refreshToken;
     private Long memberId;
-    
+
 }

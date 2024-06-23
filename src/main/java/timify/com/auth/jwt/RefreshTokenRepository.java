@@ -1,4 +1,4 @@
-package timify.com.auth;
+package timify.com.auth.jwt;
 
 import org.springframework.data.repository.CrudRepository;
 
