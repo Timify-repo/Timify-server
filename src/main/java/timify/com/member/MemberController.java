@@ -10,4 +10,5 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequestMapping("/v1/member")
 public class MemberController {
+
 }

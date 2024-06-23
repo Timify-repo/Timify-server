@@ -20,6 +20,8 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
+    private Long socialId;
+
     @Column(nullable = false, length = 100)
     private String email;
 
@@ -42,6 +44,10 @@ public class Member extends BaseDateTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private MemberStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "VARCHAR(20)")
+    private RoleType roleType;
 
     // subject 양방향 매핑
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
