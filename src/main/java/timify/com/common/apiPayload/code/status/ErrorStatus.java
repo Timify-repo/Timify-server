@@ -22,6 +22,8 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_LOGINTYPE(HttpStatus.BAD_REQUEST, "AUTH4001", "유효하지 않은 로그인 타입입니다."),
     INVALID_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "AUTH4002", "토큰이 올바르지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "AUTH4003", "리프레쉬 토큰이 유효하지 않습니다. 다시 로그인 해주세요"),
+    EXPIRED_JWT_EXCEPTION(HttpStatus.UNAUTHORIZED, "AUTH004", "기존 토큰이 만료되었습니다. 토큰을 재발급해주세요."),
+    UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "AUTH005", "로그인 후 이용가능합니다. 토큰을 입력해 주세요"),
 
 
     // 회원 관련 에러

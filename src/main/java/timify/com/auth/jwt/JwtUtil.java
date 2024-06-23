@@ -1,14 +1,15 @@
 package timify.com.auth.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import timify.com.common.apiPayload.code.status.ErrorStatus;
+import timify.com.common.apiPayload.exception.JwtAuthenticationException;
 import timify.com.member.domain.RoleType;
 
 import java.security.Key;
@@ -79,6 +80,53 @@ public class JwtUtil {
 
     public long getTokenExpirationTime(String token) {
         return parseClaims(token).getExpiration().getTime();
+    }
+
+    /**
+     * request의 header에서 token 값 추출
+     *
+     * @param request
+     * @return
+     */
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    /**
+     * JWT 검증
+     *
+     * @param token
+     * @return IsValidate
+     */
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.info("Invalid JWT Token", e);
+            throw new JwtAuthenticationException(ErrorStatus.INVALID_TOKEN_EXCEPTION);
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT Token", e);
+            throw new JwtAuthenticationException(ErrorStatus.EXPIRED_JWT_EXCEPTION);
+        } catch (UnsupportedJwtException e) {
+            log.info("Unsupported JWT Token", e);
+            throw new JwtAuthenticationException(ErrorStatus.INVALID_TOKEN_EXCEPTION);
+        } catch (IllegalArgumentException e) {
+            log.info("JWT claims string is empty.", e);
+            throw new JwtAuthenticationException(ErrorStatus.INVALID_TOKEN_EXCEPTION);
+        }
+    }
+
+    public Long getMemberId(String token) {
+        return parseClaims(token).get("memberId", Long.class);
+    }
+
+    public Long getSocialId(String token) {
+        return parseClaims(token).get("socialId", Long.class);
     }
 
 }
