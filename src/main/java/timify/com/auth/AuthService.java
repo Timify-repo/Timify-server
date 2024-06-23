@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import timify.com.auth.dto.AuthRequest;
 import timify.com.auth.dto.AuthResponse;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.exception.handler.AuthHandler;
@@ -50,6 +51,27 @@ public class AuthService {
                 .memberId(member.getId())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .accessTokenExpiresIn(jwtUtil.getTokenExpirationTime(accessToken))
+                .build();
+    }
+
+    /**
+     * access token, refresh token 재발급
+     *
+     * @param request
+     * @return
+     */
+    public AuthResponse.reissueDto reissueToken(AuthRequest.reissueRequest request) {
+        String refreshTokenId = refreshTokenService.reGenerateRefreshToken(request);
+        RefreshToken refreshToken = refreshTokenService.getRefreshToken(refreshTokenId);
+        Member parsedMember = memberRepository.findById(refreshToken.getMemberId()).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        String accessToken = jwtUtil.createAccessToken(parsedMember.getId(), parsedMember.getSocialId(), parsedMember.getRoleType());
+
+        return AuthResponse.reissueDto.builder()
+                .memberId(parsedMember.getId())
+                .accessToken(accessToken)
+                .refreshToken(refreshTokenId)
                 .accessTokenExpiresIn(jwtUtil.getTokenExpirationTime(accessToken))
                 .build();
     }

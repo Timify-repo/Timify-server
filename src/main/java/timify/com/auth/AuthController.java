@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import timify.com.auth.dto.AuthRequest;
 import timify.com.auth.dto.AuthResponse;
 import timify.com.common.apiPayload.ApiResponse;
+import timify.com.common.apiPayload.code.status.SuccessStatus;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,5 +23,11 @@ public class AuthController {
     public ApiResponse<AuthResponse.loginDto> login(@RequestBody AuthRequest.loginRequest request) {
 
         return ApiResponse.onSuccess(authService.login(request.getId(), request.getLoginType()));
+    }
+
+    @PostMapping("/reissue")
+    public ApiResponse<AuthResponse.reissueDto> reissueToken(@RequestBody AuthRequest.reissueRequest request) {
+
+        return ApiResponse.of(SuccessStatus.TOKEN_REISSUE_SUCCESS, authService.reissueToken(request));
     }
 }

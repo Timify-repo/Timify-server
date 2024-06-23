@@ -16,4 +16,15 @@ public class AuthResponse {
         String refreshToken;
         Long accessTokenExpiresIn;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class reissueDto {
+        Long memberId;
+        String accessToken;
+        String refreshToken;
+        Long accessTokenExpiresIn;
+    }
 }

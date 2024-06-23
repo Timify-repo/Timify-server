@@ -9,4 +9,9 @@ public class AuthRequest {
         Long id;
         String loginType;
     }
+
+    @Getter
+    public static class reissueRequest {
+        String refreshToken;
+    }
 }

@@ -20,10 +20,13 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 인증 관련 에러
     INVALID_LOGINTYPE(HttpStatus.BAD_REQUEST, "AUTH4001", "유효하지 않은 로그인 타입입니다."),
+    INVALID_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "AUTH4002", "토큰이 올바르지 않습니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "AUTH4003", "리프레쉬 토큰이 유효하지 않습니다. 다시 로그인 해주세요"),
+
 
     // 회원 관련 에러
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER4001", "사용자를 찾을 수 없습니다."),
-    MEMBER_EXISTS(HttpStatus.BAD_REQUEST, "MEMBER4002", "이미 가입된 사용자입니다.");
+    MEMBER_EXISTS(HttpStatus.BAD_REQUEST, "MEMBER4002", "이미 가입된 사용자 입니다.");
 
 
     private final HttpStatus httpStatus;
