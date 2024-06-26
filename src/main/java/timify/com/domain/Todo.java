@@ -32,23 +32,23 @@ public class Todo extends BaseDateTimeEntity {
     private TodoStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_id")
+    @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_type_id")
+    @JoinColumn(name = "study_type_id", nullable = false)
     private StudyType studyType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_method_id")
+    @JoinColumn(name = "study_method_id", nullable = false)
     private StudyMethod studyMethod;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_place_id")
+    @JoinColumn(name = "study_place_id", nullable = false)
     private StudyPlace studyPlace;
 
     // studyTime 양방향 매핑

@@ -15,5 +15,10 @@ public class Notice extends BaseDateTimeEntity {
     @Column(name = "notice_id")
     private Long id;
 
-    
+    @Column(nullable = false, length = 300)
+    private String title;
+
+    @Column(nullable = false, length = 5000)
+    private String contents;
+
 }
