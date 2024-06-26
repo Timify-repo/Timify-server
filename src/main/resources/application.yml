@@ -12,9 +12,20 @@ spring:
       # show_sql: true
       format_sql: true
       dialect: org.hibernate.dialect.MySQL8InnoDBDialect
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD}
 
 
 springdoc:
   swagger-ui:
     tags-sorter: alpha            # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
     operations-sorter: alpha      # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+
+jwt:
+  secret: ${JWT_SECRET}
+  access_expiration_time: 60000
+  refresh_expiration_day: 31
+

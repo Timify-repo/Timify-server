@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import timify.com.domain.common.BaseDateTimeEntity;
 import timify.com.domain.enums.SubjectStatus;
+import timify.com.member.domain.Member;
 
 import java.util.ArrayList;
 import java.util.List;
