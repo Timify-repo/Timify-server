@@ -8,12 +8,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import timify.com.auth.AuthService;
 import timify.com.auth.dto.AuthResponse;
-import timify.com.auth.security.CustomUserDetails;
 import timify.com.auth.security.SecurityUtil;
 import timify.com.common.apiPayload.ApiResponse;
-import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
-import timify.com.common.apiPayload.exception.handler.MemberHandler;
 import timify.com.domain.StudyType;
 import timify.com.member.domain.Member;
 import timify.com.member.dto.MemberRequest;
@@ -43,9 +40,7 @@ public class MemberController {
 
     @GetMapping("/test")
     public ApiResponse<MemberResponse.myInfoDto> getMyInfo(Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Long memberId = userDetails.getMemberId();
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
 
         MemberResponse.myInfoDto response = MemberResponse.myInfoDto.builder()
                 .socialId(member.getSocialId())
@@ -62,8 +57,7 @@ public class MemberController {
 
     @PostMapping("/study/type/insert")
     public ApiResponse<MemberResponse.studyTypeInsertDto> insertStudyType(@RequestBody @Valid MemberRequest.studyTypeInsertRequest request) {
-        Long memberId = SecurityUtil.getCurrentMemberId();
-        Member member = memberService.findActiveMember(memberId);
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId()); // Member의 ACTIVE 여부 검증은 filter에서 이미 진행함
 
         StudyType studyType = memberService.insertStudyType(request, member);
 

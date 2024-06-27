@@ -8,7 +8,6 @@ import timify.com.common.apiPayload.exception.handler.MemberHandler;
 import timify.com.domain.StudyType;
 import timify.com.member.domain.LoginType;
 import timify.com.member.domain.Member;
-import timify.com.member.domain.MemberStatus;
 import timify.com.member.dto.MemberRequest;
 import timify.com.member.repository.MemberRepository;
 import timify.com.member.repository.StudyTypeRepository;
@@ -57,12 +56,8 @@ public class MemberService {
         return studyTypeRepository.save(studyType);
     }
 
-    public Member findActiveMember(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        if (member.getStatus().equals(MemberStatus.INACTIVE)) {
-            throw new MemberHandler(ErrorStatus.INACTIVE_MEMBER);
-        }
-        return member;
+    public Member findMember(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
     }
 
 

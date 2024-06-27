@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByMemberIdAndSocialId(Long memberId, Long socialId) throws UsernameNotFoundException {
         Member member = memberRepository.findByIdAndSocialId(memberId, socialId)
                 .orElseThrow(() -> new JwtAuthenticationException(ErrorStatus.MEMBER_NOT_FOUND));
-        if (member.getStatus().equals(MemberStatus.INACTIVE)) {
+        if (member.getStatus().equals(MemberStatus.INACTIVE)) { // 탈퇴한 회원인 경우 에러 발생
             throw new JwtAuthenticationException(ErrorStatus.INACTIVE_MEMBER);
         }
         return new CustomUserDetails(member.getId(), member.getSocialId(), member.getLoginType(), member.getRoleType());
