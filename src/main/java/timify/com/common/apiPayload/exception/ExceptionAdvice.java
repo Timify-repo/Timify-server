@@ -1,5 +1,6 @@
 package timify.com.common.apiPayload.exception;
 
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,6 +66,23 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         ErrorReasonDTO errorReasonHttpStatus = generalException.getErrorReasonHttpStatus();
         return handleExceptionInternal(generalException, errorReasonHttpStatus, null, request);
     }
+
+    //클라이언트로부터 잘못된 타입 요청이 왔을 때 에러 처리
+    //@ExceptionHandler(HttpMessageNotReadableException.class)
+    @Override
+    public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        if (ex.getCause() instanceof MismatchedInputException mismatchedInputException) {
+            ApiResponse<Object> body = ApiResponse.onFailure(ErrorStatus._BAD_REQUEST.getCode(), mismatchedInputException.getPath().get(0).getFieldName() + " 필드의 값이 잘못되었습니다.", null);
+
+            return ResponseEntity.badRequest()
+                    .body(body);
+        }
+
+        ApiResponse<Object> body = ApiResponse.onFailure(ErrorStatus._BAD_REQUEST.getCode(), "확인할 수 없는 형태의 데이터가 들어왔습니다", null);
+        return ResponseEntity.badRequest()
+                .body(body);
+    }
+
 
     private ResponseEntity<Object> handleExceptionInternal(Exception e, ErrorReasonDTO reason, HttpHeaders headers, HttpServletRequest request) {
         ApiResponse<Object> body = ApiResponse.onFailure(reason.getCode(), reason.getMessage(), null);
