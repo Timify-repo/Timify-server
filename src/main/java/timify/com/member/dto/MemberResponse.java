@@ -31,6 +31,7 @@ public class MemberResponse {
     @AllArgsConstructor
     public static class studyTypeInsertDto {
         Long studyTypeId;
+        String studyTypeTitle;
     }
 
 }

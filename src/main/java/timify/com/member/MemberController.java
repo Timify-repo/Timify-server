@@ -1,8 +1,10 @@
 package timify.com.member;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import timify.com.auth.AuthService;
 import timify.com.auth.dto.AuthResponse;
@@ -12,6 +14,7 @@ import timify.com.common.apiPayload.ApiResponse;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
 import timify.com.common.apiPayload.exception.handler.MemberHandler;
+import timify.com.domain.StudyType;
 import timify.com.member.domain.Member;
 import timify.com.member.dto.MemberRequest;
 import timify.com.member.dto.MemberResponse;
@@ -21,6 +24,7 @@ import timify.com.member.repository.MemberRepository;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/v1/member")
+@Validated
 public class MemberController {
 
     private final AuthService authService;
@@ -28,7 +32,7 @@ public class MemberController {
     private final MemberRepository memberRepository;
 
     @PostMapping("/signin/{loginType}")
-    public ApiResponse<AuthResponse.loginDto> signin(@RequestBody MemberRequest.signinRequest request,
+    public ApiResponse<AuthResponse.loginDto> signin(@RequestBody @Valid MemberRequest.signinRequest request,
                                                      @PathVariable(name = "loginType") String loginType
     ) {
         Member member = memberService.join(request, loginType);
@@ -57,14 +61,12 @@ public class MemberController {
     }
 
     @PostMapping("/study/type/insert")
-    public ApiResponse<MemberResponse.studyTypeInsertDto> insertStudyType(@RequestBody MemberRequest.studyTypeInsertRequest request,
-                                                                          Authentication authentication) {
+    public ApiResponse<MemberResponse.studyTypeInsertDto> insertStudyType(@RequestBody @Valid MemberRequest.studyTypeInsertRequest request) {
         Long memberId = SecurityUtil.getCurrentMemberId();
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberService.findActiveMember(memberId);
 
+        StudyType studyType = memberService.insertStudyType(request, member);
 
-        return null;
-
-
+        return ApiResponse.onSuccess(MemberConverter.toStudyTypeInsertDto(studyType));
     }
 }
