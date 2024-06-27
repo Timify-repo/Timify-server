@@ -1,4 +1,4 @@
-package timify.com.member;
+package timify.com.member.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import timify.com.member.domain.LoginType;
@@ -10,6 +10,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findBySocialIdAndLoginType(Long socialId, LoginType loginType);
 
     boolean existsBySocialIdAndLoginType(Long socialId, LoginType loginType);
+
 
     Optional<Member> findByIdAndSocialId(Long memberId, Long socialId);
 }

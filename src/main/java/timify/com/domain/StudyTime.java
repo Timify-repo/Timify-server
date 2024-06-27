@@ -31,14 +31,14 @@ public class StudyTime extends BaseDateTimeEntity {
     private Double temp;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_id")
+    @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "todo_id")
+    @JoinColumn(name = "todo_id", nullable = false)
     private Todo todo;
 }

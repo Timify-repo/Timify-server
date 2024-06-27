@@ -12,9 +12,9 @@ import timify.com.auth.jwt.RefreshTokenService;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.exception.handler.AuthHandler;
 import timify.com.common.apiPayload.exception.handler.MemberHandler;
-import timify.com.member.MemberRepository;
 import timify.com.member.domain.LoginType;
 import timify.com.member.domain.Member;
+import timify.com.member.repository.MemberRepository;
 
 @Slf4j
 @Service

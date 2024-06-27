@@ -31,7 +31,7 @@ public class Subject extends BaseDateTimeEntity {
     private SubjectStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     // todo 양방향 매핑

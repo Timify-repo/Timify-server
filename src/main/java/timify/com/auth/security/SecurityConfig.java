@@ -55,7 +55,7 @@ public class SecurityConfig {
                                 exceptionHandling
                                         .accessDeniedHandler(accessDeniedHandler) // access deny 되었을 때 커스텀 응답 주기 위한 커스텀 handler
                                         .authenticationEntryPoint(unauthorizedHandler)) // 로그인되지 않은 요청에 대해 커스텀 응답 주기 위한 커스텀 handler
-                .addFilterBefore(new JwtAuthFilter(customUserDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthFilter(customUserDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class) // UsernamePasswordAuthenticationFilter에서 회원에 대한 탈퇴 여부 검증 진행
                 .addFilterBefore(jwtAuthenticationExceptionHandler, JwtAuthFilter.class);
 
 

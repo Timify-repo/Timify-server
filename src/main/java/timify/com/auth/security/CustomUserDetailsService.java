@@ -7,9 +7,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
-import timify.com.common.apiPayload.exception.handler.MemberHandler;
-import timify.com.member.MemberRepository;
+import timify.com.common.apiPayload.exception.JwtAuthenticationException;
 import timify.com.member.domain.Member;
+import timify.com.member.domain.MemberStatus;
+import timify.com.member.repository.MemberRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -19,8 +20,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     public UserDetails loadUserByMemberIdAndSocialId(Long memberId, Long socialId) throws UsernameNotFoundException {
         Member member = memberRepository.findByIdAndSocialId(memberId, socialId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
+                .orElseThrow(() -> new JwtAuthenticationException(ErrorStatus.MEMBER_NOT_FOUND));
+        if (member.getStatus().equals(MemberStatus.INACTIVE)) { // 탈퇴한 회원인 경우 에러 발생
+            throw new JwtAuthenticationException(ErrorStatus.INACTIVE_MEMBER);
+        }
         return new CustomUserDetails(member.getId(), member.getSocialId(), member.getLoginType(), member.getRoleType());
     }
 

@@ -22,13 +22,17 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_LOGINTYPE(HttpStatus.BAD_REQUEST, "AUTH4001", "유효하지 않은 로그인 타입입니다."),
     INVALID_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "AUTH4002", "토큰이 올바르지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "AUTH4003", "리프레쉬 토큰이 유효하지 않습니다. 다시 로그인 해주세요"),
-    EXPIRED_JWT_EXCEPTION(HttpStatus.UNAUTHORIZED, "AUTH004", "기존 토큰이 만료되었습니다. 토큰을 재발급해주세요."),
-    UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "AUTH005", "로그인 후 이용가능합니다. 토큰을 입력해 주세요"),
+    EXPIRED_JWT_EXCEPTION(HttpStatus.UNAUTHORIZED, "AUTH4004", "기존 토큰이 만료되었습니다. 토큰을 재발급해주세요."),
+    UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "AUTH4005", "로그인 후 이용가능합니다. 토큰을 입력해 주세요"),
+    INACTIVE_MEMBER(HttpStatus.NOT_FOUND, "AUTH4006", "탈퇴한 사용자 입니다."),
 
 
     // 회원 관련 에러
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER4001", "사용자를 찾을 수 없습니다."),
-    MEMBER_EXISTS(HttpStatus.BAD_REQUEST, "MEMBER4002", "이미 가입된 사용자 입니다.");
+    MEMBER_EXISTS(HttpStatus.BAD_REQUEST, "MEMBER4002", "이미 가입된 사용자 입니다."),
+
+    // 공부 분류, 방법, 장소 관련 에러
+    STUDY_TYPE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "STUDY4001", "이미 존재하는 공부 분류 이름 입니다.");
 
 
     private final HttpStatus httpStatus;

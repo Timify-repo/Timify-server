@@ -28,7 +28,16 @@ public class StudyType extends BaseDateTimeEntity {
     private CategoryStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    // 연관관계 메소드
+    public void setMember(Member member) {
+        if (this.member != null) {
+            this.member.getStudyTypeList().remove(this);
+        }
+        this.member = member;
+        this.member.getStudyTypeList().add(this);
+    }
 
 }
