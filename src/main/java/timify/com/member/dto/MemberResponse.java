@@ -24,4 +24,13 @@ public class MemberResponse {
         Gender gender;
         LocalDate birth;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class studyTypeInsertDto {
+        Long studyTypeId;
+    }
+
 }

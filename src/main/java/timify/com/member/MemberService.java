@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.exception.handler.MemberHandler;
+import timify.com.domain.StudyType;
 import timify.com.member.domain.LoginType;
 import timify.com.member.domain.Member;
 import timify.com.member.dto.MemberRequest;
+import timify.com.member.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -34,4 +36,14 @@ public class MemberService {
         return memberRepository.save(member);
 
     }
+
+    @Transactional
+    public StudyType insertStudyType(MemberRequest.studyTypeInsertRequest request, Member member) {
+        // 이미 존재하는 이름의 StudyType인지 검증
+
+
+        return null;
+    }
+
+
 }

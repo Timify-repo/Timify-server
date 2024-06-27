@@ -21,4 +21,9 @@ public class MemberRequest {
 
         String loginType;
     }
+
+    @Getter
+    public static class studyTypeInsertRequest {
+        String title;
+    }
 }

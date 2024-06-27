@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import timify.com.auth.AuthService;
 import timify.com.auth.dto.AuthResponse;
 import timify.com.auth.security.CustomUserDetails;
+import timify.com.auth.security.SecurityUtil;
 import timify.com.common.apiPayload.ApiResponse;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
@@ -14,6 +15,7 @@ import timify.com.common.apiPayload.exception.handler.MemberHandler;
 import timify.com.member.domain.Member;
 import timify.com.member.dto.MemberRequest;
 import timify.com.member.dto.MemberResponse;
+import timify.com.member.repository.MemberRepository;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,5 +54,17 @@ public class MemberController {
                 .build();
 
         return ApiResponse.onSuccess(response);
+    }
+
+    @PostMapping("/study/type/insert")
+    public ApiResponse<MemberResponse.studyTypeInsertDto> insertStudyType(@RequestBody MemberRequest.studyTypeInsertRequest request,
+                                                                          Authentication authentication) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+
+        return null;
+
+
     }
 }

@@ -28,7 +28,10 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 회원 관련 에러
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER4001", "사용자를 찾을 수 없습니다."),
-    MEMBER_EXISTS(HttpStatus.BAD_REQUEST, "MEMBER4002", "이미 가입된 사용자 입니다.");
+    MEMBER_EXISTS(HttpStatus.BAD_REQUEST, "MEMBER4002", "이미 가입된 사용자 입니다."),
+
+    // 공부 분류, 방법, 장소 관련 에러
+    STUDY_TYPE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "STUDY4001", "이미 존재하는 공부 분류 이름 입니다.");
 
 
     private final HttpStatus httpStatus;
