@@ -39,6 +39,7 @@ public class StudyController {
     }
 
     @GetMapping("/type")
+    @Operation(summary = "공부 분류 조회 API", description = "공부 분류 목록을 조회하는 API 입니다.")
     public ApiResponse<List<StudyResponse.studyTypeDto>> getStudyType() {
         Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
         List<StudyType> studyTypeList = studyService.getStudyTypes(member);
