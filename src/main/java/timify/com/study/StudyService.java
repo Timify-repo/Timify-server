@@ -6,9 +6,12 @@ import org.springframework.transaction.annotation.Transactional;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.exception.handler.MemberHandler;
 import timify.com.member.domain.Member;
-import timify.com.member.repository.StudyTypeRepository;
+import timify.com.study.domain.CategoryStatus;
 import timify.com.study.domain.StudyType;
 import timify.com.study.dto.StudyRequest;
+import timify.com.study.repository.StudyTypeRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +34,11 @@ public class StudyService {
         studyType.setMember(member);
 
         return studyTypeRepository.save(studyType);
+    }
+
+    @Transactional(readOnly = true)
+    public List<StudyType> getStudyTypes(Member member) {
+        return studyTypeRepository.findAllByMemberAndStatus(member, CategoryStatus.ACTIVE);
+
     }
 }

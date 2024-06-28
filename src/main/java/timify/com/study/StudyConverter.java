@@ -13,8 +13,8 @@ public class StudyConverter {
                 .build();
     }
 
-    public static StudyResponse.studyTypeInsertDto toStudyTypeInsertDto(StudyType studyType) {
-        return StudyResponse.studyTypeInsertDto.builder()
+    public static StudyResponse.studyTypeDto toStudyTypeDto(StudyType studyType) {
+        return StudyResponse.studyTypeDto.builder()
                 .studyTypeId(studyType.getId())
                 .studyTypeTitle(studyType.getTitle())
                 .build();

@@ -10,8 +10,9 @@ public class StudyResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class studyTypeInsertDto {
+    public static class studyTypeDto {
         Long studyTypeId;
         String studyTypeTitle;
     }
+
 }

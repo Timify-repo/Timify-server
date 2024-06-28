@@ -14,6 +14,9 @@ import timify.com.study.domain.StudyType;
 import timify.com.study.dto.StudyRequest;
 import timify.com.study.dto.StudyResponse;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -27,18 +30,22 @@ public class StudyController {
 
     @PostMapping("/type/insert")
     @Operation(summary = "공부 분류 등록 API", description = "공부 분류를 추가하는 API 입니다.")
-    public ApiResponse<StudyResponse.studyTypeInsertDto> insertStudyType(@RequestBody @Valid StudyRequest.studyTypeInsertRequest request) {
+    public ApiResponse<StudyResponse.studyTypeDto> insertStudyType(@RequestBody @Valid StudyRequest.studyTypeInsertRequest request) {
         Member member = memberService.findMember(SecurityUtil.getCurrentMemberId()); // Member의 ACTIVE 여부 검증은 filter에서 이미 진행함
 
         StudyType studyType = studyService.insertStudyType(request, member);
 
-        return ApiResponse.onSuccess(StudyConverter.toStudyTypeInsertDto(studyType));
+        return ApiResponse.onSuccess(StudyConverter.toStudyTypeDto(studyType));
     }
 
     @GetMapping("/type")
-    public ApiResponse<Object> getStudyType() {
+    public ApiResponse<List<StudyResponse.studyTypeDto>> getStudyType() {
         Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+        List<StudyType> studyTypeList = studyService.getStudyTypes(member);
+        List<StudyResponse.studyTypeDto> dtoList = studyTypeList.stream()
+                .map(StudyConverter::toStudyTypeDto)
+                .collect(Collectors.toList());
 
-        return null;
+        return ApiResponse.onSuccess(dtoList);
     }
 }
