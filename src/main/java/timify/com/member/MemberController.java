@@ -14,7 +14,6 @@ import timify.com.auth.dto.AuthResponse;
 import timify.com.auth.security.SecurityUtil;
 import timify.com.common.apiPayload.ApiResponse;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
-import timify.com.domain.StudyType;
 import timify.com.member.domain.Member;
 import timify.com.member.dto.MemberRequest;
 import timify.com.member.dto.MemberResponse;
@@ -61,13 +60,5 @@ public class MemberController {
         return ApiResponse.onSuccess(response);
     }
 
-    @PostMapping("/study/type/insert")
-    @Operation(summary = "공부 분류 등록 API", description = "공부 분류를 추가하는 API 입니다.")
-    public ApiResponse<MemberResponse.studyTypeInsertDto> insertStudyType(@RequestBody @Valid MemberRequest.studyTypeInsertRequest request) {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId()); // Member의 ACTIVE 여부 검증은 filter에서 이미 진행함
 
-        StudyType studyType = memberService.insertStudyType(request, member);
-
-        return ApiResponse.onSuccess(MemberConverter.toStudyTypeInsertDto(studyType));
-    }
 }

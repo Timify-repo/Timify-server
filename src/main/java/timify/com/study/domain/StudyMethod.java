@@ -1,9 +1,8 @@
-package timify.com.domain;
+package timify.com.study.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
 import timify.com.domain.common.BaseDateTimeEntity;
-import timify.com.domain.enums.CategoryStatus;
 import timify.com.member.domain.Member;
 
 @Entity
@@ -11,10 +10,10 @@ import timify.com.member.domain.Member;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class StudyType extends BaseDateTimeEntity {
+public class StudyMethod extends BaseDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "study_type_id")
+    @Column(name = "study_method_id")
     private Long id;
 
     @Column(nullable = false, length = 30)
@@ -30,14 +29,4 @@ public class StudyType extends BaseDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
-
-    // 연관관계 메소드
-    public void setMember(Member member) {
-        if (this.member != null) {
-            this.member.getStudyTypeList().remove(this);
-        }
-        this.member = member;
-        this.member.getStudyTypeList().add(this);
-    }
-
 }

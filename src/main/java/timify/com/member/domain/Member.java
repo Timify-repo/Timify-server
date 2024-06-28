@@ -2,8 +2,14 @@ package timify.com.member.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import timify.com.domain.*;
+import timify.com.domain.MemberMission;
+import timify.com.domain.StudyTime;
+import timify.com.domain.Subject;
+import timify.com.domain.Todo;
 import timify.com.domain.common.BaseDateTimeEntity;
+import timify.com.study.domain.StudyMethod;
+import timify.com.study.domain.StudyPlace;
+import timify.com.study.domain.StudyType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package timify.com.domain.enums;
+package timify.com.study.domain;
 
 public enum CategoryStatus {
     ACTIVE, // 현재 사용중인 공부 분류, 장소, 방법

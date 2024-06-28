@@ -1,10 +1,7 @@
 package timify.com.member;
 
-import timify.com.domain.StudyType;
-import timify.com.domain.enums.CategoryStatus;
 import timify.com.member.domain.*;
 import timify.com.member.dto.MemberRequest;
-import timify.com.member.dto.MemberResponse;
 
 public class MemberConverter {
 
@@ -29,18 +26,4 @@ public class MemberConverter {
                 .build();
     }
 
-    public static StudyType toStudyType(String title, int order) {
-        return StudyType.builder()
-                .title(title)
-                .order_num(order)
-                .status(CategoryStatus.ACTIVE)
-                .build();
-    }
-
-    public static MemberResponse.studyTypeInsertDto toStudyTypeInsertDto(StudyType studyType) {
-        return MemberResponse.studyTypeInsertDto.builder()
-                .studyTypeId(studyType.getId())
-                .studyTypeTitle(studyType.getTitle())
-                .build();
-    }
 }

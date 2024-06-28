@@ -1,9 +1,8 @@
-package timify.com.domain;
+package timify.com.study.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
 import timify.com.domain.common.BaseDateTimeEntity;
-import timify.com.domain.enums.CategoryStatus;
 import timify.com.member.domain.Member;
 
 @Entity
@@ -11,10 +10,10 @@ import timify.com.member.domain.Member;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class StudyMethod extends BaseDateTimeEntity {
+public class StudyPlace extends BaseDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "study_method_id")
+    @Column(name = "study_place_id")
     private Long id;
 
     @Column(nullable = false, length = 30)
