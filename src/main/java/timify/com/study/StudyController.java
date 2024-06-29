@@ -12,6 +12,7 @@ import timify.com.auth.security.SecurityUtil;
 import timify.com.common.apiPayload.ApiResponse;
 import timify.com.member.MemberService;
 import timify.com.member.domain.Member;
+import timify.com.study.domain.StudyMethod;
 import timify.com.study.domain.StudyType;
 import timify.com.study.dto.StudyRequest;
 import timify.com.study.dto.StudyResponse;
@@ -66,5 +67,16 @@ public class StudyController {
 
         return ApiResponse.onSuccess(StudyConverter.toStudyTypeDto(studyType));
     }
+
+    @PostMapping("/method/insert")
+    @Operation(summary = "공부 방법 등록 API", description = "공부 방법을 추가하는 API 입니다.")
+    public ApiResponse<StudyResponse.studyMethodDto> insertStudyMethod(@RequestBody @Valid StudyRequest.studyMethodRequest request) {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+
+        StudyMethod studyMethod = studyService.insertStudyMethod(request, member);
+
+        return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
+    }
+
 
 }
