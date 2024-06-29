@@ -90,5 +90,20 @@ public class StudyController {
         return ApiResponse.onSuccess(dtoList);
     }
 
+    @PostMapping("/method/{studyMethodId}/update")
+    @Operation(summary = "공부 방법 수정 API", description = "특정 공부 방법의 이름을 수정하는 API 입니다.")
+    @Parameters(value = {
+            @Parameter(name = "studyMethodId", description = "공부 방법의 id 입니다.")
+    })
+    public ApiResponse<StudyResponse.studyMethodDto> updateStudyMethod(
+            @RequestBody @Valid StudyRequest.studyMethodRequest request,
+            @PathVariable(name = "studyMethodId") Long studyMethodId
+    ) {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+        StudyMethod studyMethod = studyService.updateStudyMethod(request, studyMethodId, member);
+
+        return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
+    }
+
 
 }

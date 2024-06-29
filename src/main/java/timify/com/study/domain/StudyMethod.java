@@ -38,4 +38,9 @@ public class StudyMethod extends BaseDateTimeEntity {
         this.member = member;
         this.member.getStudyMethodList().add(this);
     }
+
+    // 방법 이름 update를 위한 메소드
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

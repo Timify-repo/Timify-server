@@ -90,5 +90,27 @@ public class StudyService {
         return studyMethodRepository.findAllByMemberAndStatus(member, CategoryStatus.ACTIVE);
     }
 
+    @Transactional
+    public StudyMethod updateStudyMethod(StudyRequest.studyMethodRequest request, Long studyMethodId, Member member) {
+        StudyMethod studyMethod = studyMethodRepository.findById(studyMethodId).orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_METHOD_NOT_FOUND));
+
+        // 해당 studyMethod가 member의 것이 맞는지 검증
+        if (!studyMethod.getMember().equals(member)) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_METHOD_OWNER);
+        }
+
+        // 활성화된 공부 방법과의 이름 중복 여부 검증
+        boolean exists = member.getStudyMethodList().stream()
+                .anyMatch(type -> request.getTitle().equals(type.getTitle()) && type.getStatus().equals(CategoryStatus.ACTIVE));
+
+        if (exists) {
+            throw new StudyHandler(ErrorStatus.STUDY_METHOD_ALREADY_EXISTS);
+        }
+
+        // studyMethod의 이름 수정
+        studyMethod.setTitle(request.getTitle());
+
+        return studyMethod;
+    }
 
 }
