@@ -5,6 +5,9 @@ import lombok.*;
 import timify.com.domain.common.BaseDateTimeEntity;
 import timify.com.domain.enums.TodoStatus;
 import timify.com.member.domain.Member;
+import timify.com.study.domain.StudyMethod;
+import timify.com.study.domain.StudyPlace;
+import timify.com.study.domain.StudyType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

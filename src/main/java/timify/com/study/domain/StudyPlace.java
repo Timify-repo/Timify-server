@@ -1,9 +1,8 @@
-package timify.com.domain;
+package timify.com.study.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
 import timify.com.domain.common.BaseDateTimeEntity;
-import timify.com.domain.enums.CategoryStatus;
 import timify.com.member.domain.Member;
 
 @Entity
