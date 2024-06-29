@@ -78,5 +78,17 @@ public class StudyController {
         return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
     }
 
+    @GetMapping("/method")
+    @Operation(summary = "공부 방법 조회 API", description = "공부 방법 목록을 조회하는 API 입니다.")
+    public ApiResponse<List<StudyResponse.studyMethodDto>> getStudyMethod() {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+        List<StudyMethod> studyMethodList = studyService.getStudyMethods(member);
+        List<StudyResponse.studyMethodDto> dtoList = studyMethodList.stream()
+                .map(StudyConverter::toStudyMethodDto)
+                .collect(Collectors.toList());
+
+        return ApiResponse.onSuccess(dtoList);
+    }
+
 
 }

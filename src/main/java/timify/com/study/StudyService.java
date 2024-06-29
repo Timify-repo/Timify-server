@@ -85,5 +85,10 @@ public class StudyService {
         return studyMethodRepository.save(studyMethod);
     }
 
+    @Transactional(readOnly = true)
+    public List<StudyMethod> getStudyMethods(Member member) {
+        return studyMethodRepository.findAllByMemberAndStatus(member, CategoryStatus.ACTIVE);
+    }
+
 
 }
