@@ -26,6 +26,6 @@ springdoc:
 
 jwt:
   secret: ${JWT_SECRET}
-  access_expiration_time: 60000
+  access_expiration_time: 600000
   refresh_expiration_day: 31
 
