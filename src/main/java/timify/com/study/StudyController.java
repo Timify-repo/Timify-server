@@ -13,6 +13,7 @@ import timify.com.common.apiPayload.ApiResponse;
 import timify.com.member.MemberService;
 import timify.com.member.domain.Member;
 import timify.com.study.domain.StudyMethod;
+import timify.com.study.domain.StudyPlace;
 import timify.com.study.domain.StudyType;
 import timify.com.study.dto.StudyRequest;
 import timify.com.study.dto.StudyResponse;
@@ -103,6 +104,43 @@ public class StudyController {
         StudyMethod studyMethod = studyService.updateStudyMethod(request, studyMethodId, member);
 
         return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
+    }
+
+    @PostMapping("/place/insert")
+    @Operation(summary = "공부 장소 등록 API", description = "공부 장소를 추가하는 API 입니다.")
+    public ApiResponse<StudyResponse.studyPlaceDto> insertStudyPlace(@RequestBody @Valid StudyRequest.studyPlaceRequest request) {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+
+        StudyPlace studyPlace = studyService.insertStudyPlace(request, member);
+
+        return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(studyPlace));
+    }
+
+    @GetMapping("/place")
+    @Operation(summary = "공부 장소 조회 API", description = "공부 장소 목록을 조회하는 API 입니다.")
+    public ApiResponse<List<StudyResponse.studyPlaceDto>> getStudyPlace() {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+        List<StudyPlace> studyPlaceList = studyService.getStudyPlaces(member);
+        List<StudyResponse.studyPlaceDto> dtoList = studyPlaceList.stream()
+                .map(StudyConverter::toStudyPlaceDto)
+                .collect(Collectors.toList());
+
+        return ApiResponse.onSuccess(dtoList);
+    }
+
+    @PostMapping("/place/{studyPlaceId}/update")
+    @Operation(summary = "공부 장소 수정 API", description = "특정 공부 장소의 이름을 수정하는 API 입니다.")
+    @Parameters(value = {
+            @Parameter(name = "studyPlaceId", description = "공부 장소의 id 입니다.")
+    })
+    public ApiResponse<StudyResponse.studyPlaceDto> updateStudyPlace(
+            @RequestBody @Valid StudyRequest.studyPlaceRequest request,
+            @PathVariable(name = "studyPlaceId") Long studyPlaceId
+    ) {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+        StudyPlace studyPlace = studyService.updateStudyPlace(request, studyPlaceId, member);
+
+        return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(studyPlace));
     }
 
 

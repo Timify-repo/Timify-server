@@ -29,4 +29,18 @@ public class StudyPlace extends BaseDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    // 연관관계 메소드
+    public void setMember(Member member) {
+        if (this.member != null) {
+            this.member.getStudyPlaceList().remove(this);
+        }
+        this.member = member;
+        this.member.getStudyPlaceList().add(this);
+    }
+
+    // 장소 title 업데이트를 위한 메소드
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }
