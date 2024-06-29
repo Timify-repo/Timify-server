@@ -116,5 +116,17 @@ public class StudyController {
         return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(studyPlace));
     }
 
+    @GetMapping("/place")
+    @Operation(summary = "공부 장소 조회 API", description = "공부 장소 목록을 조회하는 API 입니다.")
+    public ApiResponse<List<StudyResponse.studyPlaceDto>> getStudyPlace() {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+        List<StudyPlace> studyPlaceList = studyService.getStudyPlaces(member);
+        List<StudyResponse.studyPlaceDto> dtoList = studyPlaceList.stream()
+                .map(StudyConverter::toStudyPlaceDto)
+                .collect(Collectors.toList());
+
+        return ApiResponse.onSuccess(dtoList);
+    }
+
 
 }

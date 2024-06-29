@@ -133,4 +133,9 @@ public class StudyService {
         return studyPlaceRepository.save(studyPlace);
     }
 
+    @Transactional(readOnly = true)
+    public List<StudyPlace> getStudyPlaces(Member member) {
+        return studyPlaceRepository.findAllByMemberAndStatus(member, CategoryStatus.ACTIVE);
+    }
+
 }
