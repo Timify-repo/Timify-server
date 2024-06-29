@@ -13,6 +13,7 @@ import timify.com.common.apiPayload.ApiResponse;
 import timify.com.member.MemberService;
 import timify.com.member.domain.Member;
 import timify.com.study.domain.StudyMethod;
+import timify.com.study.domain.StudyPlace;
 import timify.com.study.domain.StudyType;
 import timify.com.study.dto.StudyRequest;
 import timify.com.study.dto.StudyResponse;
@@ -103,6 +104,16 @@ public class StudyController {
         StudyMethod studyMethod = studyService.updateStudyMethod(request, studyMethodId, member);
 
         return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
+    }
+
+    @PostMapping("/place/insert")
+    @Operation(summary = "공부 장소 등록 API", description = "공부 장소를 추가하는 API 입니다.")
+    public ApiResponse<StudyResponse.studyPlaceDto> insertStudyPlace(@RequestBody @Valid StudyRequest.studyPlaceRequest request) {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+
+        StudyPlace studyPlace = studyService.insertStudyPlace(request, member);
+
+        return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(studyPlace));
     }
 
 

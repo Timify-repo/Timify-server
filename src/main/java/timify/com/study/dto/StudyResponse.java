@@ -23,4 +23,13 @@ public class StudyResponse {
         Long studyMethodId;
         String studyMethodTitle;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class studyPlaceDto {
+        Long studyPlaceId;
+        String studyPlaceTitle;
+    }
 }

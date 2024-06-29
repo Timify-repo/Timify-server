@@ -8,9 +8,11 @@ import timify.com.common.apiPayload.exception.handler.StudyHandler;
 import timify.com.member.domain.Member;
 import timify.com.study.domain.CategoryStatus;
 import timify.com.study.domain.StudyMethod;
+import timify.com.study.domain.StudyPlace;
 import timify.com.study.domain.StudyType;
 import timify.com.study.dto.StudyRequest;
 import timify.com.study.repository.StudyMethodRepository;
+import timify.com.study.repository.StudyPlaceRepository;
 import timify.com.study.repository.StudyTypeRepository;
 
 import java.util.List;
@@ -21,6 +23,7 @@ public class StudyService {
 
     private final StudyTypeRepository studyTypeRepository;
     private final StudyMethodRepository studyMethodRepository;
+    private final StudyPlaceRepository studyPlaceRepository;
 
     @Transactional
     public StudyType insertStudyType(StudyRequest.studyTypeRequest request, Member member) {
@@ -111,6 +114,23 @@ public class StudyService {
         studyMethod.setTitle(request.getTitle());
 
         return studyMethod;
+    }
+
+    @Transactional
+    public StudyPlace insertStudyPlace(StudyRequest.studyPlaceRequest request, Member member) {
+        // 이미 존재하는 이름의 StudyPlace인지 검증
+        boolean exists = member.getStudyPlaceList().stream()
+                .anyMatch(studyPlace -> request.getTitle().equals(studyPlace.getTitle()));
+
+        if (exists) {
+            throw new StudyHandler(ErrorStatus.STUDY_PLACE_ALREADY_EXISTS);
+        }
+
+        // StudyPlace 엔티티 생성 및 연관관계 매핑
+        StudyPlace studyPlace = StudyConverter.toStudyPlace(request.getTitle(), member.getStudyPlaceList().size() + 1);
+        studyPlace.setMember(member);
+
+        return studyPlaceRepository.save(studyPlace);
     }
 
 }

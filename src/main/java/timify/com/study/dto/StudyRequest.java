@@ -18,4 +18,11 @@ public class StudyRequest {
         @Size(min = 1, max = 30)
         String title;
     }
+
+    @Getter
+    public static class studyPlaceRequest {
+        @NotBlank
+        @Size(min = 1, max = 30)
+        String title;
+    }
 }
