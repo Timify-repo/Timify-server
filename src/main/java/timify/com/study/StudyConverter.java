@@ -18,6 +18,7 @@ public class StudyConverter {
     public static StudyResponse.studyTypeDto toStudyTypeDto(StudyType studyType) {
         return StudyResponse.studyTypeDto.builder()
                 .studyTypeId(studyType.getId())
+                .order(studyType.getOrderNum())
                 .studyTypeTitle(studyType.getTitle())
                 .build();
     }
@@ -33,6 +34,7 @@ public class StudyConverter {
     public static StudyResponse.studyMethodDto toStudyMethodDto(StudyMethod studyMethod) {
         return StudyResponse.studyMethodDto.builder()
                 .studyMethodId(studyMethod.getId())
+                .order(studyMethod.getOrderNum())
                 .studyMethodTitle(studyMethod.getTitle())
                 .build();
     }
@@ -48,6 +50,7 @@ public class StudyConverter {
     public static StudyResponse.studyPlaceDto toStudyPlaceDto(StudyPlace studyPlace) {
         return StudyResponse.studyPlaceDto.builder()
                 .studyPlaceId(studyPlace.getId())
+                .order(studyPlace.getOrderNum())
                 .studyPlaceTitle(studyPlace.getTitle())
                 .build();
     }
