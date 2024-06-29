@@ -7,8 +7,10 @@ import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.exception.handler.StudyHandler;
 import timify.com.member.domain.Member;
 import timify.com.study.domain.CategoryStatus;
+import timify.com.study.domain.StudyMethod;
 import timify.com.study.domain.StudyType;
 import timify.com.study.dto.StudyRequest;
+import timify.com.study.repository.StudyMethodRepository;
 import timify.com.study.repository.StudyTypeRepository;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
 public class StudyService {
 
     private final StudyTypeRepository studyTypeRepository;
+    private final StudyMethodRepository studyMethodRepository;
 
     @Transactional
     public StudyType insertStudyType(StudyRequest.studyTypeRequest request, Member member) {
@@ -64,4 +67,50 @@ public class StudyService {
 
         return studyType;
     }
+
+    @Transactional
+    public StudyMethod insertStudyMethod(StudyRequest.studyMethodRequest request, Member member) {
+        // 이미 존재하는 이름의 StudyMethod인지 검증
+        boolean exists = member.getStudyMethodList().stream()
+                .anyMatch(studyMethod -> request.getTitle().equals(studyMethod.getTitle()));
+
+        if (exists) {
+            throw new StudyHandler(ErrorStatus.STUDY_METHOD_ALREADY_EXISTS);
+        }
+
+        // StudyMethod 엔티티 생성 및 연관관계 매핑
+        StudyMethod studyMethod = StudyConverter.toStudyMethod(request.getTitle(), member.getStudyMethodList().size() + 1);
+        studyMethod.setMember(member);
+
+        return studyMethodRepository.save(studyMethod);
+    }
+
+    @Transactional(readOnly = true)
+    public List<StudyMethod> getStudyMethods(Member member) {
+        return studyMethodRepository.findAllByMemberAndStatus(member, CategoryStatus.ACTIVE);
+    }
+
+    @Transactional
+    public StudyMethod updateStudyMethod(StudyRequest.studyMethodRequest request, Long studyMethodId, Member member) {
+        StudyMethod studyMethod = studyMethodRepository.findById(studyMethodId).orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_METHOD_NOT_FOUND));
+
+        // 해당 studyMethod가 member의 것이 맞는지 검증
+        if (!studyMethod.getMember().equals(member)) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_METHOD_OWNER);
+        }
+
+        // 활성화된 공부 방법과의 이름 중복 여부 검증
+        boolean exists = member.getStudyMethodList().stream()
+                .anyMatch(type -> request.getTitle().equals(type.getTitle()) && type.getStatus().equals(CategoryStatus.ACTIVE));
+
+        if (exists) {
+            throw new StudyHandler(ErrorStatus.STUDY_METHOD_ALREADY_EXISTS);
+        }
+
+        // studyMethod의 이름 수정
+        studyMethod.setTitle(request.getTitle());
+
+        return studyMethod;
+    }
+
 }

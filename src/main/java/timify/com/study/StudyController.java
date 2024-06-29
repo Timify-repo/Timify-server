@@ -12,6 +12,7 @@ import timify.com.auth.security.SecurityUtil;
 import timify.com.common.apiPayload.ApiResponse;
 import timify.com.member.MemberService;
 import timify.com.member.domain.Member;
+import timify.com.study.domain.StudyMethod;
 import timify.com.study.domain.StudyType;
 import timify.com.study.dto.StudyRequest;
 import timify.com.study.dto.StudyResponse;
@@ -66,5 +67,43 @@ public class StudyController {
 
         return ApiResponse.onSuccess(StudyConverter.toStudyTypeDto(studyType));
     }
+
+    @PostMapping("/method/insert")
+    @Operation(summary = "공부 방법 등록 API", description = "공부 방법을 추가하는 API 입니다.")
+    public ApiResponse<StudyResponse.studyMethodDto> insertStudyMethod(@RequestBody @Valid StudyRequest.studyMethodRequest request) {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+
+        StudyMethod studyMethod = studyService.insertStudyMethod(request, member);
+
+        return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
+    }
+
+    @GetMapping("/method")
+    @Operation(summary = "공부 방법 조회 API", description = "공부 방법 목록을 조회하는 API 입니다.")
+    public ApiResponse<List<StudyResponse.studyMethodDto>> getStudyMethod() {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+        List<StudyMethod> studyMethodList = studyService.getStudyMethods(member);
+        List<StudyResponse.studyMethodDto> dtoList = studyMethodList.stream()
+                .map(StudyConverter::toStudyMethodDto)
+                .collect(Collectors.toList());
+
+        return ApiResponse.onSuccess(dtoList);
+    }
+
+    @PostMapping("/method/{studyMethodId}/update")
+    @Operation(summary = "공부 방법 수정 API", description = "특정 공부 방법의 이름을 수정하는 API 입니다.")
+    @Parameters(value = {
+            @Parameter(name = "studyMethodId", description = "공부 방법의 id 입니다.")
+    })
+    public ApiResponse<StudyResponse.studyMethodDto> updateStudyMethod(
+            @RequestBody @Valid StudyRequest.studyMethodRequest request,
+            @PathVariable(name = "studyMethodId") Long studyMethodId
+    ) {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+        StudyMethod studyMethod = studyService.updateStudyMethod(request, studyMethodId, member);
+
+        return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
+    }
+
 
 }

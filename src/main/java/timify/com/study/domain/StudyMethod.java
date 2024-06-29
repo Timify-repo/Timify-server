@@ -20,7 +20,7 @@ public class StudyMethod extends BaseDateTimeEntity {
     private String title;
 
     @Column(nullable = false, length = 3)
-    private int order_num;
+    private int orderNum;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
@@ -29,4 +29,18 @@ public class StudyMethod extends BaseDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    // 연관관계 메소드
+    public void setMember(Member member) {
+        if (this.member != null) {
+            this.member.getStudyMethodList().remove(this);
+        }
+        this.member = member;
+        this.member.getStudyMethodList().add(this);
+    }
+
+    // 방법 이름 update를 위한 메소드
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

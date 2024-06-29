@@ -34,8 +34,10 @@ public enum ErrorStatus implements BaseErrorCode {
     // 공부 분류, 방법, 장소 관련 에러
     STUDY_TYPE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "STUDY4001", "이미 존재하는 공부 분류 이름 입니다."),
     STUDY_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY4002", "공부 분류를 찾을 수 없습니다."),
-    NOT_STUDY_TYPE_OWNER(HttpStatus.BAD_REQUEST, "STUDY4003", "해당 회원의 공부 분류가 아닙니다.");
-
+    NOT_STUDY_TYPE_OWNER(HttpStatus.BAD_REQUEST, "STUDY4003", "해당 회원의 공부 분류가 아닙니다."),
+    STUDY_METHOD_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "STUDY4004", "이미 존재하는 공부 방법 이름 입니다."),
+    STUDY_METHOD_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY4005", "공부 방법을 찾을 수 없습니다."),
+    NOT_STUDY_METHOD_OWNER(HttpStatus.BAD_REQUEST, "STUDY4006", "해당 회원의 공부 방법이 아닙니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

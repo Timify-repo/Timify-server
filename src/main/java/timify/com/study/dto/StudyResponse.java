@@ -15,4 +15,12 @@ public class StudyResponse {
         String studyTypeTitle;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class studyMethodDto {
+        Long studyMethodId;
+        String studyMethodTitle;
+    }
 }

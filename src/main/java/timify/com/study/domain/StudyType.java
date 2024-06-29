@@ -20,7 +20,7 @@ public class StudyType extends BaseDateTimeEntity {
     private String title;
 
     @Column(nullable = false, length = 3)
-    private int order_num;
+    private int orderNum;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
