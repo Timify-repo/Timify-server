@@ -1,6 +1,8 @@
 package timify.com.study;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +32,7 @@ public class StudyController {
 
     @PostMapping("/type/insert")
     @Operation(summary = "공부 분류 등록 API", description = "공부 분류를 추가하는 API 입니다.")
-    public ApiResponse<StudyResponse.studyTypeDto> insertStudyType(@RequestBody @Valid StudyRequest.studyTypeInsertRequest request) {
+    public ApiResponse<StudyResponse.studyTypeDto> insertStudyType(@RequestBody @Valid StudyRequest.studyTypeRequest request) {
         Member member = memberService.findMember(SecurityUtil.getCurrentMemberId()); // Member의 ACTIVE 여부 검증은 filter에서 이미 진행함
 
         StudyType studyType = studyService.insertStudyType(request, member);
@@ -49,4 +51,20 @@ public class StudyController {
 
         return ApiResponse.onSuccess(dtoList);
     }
+
+    @PostMapping("/type/{studyTypeId}/update")
+    @Operation(summary = "공부 분류 수정 API", description = "특정 공부 분류의 이름을 수정하는 API 입니다.")
+    @Parameters(value = {
+            @Parameter(name = "studyTypeId", description = "공부 분류의 id 입니다.")
+    })
+    public ApiResponse<StudyResponse.studyTypeDto> updateStudyType(
+            @RequestBody @Valid StudyRequest.studyTypeRequest request,
+            @PathVariable(name = "studyTypeId") Long studyTypeId
+    ) {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+        StudyType studyType = studyService.updateStudyType(request, studyTypeId, member);
+
+        return ApiResponse.onSuccess(StudyConverter.toStudyTypeDto(studyType));
+    }
+
 }

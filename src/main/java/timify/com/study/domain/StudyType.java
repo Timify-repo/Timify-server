@@ -39,4 +39,9 @@ public class StudyType extends BaseDateTimeEntity {
         this.member.getStudyTypeList().add(this);
     }
 
+    // 분류 이름 update를 위한 메소드
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
 }

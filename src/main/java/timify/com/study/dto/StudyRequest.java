@@ -6,7 +6,7 @@ import lombok.Getter;
 
 public class StudyRequest {
     @Getter
-    public static class studyTypeInsertRequest {
+    public static class studyTypeRequest {
         @NotBlank
         @Size(min = 1, max = 30)
         String title;
