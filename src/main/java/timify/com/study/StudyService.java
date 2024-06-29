@@ -138,4 +138,27 @@ public class StudyService {
         return studyPlaceRepository.findAllByMemberAndStatus(member, CategoryStatus.ACTIVE);
     }
 
+    @Transactional
+    public StudyPlace updateStudyPlace(StudyRequest.studyPlaceRequest request, Long studyPlaceId, Member member) {
+        StudyPlace studyPlace = studyPlaceRepository.findById(studyPlaceId).orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_PLACE_NOT_FOUND));
+
+        // 해당 studyPlace가 member의 것이 맞는지 검증
+        if (!studyPlace.getMember().equals(member)) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_PLACE_OWNER);
+        }
+
+        // 활성화된 공부 징소와의 이름 중복 여부 검증
+        boolean exists = member.getStudyPlaceList().stream()
+                .anyMatch(place -> request.getTitle().equals(place.getTitle()) && place.getStatus().equals(CategoryStatus.ACTIVE));
+
+        if (exists) {
+            throw new StudyHandler(ErrorStatus.STUDY_PLACE_ALREADY_EXISTS);
+        }
+
+        // studyPlace의 이름 수정
+        studyPlace.setTitle(request.getTitle());
+
+        return studyPlace;
+    }
+
 }

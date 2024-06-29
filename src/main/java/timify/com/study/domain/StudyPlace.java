@@ -38,4 +38,9 @@ public class StudyPlace extends BaseDateTimeEntity {
         this.member = member;
         this.member.getStudyPlaceList().add(this);
     }
+
+    // 장소 title 업데이트를 위한 메소드
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

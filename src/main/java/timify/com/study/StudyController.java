@@ -128,5 +128,20 @@ public class StudyController {
         return ApiResponse.onSuccess(dtoList);
     }
 
+    @PostMapping("/place/{studyPlaceId}/update")
+    @Operation(summary = "공부 장소 수정 API", description = "특정 공부 장소의 이름을 수정하는 API 입니다.")
+    @Parameters(value = {
+            @Parameter(name = "studyPlaceId", description = "공부 장소의 id 입니다.")
+    })
+    public ApiResponse<StudyResponse.studyPlaceDto> updateStudyPlace(
+            @RequestBody @Valid StudyRequest.studyPlaceRequest request,
+            @PathVariable(name = "studyPlaceId") Long studyPlaceId
+    ) {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+        StudyPlace studyPlace = studyService.updateStudyPlace(request, studyPlaceId, member);
+
+        return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(studyPlace));
+    }
+
 
 }
