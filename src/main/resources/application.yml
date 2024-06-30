@@ -14,7 +14,7 @@ spring:
       dialect: org.hibernate.dialect.MySQL8InnoDBDialect
   data:
     redis:
-      host: localhost
+      host: ${REDIS_HOST}
       port: 6379
       password: ${REDIS_PASSWORD}
 
