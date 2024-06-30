@@ -26,9 +26,6 @@ public class MemberRequest {
 
         @NotNull
         Long socialId;
-
-        @NotBlank
-        String loginType;
     }
 
 
