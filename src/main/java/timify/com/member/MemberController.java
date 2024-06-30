@@ -29,7 +29,9 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signin/{loginType}")
-    @Operation(summary = "회원가입 API", description = "소셜 계정 기반 회원 가입 API 입니다.")
+    @Operation(summary = "회원가입 API", description = "소셜 계정 기반 회원 가입 API 입니다.\n\n" +
+            "gender에는 \"F\" 또는 \"M\"을 보내주세요."
+    )
     @Parameters(value = {
             @Parameter(name = "loginType", description = "소셜 로그인 타입으로, KAKAO 또는 APPLE을 입력해야 합니다.")
     })
