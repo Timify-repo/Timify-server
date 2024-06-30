@@ -30,6 +30,7 @@ jobs:
           spring.datasource.password: ${{ secrets.DB_PASSWORD }}
           spring.data.redis.host: ${{ secrets.REDIS_HOST }}
           spring.data.redis.password: ""
+          jwt.secret: ${{ secrets.JWT_SECRET }}
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
