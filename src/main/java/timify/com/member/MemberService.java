@@ -16,7 +16,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Member join(MemberRequest.signinRequest request, String reqLoginType) {
         LoginType loginType = null;
         if (reqLoginType.equals(LoginType.KAKAO.toString())) {
