@@ -44,4 +44,9 @@ public class StudyType extends BaseDateTimeEntity {
         this.title = title;
     }
 
+    // 분류 삭제 처리를 위한 메소드
+    public void setStatus(CategoryStatus status) {
+        this.status = status;
+    }
+
 }

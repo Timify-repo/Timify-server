@@ -72,6 +72,19 @@ public class StudyService {
     }
 
     @Transactional
+    public void deleteStudyType(Long studyTypeId, Member member) {
+        StudyType studyType = studyTypeRepository.findByIdAndStatus(studyTypeId, CategoryStatus.ACTIVE)
+                .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_TYPE_NOT_FOUND));
+
+        // 해당 studyType이 member의 것이 맞는지 검증
+        if (!studyType.getMember().equals(member)) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_TYPE_OWNER);
+        }
+
+        studyType.setStatus(CategoryStatus.INACTIVE);
+    }
+
+    @Transactional
     public StudyMethod insertStudyMethod(StudyRequest.studyMethodRequest request, Member member) {
         // 이미 존재하는 이름의 StudyMethod인지 검증
         boolean exists = member.getStudyMethodList().stream()
