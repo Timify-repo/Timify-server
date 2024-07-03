@@ -123,6 +123,19 @@ public class StudyService {
     }
 
     @Transactional
+    public void deleteStudyMethod(Long studyMethodId, Member member) {
+        StudyMethod studyMethod = studyMethodRepository.findByIdAndStatus(studyMethodId, CategoryStatus.ACTIVE)
+                .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_TYPE_NOT_FOUND));
+
+        // 해당 studyMethod가 member의 것이 맞는지 검증
+        if (!studyMethod.getMember().equals(member)) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_METHOD_OWNER);
+        }
+
+        studyMethod.setStatus(CategoryStatus.INACTIVE);
+    }
+
+    @Transactional
     public StudyPlace insertStudyPlace(StudyRequest.studyPlaceRequest request, Member member) {
         // 이미 존재하는 이름의 StudyPlace인지 검증
         boolean exists = studyPlaceRepository.existsByMemberAndTitleAndStatus(member, request.getTitle(), CategoryStatus.ACTIVE);

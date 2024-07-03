@@ -118,6 +118,18 @@ public class StudyController {
         return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
     }
 
+    @DeleteMapping("/method/{studyMethodId}/delete")
+    @Operation(summary = "공부 방법 삭제 API", description = "특정 공부 방법을 삭제 처리하는 API 입니다.")
+    @Parameters(value = {
+            @Parameter(name = "studyMethodId", description = "공부 방법의 id 입니다.")
+    })
+    public ApiResponse<String> deleteStudyMethod(@PathVariable(name = "studyMethodId") Long studyMethodId) {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+        studyService.deleteStudyMethod(studyMethodId, member);
+
+        return ApiResponse.onSuccess("공부 방법 삭제 성공");
+    }
+
     @PostMapping("/place/insert")
     @Operation(summary = "공부 장소 등록 API", description = "공부 장소를 추가하는 API 입니다.")
     public ApiResponse<StudyResponse.studyPlaceDto> insertStudyPlace(@RequestBody @Valid StudyRequest.studyPlaceRequest request) {
