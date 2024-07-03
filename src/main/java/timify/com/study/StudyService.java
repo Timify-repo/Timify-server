@@ -25,8 +25,17 @@ public class StudyService {
     private final StudyMethodRepository studyMethodRepository;
     private final StudyPlaceRepository studyPlaceRepository;
 
+    Long countLimit = 15L;
+
     @Transactional
     public StudyType insertStudyType(StudyRequest.studyTypeRequest request, Member member) {
+
+        // 등록 개수 제한 초과 여부 검증
+        long count = studyTypeRepository.countByMemberAndStatus(member, CategoryStatus.ACTIVE);
+        if (count == countLimit) {
+            throw new StudyHandler(ErrorStatus.MAX_STUDY_ERROR);
+        }
+
         // 이미 존재하는 이름의 StudyType인지 검증
         boolean exists = studyTypeRepository.existsByMemberAndTitleAndStatus(member, request.getTitle(), CategoryStatus.ACTIVE);
         if (exists) {
@@ -82,6 +91,12 @@ public class StudyService {
 
     @Transactional
     public StudyMethod insertStudyMethod(StudyRequest.studyMethodRequest request, Member member) {
+        // 등록 개수 제한 초과 여부 검증
+        long count = studyMethodRepository.countByMemberAndStatus(member, CategoryStatus.ACTIVE);
+        if (count == countLimit) {
+            throw new StudyHandler(ErrorStatus.MAX_STUDY_ERROR);
+        }
+
         // 이미 존재하는 이름의 StudyMethod인지 검증
         boolean exists = studyMethodRepository.existsByMemberAndTitleAndStatus(member, request.getTitle(), CategoryStatus.ACTIVE);
         if (exists) {
@@ -137,6 +152,12 @@ public class StudyService {
 
     @Transactional
     public StudyPlace insertStudyPlace(StudyRequest.studyPlaceRequest request, Member member) {
+        // 등록 개수 제한 초과 여부 검증
+        long count = studyPlaceRepository.countByMemberAndStatus(member, CategoryStatus.ACTIVE);
+        if (count == countLimit) {
+            throw new StudyHandler(ErrorStatus.MAX_STUDY_ERROR);
+        }
+        
         // 이미 존재하는 이름의 StudyPlace인지 검증
         boolean exists = studyPlaceRepository.existsByMemberAndTitleAndStatus(member, request.getTitle(), CategoryStatus.ACTIVE);
         if (exists) {
