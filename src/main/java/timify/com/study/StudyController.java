@@ -167,5 +167,17 @@ public class StudyController {
         return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(studyPlace));
     }
 
+    @DeleteMapping("/place/{studyPlaceId}/delete")
+    @Operation(summary = "공부 장소 삭제 API", description = "특정 공부 장소를 삭제 처리하는 API 입니다.")
+    @Parameters(value = {
+            @Parameter(name = "studyPlaceId", description = "공부 장소의 id 입니다.")
+    })
+    public ApiResponse<String> deleteStudyPlace(@PathVariable(name = "studyPlaceId") Long studyPlaceId) {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+        studyService.deleteStudyPlace(studyPlaceId, member);
+
+        return ApiResponse.onSuccess("공부 장소 삭제 성공");
+    }
+
 
 }

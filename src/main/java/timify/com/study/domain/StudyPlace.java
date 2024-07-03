@@ -43,4 +43,9 @@ public class StudyPlace extends BaseDateTimeEntity {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    // 장소 삭제 처리를 위한 메소드
+    public void setStatus(CategoryStatus status) {
+        this.status = status;
+    }
 }

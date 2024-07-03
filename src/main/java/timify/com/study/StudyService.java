@@ -177,4 +177,17 @@ public class StudyService {
         return studyPlace;
     }
 
+    @Transactional
+    public void deleteStudyPlace(Long studyPlaceId, Member member) {
+        StudyPlace studyPlace = studyPlaceRepository.findByIdAndStatus(studyPlaceId, CategoryStatus.ACTIVE)
+                .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_PLACE_NOT_FOUND));
+
+        // 해당 studyPlace가 member의 것이 맞는지 검증
+        if (!studyPlace.getMember().equals(member)) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_PLACE_OWNER);
+        }
+
+        studyPlace.setStatus(CategoryStatus.INACTIVE);
+    }
+
 }
