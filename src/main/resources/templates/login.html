@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+<!-- kakao button -->
+<div class="text-center">
+    <a href="https://kauth.kakao.com/oauth/authorize"
+       th:href="@{https://kauth.kakao.com/oauth/authorize(client_id=${kakaoApiServiceKey}, redirect_uri=${redirectUri}, response_type='code')}">
+        <img src="/images/kakao_login_medium_narrow.png">
+    </a>
+</div>
+</body>

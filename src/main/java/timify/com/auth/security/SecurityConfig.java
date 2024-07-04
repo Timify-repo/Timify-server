@@ -45,6 +45,7 @@ public class SecurityConfig {
                                     .requestMatchers("/v1/member/signin/{loginType}").permitAll()
                                     .requestMatchers("/v1/auth/reissue").permitAll()
                                     .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // 스웨거 관련 엔드포인트 허용
+                                    .requestMatchers("/kakaoLoginPage", "/login/oauth2/code/kakao", "/images/kakao_login_medium_narrow.png", "/accessToken").permitAll() // 소셜로그인 관련 엔드포인트 허용
                                     .requestMatchers("/v1/**").hasAnyRole("MEMBER", "ADMIN")
                                     .requestMatchers("/admin/**").hasRole(RoleType.ADMIN.toString())
                                     .anyRequest().authenticated();
