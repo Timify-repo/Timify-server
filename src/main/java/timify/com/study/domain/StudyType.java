@@ -17,6 +17,7 @@ public class StudyType extends BaseDateTimeEntity {
     private Long id;
 
     @Column(nullable = false, length = 30)
+    @Setter
     private String title;
 
     @Column(nullable = false, length = 3)
@@ -24,6 +25,7 @@ public class StudyType extends BaseDateTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
+    @Setter
     private CategoryStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,16 +39,6 @@ public class StudyType extends BaseDateTimeEntity {
         }
         this.member = member;
         this.member.getStudyTypeList().add(this);
-    }
-
-    // 분류 이름 update를 위한 메소드
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    // 분류 삭제 처리를 위한 메소드
-    public void setStatus(CategoryStatus status) {
-        this.status = status;
     }
 
 }
