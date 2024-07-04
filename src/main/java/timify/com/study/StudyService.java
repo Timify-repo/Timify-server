@@ -25,12 +25,19 @@ public class StudyService {
     private final StudyMethodRepository studyMethodRepository;
     private final StudyPlaceRepository studyPlaceRepository;
 
+    Long countLimit = 15L;
+
     @Transactional
     public StudyType insertStudyType(StudyRequest.studyTypeRequest request, Member member) {
-        // 이미 존재하는 이름의 StudyType인지 검증
-        boolean exists = member.getStudyTypeList().stream()
-                .anyMatch(studyType -> request.getTitle().equals(studyType.getTitle()));
 
+        // 등록 개수 제한 초과 여부 검증
+        long count = studyTypeRepository.countByMemberAndStatus(member, CategoryStatus.ACTIVE);
+        if (count == countLimit) {
+            throw new StudyHandler(ErrorStatus.MAX_STUDY_ERROR);
+        }
+
+        // 이미 존재하는 이름의 StudyType인지 검증
+        boolean exists = studyTypeRepository.existsByMemberAndTitleAndStatus(member, request.getTitle(), CategoryStatus.ACTIVE);
         if (exists) {
             throw new StudyHandler(ErrorStatus.STUDY_TYPE_ALREADY_EXISTS);
         }
@@ -45,12 +52,12 @@ public class StudyService {
     @Transactional(readOnly = true)
     public List<StudyType> getStudyTypes(Member member) {
         return studyTypeRepository.findAllByMemberAndStatus(member, CategoryStatus.ACTIVE);
-
     }
 
     @Transactional
     public StudyType updateStudyType(StudyRequest.studyTypeRequest request, Long studyTypeId, Member member) {
-        StudyType studyType = studyTypeRepository.findById(studyTypeId).orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_TYPE_NOT_FOUND));
+        StudyType studyType = studyTypeRepository.findByIdAndStatus(studyTypeId, CategoryStatus.ACTIVE)
+                .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_TYPE_NOT_FOUND));
 
         // 해당 studyType이 member의 것이 맞는지 검증
         if (!studyType.getMember().equals(member)) {
@@ -58,9 +65,7 @@ public class StudyService {
         }
 
         // 활성화된 공부 분류와의 이름 중복 여부 검증
-        boolean exists = member.getStudyTypeList().stream()
-                .anyMatch(type -> request.getTitle().equals(type.getTitle()) && type.getStatus().equals(CategoryStatus.ACTIVE));
-
+        boolean exists = studyTypeRepository.existsByMemberAndTitleAndStatus(member, request.getTitle(), CategoryStatus.ACTIVE);
         if (exists) {
             throw new StudyHandler(ErrorStatus.STUDY_TYPE_ALREADY_EXISTS);
         }
@@ -72,11 +77,28 @@ public class StudyService {
     }
 
     @Transactional
-    public StudyMethod insertStudyMethod(StudyRequest.studyMethodRequest request, Member member) {
-        // 이미 존재하는 이름의 StudyMethod인지 검증
-        boolean exists = member.getStudyMethodList().stream()
-                .anyMatch(studyMethod -> request.getTitle().equals(studyMethod.getTitle()));
+    public void deleteStudyType(Long studyTypeId, Member member) {
+        StudyType studyType = studyTypeRepository.findByIdAndStatus(studyTypeId, CategoryStatus.ACTIVE)
+                .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_TYPE_NOT_FOUND));
 
+        // 해당 studyType이 member의 것이 맞는지 검증
+        if (!studyType.getMember().equals(member)) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_TYPE_OWNER);
+        }
+
+        studyType.setStatus(CategoryStatus.INACTIVE);
+    }
+
+    @Transactional
+    public StudyMethod insertStudyMethod(StudyRequest.studyMethodRequest request, Member member) {
+        // 등록 개수 제한 초과 여부 검증
+        long count = studyMethodRepository.countByMemberAndStatus(member, CategoryStatus.ACTIVE);
+        if (count == countLimit) {
+            throw new StudyHandler(ErrorStatus.MAX_STUDY_ERROR);
+        }
+
+        // 이미 존재하는 이름의 StudyMethod인지 검증
+        boolean exists = studyMethodRepository.existsByMemberAndTitleAndStatus(member, request.getTitle(), CategoryStatus.ACTIVE);
         if (exists) {
             throw new StudyHandler(ErrorStatus.STUDY_METHOD_ALREADY_EXISTS);
         }
@@ -95,7 +117,8 @@ public class StudyService {
 
     @Transactional
     public StudyMethod updateStudyMethod(StudyRequest.studyMethodRequest request, Long studyMethodId, Member member) {
-        StudyMethod studyMethod = studyMethodRepository.findById(studyMethodId).orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_METHOD_NOT_FOUND));
+        StudyMethod studyMethod = studyMethodRepository.findByIdAndStatus(studyMethodId, CategoryStatus.ACTIVE)
+                .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_METHOD_NOT_FOUND));
 
         // 해당 studyMethod가 member의 것이 맞는지 검증
         if (!studyMethod.getMember().equals(member)) {
@@ -103,9 +126,7 @@ public class StudyService {
         }
 
         // 활성화된 공부 방법과의 이름 중복 여부 검증
-        boolean exists = member.getStudyMethodList().stream()
-                .anyMatch(type -> request.getTitle().equals(type.getTitle()) && type.getStatus().equals(CategoryStatus.ACTIVE));
-
+        boolean exists = studyMethodRepository.existsByMemberAndTitleAndStatus(member, request.getTitle(), CategoryStatus.ACTIVE);
         if (exists) {
             throw new StudyHandler(ErrorStatus.STUDY_METHOD_ALREADY_EXISTS);
         }
@@ -117,11 +138,28 @@ public class StudyService {
     }
 
     @Transactional
-    public StudyPlace insertStudyPlace(StudyRequest.studyPlaceRequest request, Member member) {
-        // 이미 존재하는 이름의 StudyPlace인지 검증
-        boolean exists = member.getStudyPlaceList().stream()
-                .anyMatch(studyPlace -> request.getTitle().equals(studyPlace.getTitle()));
+    public void deleteStudyMethod(Long studyMethodId, Member member) {
+        StudyMethod studyMethod = studyMethodRepository.findByIdAndStatus(studyMethodId, CategoryStatus.ACTIVE)
+                .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_TYPE_NOT_FOUND));
 
+        // 해당 studyMethod가 member의 것이 맞는지 검증
+        if (!studyMethod.getMember().equals(member)) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_METHOD_OWNER);
+        }
+
+        studyMethod.setStatus(CategoryStatus.INACTIVE);
+    }
+
+    @Transactional
+    public StudyPlace insertStudyPlace(StudyRequest.studyPlaceRequest request, Member member) {
+        // 등록 개수 제한 초과 여부 검증
+        long count = studyPlaceRepository.countByMemberAndStatus(member, CategoryStatus.ACTIVE);
+        if (count == countLimit) {
+            throw new StudyHandler(ErrorStatus.MAX_STUDY_ERROR);
+        }
+        
+        // 이미 존재하는 이름의 StudyPlace인지 검증
+        boolean exists = studyPlaceRepository.existsByMemberAndTitleAndStatus(member, request.getTitle(), CategoryStatus.ACTIVE);
         if (exists) {
             throw new StudyHandler(ErrorStatus.STUDY_PLACE_ALREADY_EXISTS);
         }
@@ -140,7 +178,8 @@ public class StudyService {
 
     @Transactional
     public StudyPlace updateStudyPlace(StudyRequest.studyPlaceRequest request, Long studyPlaceId, Member member) {
-        StudyPlace studyPlace = studyPlaceRepository.findById(studyPlaceId).orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_PLACE_NOT_FOUND));
+        StudyPlace studyPlace = studyPlaceRepository.findByIdAndStatus(studyPlaceId, CategoryStatus.ACTIVE)
+                .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_PLACE_NOT_FOUND));
 
         // 해당 studyPlace가 member의 것이 맞는지 검증
         if (!studyPlace.getMember().equals(member)) {
@@ -148,9 +187,7 @@ public class StudyService {
         }
 
         // 활성화된 공부 징소와의 이름 중복 여부 검증
-        boolean exists = member.getStudyPlaceList().stream()
-                .anyMatch(place -> request.getTitle().equals(place.getTitle()) && place.getStatus().equals(CategoryStatus.ACTIVE));
-
+        boolean exists = studyPlaceRepository.existsByMemberAndTitleAndStatus(member, request.getTitle(), CategoryStatus.ACTIVE);
         if (exists) {
             throw new StudyHandler(ErrorStatus.STUDY_PLACE_ALREADY_EXISTS);
         }
@@ -159,6 +196,19 @@ public class StudyService {
         studyPlace.setTitle(request.getTitle());
 
         return studyPlace;
+    }
+
+    @Transactional
+    public void deleteStudyPlace(Long studyPlaceId, Member member) {
+        StudyPlace studyPlace = studyPlaceRepository.findByIdAndStatus(studyPlaceId, CategoryStatus.ACTIVE)
+                .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_PLACE_NOT_FOUND));
+
+        // 해당 studyPlace가 member의 것이 맞는지 검증
+        if (!studyPlace.getMember().equals(member)) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_PLACE_OWNER);
+        }
+
+        studyPlace.setStatus(CategoryStatus.INACTIVE);
     }
 
 }
