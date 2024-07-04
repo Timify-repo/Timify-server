@@ -25,7 +25,7 @@ public class StudyService {
     private final StudyMethodRepository studyMethodRepository;
     private final StudyPlaceRepository studyPlaceRepository;
 
-    Long countLimit = 15L;
+    private final Long countLimit = 15L;
 
     @Transactional
     public StudyType insertStudyType(StudyRequest.studyTypeRequest request, Member member) {
@@ -157,7 +157,7 @@ public class StudyService {
         if (count == countLimit) {
             throw new StudyHandler(ErrorStatus.MAX_STUDY_ERROR);
         }
-        
+
         // 이미 존재하는 이름의 StudyPlace인지 검증
         boolean exists = studyPlaceRepository.existsByMemberAndTitleAndStatus(member, request.getTitle(), CategoryStatus.ACTIVE);
         if (exists) {

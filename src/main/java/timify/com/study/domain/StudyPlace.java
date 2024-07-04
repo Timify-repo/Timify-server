@@ -17,6 +17,7 @@ public class StudyPlace extends BaseDateTimeEntity {
     private Long id;
 
     @Column(nullable = false, length = 30)
+    @Setter
     private String title;
 
     @Column(nullable = false, length = 3)
@@ -24,6 +25,7 @@ public class StudyPlace extends BaseDateTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
+    @Setter
     private CategoryStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,13 +41,4 @@ public class StudyPlace extends BaseDateTimeEntity {
         this.member.getStudyPlaceList().add(this);
     }
 
-    // 장소 title 업데이트를 위한 메소드
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    // 장소 삭제 처리를 위한 메소드
-    public void setStatus(CategoryStatus status) {
-        this.status = status;
-    }
 }
