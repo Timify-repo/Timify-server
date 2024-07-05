@@ -10,7 +10,6 @@ import timify.com.auth.jwt.JwtUtil;
 import timify.com.auth.jwt.RefreshToken;
 import timify.com.auth.jwt.RefreshTokenService;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
-import timify.com.common.apiPayload.exception.handler.AuthHandler;
 import timify.com.common.apiPayload.exception.handler.MemberHandler;
 import timify.com.member.domain.LoginType;
 import timify.com.member.domain.Member;
@@ -26,38 +25,6 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final RefreshTokenService refreshTokenService;
     private final KakaoApiService kakaoApiService;
-
-    /**
-     * member외 socialId와 LoginType String을 받아 access token, refresh token 발급
-     *
-     * @param socialId
-     * @param requestLoginType
-     * @return
-     */
-    @Transactional
-    public AuthResponse.loginDto login(Long socialId, String requestLoginType) {
-        LoginType loginType = null;
-
-        if (requestLoginType.equals(LoginType.KAKAO.toString())) {
-            loginType = LoginType.KAKAO;
-        } else if (requestLoginType.equals(LoginType.APPLE.toString())) {
-            loginType = LoginType.APPLE;
-        } else {
-            throw new AuthHandler(ErrorStatus.INVALID_LOGINTYPE);
-        }
-
-        Member member = memberRepository.findBySocialIdAndLoginType(socialId, loginType).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
-        String accessToken = jwtUtil.createAccessToken(member.getId(), member.getSocialId(), member.getRoleType());
-        String refreshToken = refreshTokenService.generateRefreshToken(member.getSocialId(), member.getLoginType());
-
-        return AuthResponse.loginDto.builder()
-                .memberId(member.getId())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .accessTokenExpiresIn(jwtUtil.getTokenExpirationTime(accessToken))
-                .build();
-    }
 
     /**
      * kakao access token을 이용해 사용자 정보 조회 및 로그인 처리

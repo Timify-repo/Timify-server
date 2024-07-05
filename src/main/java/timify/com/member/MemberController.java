@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import timify.com.auth.AuthService;
 import timify.com.auth.dto.AuthResponse;
 import timify.com.auth.security.SecurityUtil;
 import timify.com.common.apiPayload.ApiResponse;
@@ -23,7 +22,6 @@ import timify.com.member.dto.MemberResponse;
 @Tag(name = "Member", description = "Member 관련 API")
 public class MemberController {
 
-    private final AuthService authService;
     private final MemberService memberService;
 
     @PostMapping("/signin/kakao")
@@ -32,10 +30,8 @@ public class MemberController {
             "accessToken에는 카카오에서 발급 받은 access token을 담아주세요."
     )
     public ApiResponse<AuthResponse.loginDto> signin(@RequestBody @Valid MemberRequest.kakaoSigninRequest request) {
-        Member member = memberService.kakaoSignin(request);
-        AuthResponse.loginDto loginDto = authService.login(member.getSocialId(), "KAKAO");
 
-        return ApiResponse.of(SuccessStatus.JOIN_SUCCESS, loginDto);
+        return ApiResponse.of(SuccessStatus.JOIN_SUCCESS, memberService.kakaoSignin(request));
     }
 
     @GetMapping("/test")

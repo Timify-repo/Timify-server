@@ -22,13 +22,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/login")
-    @Operation(summary = "로그인 API", description = "회원의 socialId를 받는 로그인 API 입니다.")
-    public ApiResponse<AuthResponse.loginDto> login(@RequestBody AuthRequest.loginRequest request) {
-
-        return ApiResponse.onSuccess(authService.login(request.getSocialId(), request.getLoginType()));
-    }
-
     @PostMapping("/login/kakao")
     @Operation(summary = "카카오 로그인 API", description = "카카오 소셜 로그인 API 입니다.\n\n" +
             "카카오에서 발급 받은 access token을 담아주세요.")

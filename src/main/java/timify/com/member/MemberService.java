@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import timify.com.auth.KakaoApiService;
 import timify.com.auth.dto.AuthResponse;
+import timify.com.auth.jwt.JwtUtil;
+import timify.com.auth.jwt.RefreshTokenService;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.exception.handler.MemberHandler;
 import timify.com.member.domain.LoginType;
@@ -16,11 +18,13 @@ import timify.com.member.repository.MemberRepository;
 @RequiredArgsConstructor
 public class MemberService {
 
+    private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
     private final KakaoApiService kakaoApiService;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
-    public Member kakaoSignin(MemberRequest.kakaoSigninRequest request) {
+    public AuthResponse.loginDto kakaoSignin(MemberRequest.kakaoSigninRequest request) {
         AuthResponse.kakaoResultDto userInfo = kakaoApiService.getUserInfo(request.getAccessToken());
 
         // request의 Gender 값 검증
@@ -35,8 +39,20 @@ public class MemberService {
             throw new MemberHandler(ErrorStatus.MEMBER_EXISTS);
         }
 
+        // member 엔티티 생성 및 저장
         Member member = MemberConverter.toMemberFromKakaoRequest(request, userInfo);
-        return memberRepository.save(member);
+        memberRepository.save(member);
+
+        // 회원 저장 후 자동 로그인 처리
+        String accessToken = jwtUtil.createAccessToken(member.getId(), member.getSocialId(), member.getRoleType());
+        String refreshToken = refreshTokenService.generateRefreshToken(member.getSocialId(), member.getLoginType());
+
+        return AuthResponse.loginDto.builder()
+                .memberId(member.getId())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .accessTokenExpiresIn(jwtUtil.getTokenExpirationTime(accessToken))
+                .build();
     }
 
     @Transactional(readOnly = true)
