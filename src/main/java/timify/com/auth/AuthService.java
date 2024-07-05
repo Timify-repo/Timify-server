@@ -25,6 +25,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
     private final RefreshTokenService refreshTokenService;
+    private final KakaoApiService kakaoApiService;
 
     /**
      * member외 socialId와 LoginType String을 받아 access token, refresh token 발급
@@ -57,6 +58,34 @@ public class AuthService {
                 .accessTokenExpiresIn(jwtUtil.getTokenExpirationTime(accessToken))
                 .build();
     }
+
+    /**
+     * kakao access token을 이용해 사용자 정보 조회 및 로그인 처리
+     *
+     * @param kakaoAccessToken
+     * @return
+     */
+    @Transactional
+    public AuthResponse.loginDto kakaoLogin(String kakaoAccessToken) {
+        // 카카오 서버로부터 사용자 정보 가져오기
+        AuthResponse.kakaoResultDto userInfo = kakaoApiService.getUserInfo(kakaoAccessToken);
+
+        // socialId와 socialType에 해당하는 회원 존재하는지 검증
+        Member member = memberRepository.findBySocialIdAndLoginType(userInfo.getSocialId(), LoginType.KAKAO)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        String accessToken = jwtUtil.createAccessToken(member.getId(), member.getSocialId(), member.getRoleType());
+        String refreshToken = refreshTokenService.generateRefreshToken(member.getSocialId(), member.getLoginType());
+
+
+        return AuthResponse.loginDto.builder()
+                .memberId(member.getId())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .accessTokenExpiresIn(jwtUtil.getTokenExpirationTime(accessToken))
+                .build();
+    }
+
 
     /**
      * access token, refresh token 재발급

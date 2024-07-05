@@ -11,6 +11,11 @@ public class AuthRequest {
     }
 
     @Getter
+    public static class kakaoLoginRequest {
+        String accessToken;
+    }
+
+    @Getter
     public static class reissueRequest {
         String refreshToken;
     }

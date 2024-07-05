@@ -21,6 +21,16 @@ public class AuthResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class kakaoResultDto {
+        Long socialId;
+        String nickname;
+        String email;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class reissueDto {
         Long memberId;
         String accessToken;
