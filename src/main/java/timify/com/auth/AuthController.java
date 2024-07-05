@@ -23,10 +23,10 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    @Operation(summary = "로그인 API", description = "로그인 API 입니다.")
+    @Operation(summary = "로그인 API", description = "회원의 socialId를 받는 로그인 API 입니다.")
     public ApiResponse<AuthResponse.loginDto> login(@RequestBody AuthRequest.loginRequest request) {
 
-        return ApiResponse.onSuccess(authService.login(request.getId(), request.getLoginType()));
+        return ApiResponse.onSuccess(authService.login(request.getSocialId(), request.getLoginType()));
     }
 
     @PostMapping("/login/kakao")

@@ -6,7 +6,7 @@ public class AuthRequest {
 
     @Getter
     public static class loginRequest {
-        Long id;
+        Long socialId;
         String loginType;
     }
 

@@ -8,13 +8,7 @@ import java.time.LocalDate;
 
 public class MemberRequest {
     @Getter
-    public static class signinRequest {
-        @NotBlank
-        String email;
-
-        @NotBlank
-        String name;
-
+    public static class kakaoSigninRequest {
         @NotBlank
         String gender;
 
@@ -24,8 +18,8 @@ public class MemberRequest {
         @NotNull
         LocalDate birth;
 
-        @NotNull
-        Long socialId;
+        @NotBlank
+        String accessToken;
     }
 
 
