@@ -3,6 +3,10 @@ package timify.com.member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import timify.com.auth.KakaoApiService;
+import timify.com.auth.dto.AuthResponse;
+import timify.com.auth.jwt.JwtUtil;
+import timify.com.auth.jwt.RefreshTokenService;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.exception.handler.MemberHandler;
 import timify.com.member.domain.LoginType;
@@ -14,26 +18,41 @@ import timify.com.member.repository.MemberRepository;
 @RequiredArgsConstructor
 public class MemberService {
 
+    private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
+    private final KakaoApiService kakaoApiService;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
-    public Member join(MemberRequest.signinRequest request, String reqLoginType) {
-        LoginType loginType = null;
-        if (reqLoginType.equals(LoginType.KAKAO.toString())) {
-            loginType = LoginType.KAKAO;
-        } else if (reqLoginType.equals(LoginType.APPLE.toString())) {
-            loginType = LoginType.APPLE;
+    public AuthResponse.loginDto kakaoSignin(MemberRequest.kakaoSigninRequest request) {
+        AuthResponse.kakaoResultDto userInfo = kakaoApiService.getUserInfo(request.getAccessToken());
+
+        // request의 Gender 값 검증
+        String gender = request.getGender();
+        if (!"F".equals(gender) && !"M".equals(gender) && !"N".equals(gender)) {
+            throw new MemberHandler(ErrorStatus.GENDER_BAD_REQUEST);
         }
 
         // socialId와 loginType이 일치하는 사용자가 있는지 검증
-        boolean isExist = memberRepository.existsBySocialIdAndLoginType(request.getSocialId(), loginType);
+        boolean isExist = memberRepository.existsBySocialIdAndLoginType(userInfo.getSocialId(), LoginType.KAKAO);
         if (isExist) {
             throw new MemberHandler(ErrorStatus.MEMBER_EXISTS);
         }
 
-        Member member = MemberConverter.toMember(request, loginType);
-        return memberRepository.save(member);
+        // member 엔티티 생성 및 저장
+        Member member = MemberConverter.toMemberFromKakaoRequest(request, userInfo);
+        memberRepository.save(member);
 
+        // 회원 저장 후 자동 로그인 처리
+        String accessToken = jwtUtil.createAccessToken(member.getId(), member.getSocialId(), member.getRoleType());
+        String refreshToken = refreshTokenService.generateRefreshToken(member.getSocialId(), member.getLoginType());
+
+        return AuthResponse.loginDto.builder()
+                .memberId(member.getId())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .accessTokenExpiresIn(jwtUtil.getTokenExpirationTime(accessToken))
+                .build();
     }
 
     @Transactional(readOnly = true)

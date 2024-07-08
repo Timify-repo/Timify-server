@@ -25,14 +25,14 @@ public class StudyService {
     private final StudyMethodRepository studyMethodRepository;
     private final StudyPlaceRepository studyPlaceRepository;
 
-    private final Long countLimit = 15L;
+    private final static long COUNT_LIMIT = 15L;
 
     @Transactional
     public StudyType insertStudyType(StudyRequest.studyTypeRequest request, Member member) {
 
         // 등록 개수 제한 초과 여부 검증
         long count = studyTypeRepository.countByMemberAndStatus(member, CategoryStatus.ACTIVE);
-        if (count == countLimit) {
+        if (count == COUNT_LIMIT) {
             throw new StudyHandler(ErrorStatus.MAX_STUDY_ERROR);
         }
 
@@ -93,7 +93,7 @@ public class StudyService {
     public StudyMethod insertStudyMethod(StudyRequest.studyMethodRequest request, Member member) {
         // 등록 개수 제한 초과 여부 검증
         long count = studyMethodRepository.countByMemberAndStatus(member, CategoryStatus.ACTIVE);
-        if (count == countLimit) {
+        if (count == COUNT_LIMIT) {
             throw new StudyHandler(ErrorStatus.MAX_STUDY_ERROR);
         }
 
@@ -154,7 +154,7 @@ public class StudyService {
     public StudyPlace insertStudyPlace(StudyRequest.studyPlaceRequest request, Member member) {
         // 등록 개수 제한 초과 여부 검증
         long count = studyPlaceRepository.countByMemberAndStatus(member, CategoryStatus.ACTIVE);
-        if (count == countLimit) {
+        if (count == COUNT_LIMIT) {
             throw new StudyHandler(ErrorStatus.MAX_STUDY_ERROR);
         }
 

@@ -6,8 +6,13 @@ public class AuthRequest {
 
     @Getter
     public static class loginRequest {
-        Long id;
+        Long socialId;
         String loginType;
+    }
+
+    @Getter
+    public static class kakaoLoginRequest {
+        String accessToken;
     }
 
     @Getter

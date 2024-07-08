@@ -29,3 +29,7 @@ jwt:
   access_expiration_time: 600000
   refresh_expiration_day: 31
 
+social:
+  kakao:
+    apikey: ${KAKAO_API_KEY}
+    redirect_uri: ${KAKAO_REDIRECT_URI}

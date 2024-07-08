@@ -22,11 +22,12 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/login")
-    @Operation(summary = "로그인 API", description = "로그인 API 입니다.")
-    public ApiResponse<AuthResponse.loginDto> login(@RequestBody AuthRequest.loginRequest request) {
+    @PostMapping("/login/kakao")
+    @Operation(summary = "카카오 로그인 API", description = "카카오 소셜 로그인 API 입니다.\n\n" +
+            "카카오에서 발급 받은 access token을 담아주세요.")
+    public ApiResponse<AuthResponse.loginDto> kakaoLogin(@RequestBody AuthRequest.kakaoLoginRequest request) {
 
-        return ApiResponse.onSuccess(authService.login(request.getId(), request.getLoginType()));
+        return ApiResponse.onSuccess(authService.kakaoLogin(request.getAccessToken()));
     }
 
     @PostMapping("/reissue")

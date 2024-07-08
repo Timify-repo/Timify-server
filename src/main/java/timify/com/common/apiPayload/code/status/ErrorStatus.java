@@ -26,10 +26,14 @@ public enum ErrorStatus implements BaseErrorCode {
     UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "AUTH4005", "로그인 후 이용가능합니다. 토큰을 입력해 주세요"),
     INACTIVE_MEMBER(HttpStatus.NOT_FOUND, "AUTH4006", "탈퇴한 사용자 입니다."),
 
+    // 카카오 소셜 로그인 관련 에러
+    KAKAO_REQ_FAILED(HttpStatus.BAD_REQUEST, "AUTH4007", "카카오 access token으로 사용자 정보 요청에 실패했습니다."),
+
 
     // 회원 관련 에러
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER4001", "사용자를 찾을 수 없습니다."),
     MEMBER_EXISTS(HttpStatus.BAD_REQUEST, "MEMBER4002", "이미 가입된 사용자 입니다."),
+    GENDER_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MEMBER4003", "잘못된 성별 값 입니다."),
 
     // 공부 분류, 방법, 장소 관련 에러
     STUDY_TYPE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "STUDY4001", "이미 존재하는 공부 분류 이름 입니다."),
