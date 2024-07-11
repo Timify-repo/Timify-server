@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import timify.com.domain.MemberMission;
 import timify.com.domain.StudyTime;
-import timify.com.domain.Subject;
+import timify.com.subject.domain.Subject;
 import timify.com.domain.Todo;
 import timify.com.domain.common.BaseDateTimeEntity;
 import timify.com.study.domain.StudyMethod;

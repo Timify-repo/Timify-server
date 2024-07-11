@@ -1,9 +1,10 @@
-package timify.com.domain;
+package timify.com.subject.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import timify.com.domain.StudyTime;
+import timify.com.domain.Todo;
 import timify.com.domain.common.BaseDateTimeEntity;
-import timify.com.domain.enums.SubjectStatus;
 import timify.com.member.domain.Member;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class Subject extends BaseDateTimeEntity {
     private Long id;
 
     @Column(nullable = false, length = 50)
-    private String email;
+    private String title;
 
     @Column(nullable = false, length = 3)
     private int order_num;
@@ -41,4 +42,8 @@ public class Subject extends BaseDateTimeEntity {
     // studyTime 양방향 매핑
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     private List<StudyTime> studyTimeList = new ArrayList<>();
+
+    public void updateOrderNum(int newOrderNum) {
+        this.order_num = newOrderNum;
+    }
 }
