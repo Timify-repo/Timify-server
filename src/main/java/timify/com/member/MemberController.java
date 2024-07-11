@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import timify.com.auth.dto.AuthResponse;
 import timify.com.auth.security.SecurityUtil;
@@ -49,24 +48,5 @@ public class MemberController {
 
         return ApiResponse.onSuccess(response);
     }
-
-    @GetMapping("/test")
-    @Operation(summary = "테스트용 회원 정보 조회 API", description = "jwt 테스트용, 로그인한 회원 정보를 조회하는 API 입니다.")
-    public ApiResponse<MemberResponse.myInfoDto> getMyInfo(Authentication authentication) {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
-
-        MemberResponse.myInfoDto response = MemberResponse.myInfoDto.builder()
-                .socialId(member.getSocialId())
-                .name(member.getName())
-                .email(member.getEmail())
-                .loginType(member.getLoginType())
-                .job(member.getJob())
-                .gender(member.getGender())
-                .birth(member.getBirth())
-                .build();
-
-        return ApiResponse.onSuccess(response);
-    }
-
 
 }
