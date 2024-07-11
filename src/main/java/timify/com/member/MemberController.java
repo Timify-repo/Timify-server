@@ -34,6 +34,22 @@ public class MemberController {
         return ApiResponse.of(SuccessStatus.JOIN_SUCCESS, memberService.kakaoSignin(request));
     }
 
+    @GetMapping("/info")
+    @Operation(summary = "개인 정보 조회 API", description = "해당 회원의 개인 정보를 조회하는 API 입니다.")
+    public ApiResponse<MemberResponse.memberInfoDto> getInfo() {
+        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+
+        MemberResponse.memberInfoDto response = MemberResponse.memberInfoDto.builder()
+                .name(member.getName())
+                .email(member.getEmail())
+                .job(member.getJob())
+                .gender(member.getGender())
+                .birth(member.getBirth())
+                .build();
+
+        return ApiResponse.onSuccess(response);
+    }
+
     @GetMapping("/test")
     @Operation(summary = "테스트용 회원 정보 조회 API", description = "jwt 테스트용, 로그인한 회원 정보를 조회하는 API 입니다.")
     public ApiResponse<MemberResponse.myInfoDto> getMyInfo(Authentication authentication) {

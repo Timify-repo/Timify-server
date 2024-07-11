@@ -25,4 +25,16 @@ public class MemberResponse {
         LocalDate birth;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class memberInfoDto {
+        String name;
+        String email;
+        String job;
+        Gender gender;
+        LocalDate birth;
+    }
+
 }
