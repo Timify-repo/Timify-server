@@ -3,6 +3,7 @@ package timify.com.member;
 import timify.com.auth.dto.AuthResponse;
 import timify.com.member.domain.*;
 import timify.com.member.dto.MemberRequest;
+import timify.com.member.dto.MemberResponse;
 
 public class MemberConverter {
 
@@ -26,6 +27,12 @@ public class MemberConverter {
                 .socialId(userInfo.getSocialId())
                 .loginType(LoginType.KAKAO)
                 .status(MemberStatus.ACTIVE)
+                .build();
+    }
+
+    public static MemberResponse.memberNameUpdateResultDto toMemberNameUpdateResultDto(Member member) {
+        return MemberResponse.memberNameUpdateResultDto.builder()
+                .name(member.getName())
                 .build();
     }
 

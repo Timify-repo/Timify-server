@@ -49,4 +49,12 @@ public class MemberController {
         return ApiResponse.onSuccess(response);
     }
 
+    @PostMapping("/name/update")
+    @Operation(summary = "회원 이름 수정 API", description = "해당 회원의 이름을 수정하 API 입니다.")
+    public ApiResponse<Object> updateMemberName(@RequestBody @Valid MemberRequest.nameUpdateRequest request) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberService.updateMemberName(request, memberId);
+        
+        return ApiResponse.onSuccess(MemberConverter.toMemberNameUpdateResultDto(member));
+    }
 }

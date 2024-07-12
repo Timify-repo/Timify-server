@@ -82,4 +82,9 @@ public class Member extends BaseDateTimeEntity {
     // MemberMission 양방향 매핑
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberMission> memberMissionList = new ArrayList<>();
+
+    // 이름 수정을 위한 메소드
+    public void updateName(String name) {
+        this.name = name;
+    }
 }
