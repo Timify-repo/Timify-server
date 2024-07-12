@@ -87,4 +87,9 @@ public class Member extends BaseDateTimeEntity {
     public void updateName(String name) {
         this.name = name;
     }
+
+    // 생일 수정을 위한 메소드
+    public void updateBirth(LocalDate birth) {
+        this.birth = birth;
+    }
 }

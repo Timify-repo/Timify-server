@@ -50,11 +50,21 @@ public class MemberController {
     }
 
     @PostMapping("/name/update")
-    @Operation(summary = "회원 이름 수정 API", description = "해당 회원의 이름을 수정하 API 입니다.")
-    public ApiResponse<Object> updateMemberName(@RequestBody @Valid MemberRequest.nameUpdateRequest request) {
+    @Operation(summary = "회원 이름 수정 API", description = "해당 회원의 이름을 수정하는 API 입니다.")
+    public ApiResponse<MemberResponse.memberNameUpdateResultDto> updateMemberName(@RequestBody @Valid MemberRequest.nameUpdateRequest request) {
         Long memberId = SecurityUtil.getCurrentMemberId();
         Member member = memberService.updateMemberName(request, memberId);
-        
+
         return ApiResponse.onSuccess(MemberConverter.toMemberNameUpdateResultDto(member));
     }
+
+    @PostMapping("/birth/update")
+    @Operation(summary = "회원 생년월일 수정 API", description = "해당 회원의 생년월일을 수정하는 API 입니다.")
+    public ApiResponse<MemberResponse.memberBirthUpdateResultDto> updateMemberBirth(@RequestBody @Valid MemberRequest.birthUpdateRequest request) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberService.updateMemberBirth(request, memberId);
+
+        return ApiResponse.onSuccess(MemberConverter.toMemberBirthUpdateResultDto(member));
+    }
+
 }

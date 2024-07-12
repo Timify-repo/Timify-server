@@ -36,4 +36,10 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponse.memberBirthUpdateResultDto toMemberBirthUpdateResultDto(Member member) {
+        return MemberResponse.memberBirthUpdateResultDto.builder()
+                .birth(member.getBirth())
+                .build();
+    }
+
 }

@@ -31,4 +31,13 @@ public class MemberResponse {
         String name;
     }
 
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class memberBirthUpdateResultDto {
+        LocalDate birth;
+    }
+
 }
