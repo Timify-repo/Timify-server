@@ -77,7 +77,8 @@ public class MemberController {
     }
 
     @PatchMapping("/gender/update")
-    @Operation(summary = "회원 성별 수정 API", description = "해당 회원의 성별을 수정하는 API 입니다.")
+    @Operation(summary = "회원 성별 수정 API", description = "해당 회원의 성별을 수정하는 API 입니다.\n\n" +
+            "gender에는 \"F\"(여성), \"M\"(남성), \"N\"(선택안함) 중 하나를 보내주세요")
     public ApiResponse<MemberResponse.memberGenderUpdateResultDto> updateMemberGender(@RequestBody @Valid MemberRequest.genderUpdateRequest request) {
         Long memberId = SecurityUtil.getCurrentMemberId();
         Member member = memberService.updateMemberGender(request, memberId);
