@@ -33,7 +33,7 @@ public class MemberController {
         return ApiResponse.of(SuccessStatus.JOIN_SUCCESS, memberService.kakaoSignin(request));
     }
 
-    @GetMapping("/info")
+    @GetMapping
     @Operation(summary = "개인 정보 조회 API", description = "해당 회원의 개인 정보를 조회하는 API 입니다.")
     public ApiResponse<MemberResponse.memberInfoDto> getInfo() {
         Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
@@ -49,7 +49,7 @@ public class MemberController {
         return ApiResponse.onSuccess(response);
     }
 
-    @PostMapping("/name/update")
+    @PatchMapping("/name/update")
     @Operation(summary = "회원 이름 수정 API", description = "해당 회원의 이름을 수정하는 API 입니다.")
     public ApiResponse<MemberResponse.memberNameUpdateResultDto> updateMemberName(@RequestBody @Valid MemberRequest.nameUpdateRequest request) {
         Long memberId = SecurityUtil.getCurrentMemberId();
@@ -58,7 +58,7 @@ public class MemberController {
         return ApiResponse.onSuccess(MemberConverter.toMemberNameUpdateResultDto(member));
     }
 
-    @PostMapping("/birth/update")
+    @PatchMapping("/birth/update")
     @Operation(summary = "회원 생년월일 수정 API", description = "해당 회원의 생년월일을 수정하는 API 입니다.")
     public ApiResponse<MemberResponse.memberBirthUpdateResultDto> updateMemberBirth(@RequestBody @Valid MemberRequest.birthUpdateRequest request) {
         Long memberId = SecurityUtil.getCurrentMemberId();
@@ -67,13 +67,22 @@ public class MemberController {
         return ApiResponse.onSuccess(MemberConverter.toMemberBirthUpdateResultDto(member));
     }
 
-    @PostMapping("/job/update")
+    @PatchMapping("/job/update")
     @Operation(summary = "회원 직업 수정 API", description = "해당 회원의 직업을 수정하는 API 입니다.")
     public ApiResponse<MemberResponse.memberJobUpdateResultDto> updateMemberJob(@RequestBody @Valid MemberRequest.jobUpdateRequest request) {
         Long memberId = SecurityUtil.getCurrentMemberId();
         Member member = memberService.updateMemberJob(request, memberId);
 
         return ApiResponse.onSuccess(MemberConverter.toMemberJobUpdateResultDto(member));
+    }
+
+    @PatchMapping("/gender/update")
+    @Operation(summary = "회원 성별 수정 API", description = "해당 회원의 성별을 수정하는 API 입니다.")
+    public ApiResponse<MemberResponse.memberGenderUpdateResultDto> updateMemberGender(@RequestBody @Valid MemberRequest.genderUpdateRequest request) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberService.updateMemberGender(request, memberId);
+
+        return ApiResponse.onSuccess(MemberConverter.toMemberGenderUpdateResultDto(member));
     }
 
 }

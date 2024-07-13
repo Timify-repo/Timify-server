@@ -48,4 +48,12 @@ public class MemberResponse {
         String job;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class memberGenderUpdateResultDto {
+        Gender gender;
+    }
+
 }

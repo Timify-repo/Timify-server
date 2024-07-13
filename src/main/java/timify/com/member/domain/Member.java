@@ -97,4 +97,9 @@ public class Member extends BaseDateTimeEntity {
     public void updateJob(String job) {
         this.job = job;
     }
+
+    // 성별 수정을 위한 메소드
+    public void updateGender(Gender gender) {
+        this.gender = gender;
+    }
 }

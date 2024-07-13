@@ -8,13 +8,11 @@ import timify.com.member.dto.MemberResponse;
 public class MemberConverter {
 
     public static Member toMemberFromKakaoRequest(MemberRequest.kakaoSigninRequest request, AuthResponse.kakaoResultDto userInfo) {
-        Gender gender = null;
-        if (request.getGender().equals("M")) {
+        Gender gender = Gender.NONE;
+        if ("M".equals(request.getGender())) {
             gender = Gender.MALE;
-        } else if (request.getGender().equals("F")) {
+        } else if ("F".equals(request.getGender())) {
             gender = Gender.FEMALE;
-        } else {
-            gender = Gender.NONE;
         }
 
         return Member.builder()
@@ -45,6 +43,12 @@ public class MemberConverter {
     public static MemberResponse.memberJobUpdateResultDto toMemberJobUpdateResultDto(Member member) {
         return MemberResponse.memberJobUpdateResultDto.builder()
                 .job(member.getJob())
+                .build();
+    }
+
+    public static MemberResponse.memberGenderUpdateResultDto toMemberGenderUpdateResultDto(Member member) {
+        return MemberResponse.memberGenderUpdateResultDto.builder()
+                .gender(member.getGender())
                 .build();
     }
 }

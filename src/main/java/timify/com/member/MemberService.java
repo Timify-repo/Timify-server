@@ -9,6 +9,7 @@ import timify.com.auth.jwt.JwtUtil;
 import timify.com.auth.jwt.RefreshTokenService;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.exception.handler.MemberHandler;
+import timify.com.member.domain.Gender;
 import timify.com.member.domain.LoginType;
 import timify.com.member.domain.Member;
 import timify.com.member.dto.MemberRequest;
@@ -89,6 +90,24 @@ public class MemberService {
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         member.updateJob(request.getNewJob());
+
+        return member;
+    }
+
+    @Transactional
+    public Member updateMemberGender(MemberRequest.genderUpdateRequest request, Long memberId) {
+        // member 엔티티 조회 및 검증
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        Gender gender = Gender.NONE;
+        if ("M".equals(request.getGender())) {
+            gender = Gender.MALE;
+        } else if ("F".equals(request.getGender())) {
+            gender = Gender.FEMALE;
+        }
+
+        member.updateGender(gender);
 
         return member;
     }

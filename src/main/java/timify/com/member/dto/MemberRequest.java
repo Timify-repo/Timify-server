@@ -43,5 +43,11 @@ public class MemberRequest {
         String newJob;
     }
 
+    @Getter
+    public static class genderUpdateRequest {
+        @Size(min = 1, max = 1)
+        String gender;
+    }
+
 
 }
