@@ -39,4 +39,15 @@ public class SubjectResponse {
     int orderNum;
     LocalDate updateAt;
   }
+
+  @Builder
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class updateTitleNameDto {
+    Long id;
+    String title;
+    LocalDate updateAt;
+  }
+
 }

@@ -52,8 +52,9 @@ public enum ErrorStatus implements BaseErrorCode {
 
     NO_SUBJECT_FOUND(HttpStatus.NOT_FOUND, "SUBJECT4040", "해당 항목을 찾지 못하였습니다."),
     NO_SUBJECT_PERMISSION(HttpStatus.FORBIDDEN, "SUBJECT4030", "해당 항목을 삭제할 권한이 없습니다."),
-    INVALID_ORDER_NUMBER(HttpStatus.BAD_REQUEST, "ORDER400", "유효하지 않은 순서 번호입니다.");
-
+    INVALID_ORDER_NUMBER(HttpStatus.BAD_REQUEST, "ORDER400", "유효하지 않은 순서 번호입니다."),
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "잘못된 요청입니다."),
+    MAX_SUBJECT_ERROR(HttpStatus.BAD_REQUEST, "SUBJECT4000", "최대 항목 개수를 초과했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

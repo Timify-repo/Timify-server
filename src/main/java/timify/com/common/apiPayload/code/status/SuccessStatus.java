@@ -14,7 +14,8 @@ public enum SuccessStatus implements BaseCode {
     JOIN_SUCCESS(HttpStatus.OK, "MEMBER200", "회원가입 성공"),
     TOKEN_REISSUE_SUCCESS(HttpStatus.OK, "AUTH200", "토큰 재발급 성공"),
     SUBJECT_DELETE_SUCCESS(HttpStatus.NO_CONTENT, "DELETE200", "항목 삭제 성공"),
-    ORDER_CHANGE_SUCCESS(HttpStatus.OK, "ORDER200", "항목 순서 변경 성공");
+    ORDER_CHANGE_SUCCESS(HttpStatus.OK, "ORDER200", "항목 순서 변경 성공"),
+    TITLE_CHANGE_SUCCESS(HttpStatus.OK, "SUBJECT200", "항목 이름 변경 성공");
 
 
     private final HttpStatus httpStatus;

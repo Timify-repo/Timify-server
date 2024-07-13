@@ -25,7 +25,7 @@ public class Subject extends BaseDateTimeEntity {
     private String title;
 
     @Column(nullable = false, length = 3)
-    private int order_num;
+    private int orderNum;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
@@ -44,6 +44,24 @@ public class Subject extends BaseDateTimeEntity {
     private List<StudyTime> studyTimeList = new ArrayList<>();
 
     public void updateOrderNum(int newOrderNum) {
-        this.order_num = newOrderNum;
+        this.orderNum = newOrderNum;
     }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void linkFromMember(Member member) {
+        this.member = member;
+        member.addSubject(this);
+    }
+
+
+    public void unlinkFromMember() {
+        if (this.member != null) {
+            this.member.getSubjectList().remove(this);
+            this.member = null;
+        }
+    }
+
 }

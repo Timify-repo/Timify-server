@@ -55,8 +55,8 @@ public class Member extends BaseDateTimeEntity {
     @Column(nullable = false, columnDefinition = "VARCHAR(20)")
     private RoleType roleType;
 
-    // subject 양방향 매핑
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    // subject 양방향 매핑  LAZY 둘 다임? 일단 ㅇㅋ
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subject> subjectList = new ArrayList<>();
 
     // studyType 양방향 매핑
@@ -82,4 +82,19 @@ public class Member extends BaseDateTimeEntity {
     // MemberMission 양방향 매핑
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberMission> memberMissionList = new ArrayList<>();
+
+    public void addSubject(Subject subject) {
+        if (!this.getSubjectList().contains(subject)) {
+            subjectList.add(subject);
+            subject.linkFromMember(this);
+        }
+    }
+
+    public void removeSubject(Subject subject) {
+        if (subjectList.contains(subject)) {
+            subjectList.remove(subject);
+            subject.unlinkFromMember();
+        }
+    }
+
 }
