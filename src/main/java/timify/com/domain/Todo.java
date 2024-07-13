@@ -12,6 +12,7 @@ import timify.com.study.domain.StudyType;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import timify.com.subject.domain.Subject;
 
 @Entity
 @Getter
