@@ -109,6 +109,10 @@ public class SubjectService {
     Subject subject = validateAndGetSubject(id);
     subject.updateTitle(request.getTitle());
 
+    if (subjectRepository.existsByMemberAndTitle(getMember(), request.getTitle())) {
+      throw new SubjectHandler(ErrorStatus.DUPLICATE_SUBJECT_TITLE);
+    }
+
     return updateTitleNameDto.builder()
         .id(subject.getId())
         .title(subject.getTitle())
