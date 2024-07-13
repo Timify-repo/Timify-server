@@ -29,11 +29,12 @@ public class SubjectService {
   public subjectInfoDto registerSubject(@Valid subjectRequest request) {
     Member findMember = getMember();
 
-    long activeSubjectCount = subjectRepository.countByMemberAndStatus(findMember, SubjectStatus.ACTIVE);
-
-    // 최대 개수 확인
-    if (activeSubjectCount >= 15) {
+    if (subjectRepository.countByMemberAndStatus(findMember, SubjectStatus.ACTIVE) >= 15) {
       throw new SubjectHandler(ErrorStatus.MAX_SUBJECT_ERROR);
+    }
+
+    if (subjectRepository.existsByMemberAndTitle(findMember, request.getTitle())) {
+      throw new SubjectHandler(ErrorStatus.DUPLICATE_SUBJECT_TITLE);
     }
 
     int orderNum =  subjectRepository.countByMemberAndStatus(findMember, SubjectStatus.ACTIVE) + 1;
