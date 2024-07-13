@@ -107,11 +107,12 @@ public class SubjectService {
   @Transactional
   public updateTitleNameDto updateTitle(@Valid subjectRequest request, Long id) {
     Subject subject = validateAndGetSubject(id);
-    subject.updateTitle(request.getTitle());
 
     if (subjectRepository.existsByMemberAndTitle(getMember(), request.getTitle())) {
       throw new SubjectHandler(ErrorStatus.DUPLICATE_SUBJECT_TITLE);
     }
+
+    subject.updateTitle(request.getTitle());
 
     return updateTitleNameDto.builder()
         .id(subject.getId())
