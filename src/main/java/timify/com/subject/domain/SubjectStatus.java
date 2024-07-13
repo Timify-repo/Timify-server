@@ -1,4 +1,4 @@
-package timify.com.domain.enums;
+package timify.com.subject.domain;
 
 public enum SubjectStatus {
     ACTIVE, // 홈 화면에 노출될 항목

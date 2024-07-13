@@ -6,6 +6,7 @@ import timify.com.domain.common.BaseDateTimeEntity;
 import timify.com.member.domain.Member;
 
 import java.time.LocalDateTime;
+import timify.com.subject.domain.Subject;
 
 @Entity
 @Getter
