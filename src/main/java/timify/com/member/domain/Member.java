@@ -92,4 +92,9 @@ public class Member extends BaseDateTimeEntity {
     public void updateBirth(LocalDate birth) {
         this.birth = birth;
     }
+
+    // 직업 수정을 위한 메소드
+    public void updateJob(String job) {
+        this.job = job;
+    }
 }

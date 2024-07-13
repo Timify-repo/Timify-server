@@ -67,4 +67,13 @@ public class MemberController {
         return ApiResponse.onSuccess(MemberConverter.toMemberBirthUpdateResultDto(member));
     }
 
+    @PostMapping("/job/update")
+    @Operation(summary = "회원 직업 수정 API", description = "해당 회원의 직업을 수정하는 API 입니다.")
+    public ApiResponse<MemberResponse.memberJobUpdateResultDto> updateMemberJob(@RequestBody @Valid MemberRequest.jobUpdateRequest request) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberService.updateMemberJob(request, memberId);
+
+        return ApiResponse.onSuccess(MemberConverter.toMemberJobUpdateResultDto(member));
+    }
+
 }

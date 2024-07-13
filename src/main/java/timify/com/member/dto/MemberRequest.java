@@ -37,5 +37,11 @@ public class MemberRequest {
         LocalDate birth;
     }
 
+    @Getter
+    public static class jobUpdateRequest {
+        @Size(min = 1, max = 50)
+        String newJob;
+    }
+
 
 }

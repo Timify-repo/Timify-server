@@ -82,5 +82,16 @@ public class MemberService {
         return member;
     }
 
+    @Transactional
+    public Member updateMemberJob(MemberRequest.jobUpdateRequest request, Long memberId) {
+        // member 엔티티 조회 및 검증
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        member.updateJob(request.getNewJob());
+
+        return member;
+    }
+
 
 }

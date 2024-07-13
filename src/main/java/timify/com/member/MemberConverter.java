@@ -42,4 +42,9 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponse.memberJobUpdateResultDto toMemberJobUpdateResultDto(Member member) {
+        return MemberResponse.memberJobUpdateResultDto.builder()
+                .job(member.getJob())
+                .build();
+    }
 }
