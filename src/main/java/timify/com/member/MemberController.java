@@ -25,7 +25,7 @@ public class MemberController {
 
     @PostMapping("/signin/kakao")
     @Operation(summary = "카카오 회원가입 API", description = "카카오 소셜 회원 가입 API 입니다.\n\n" +
-            "gender에는 \"F\"(여성), \"M\"(남성), \"N\"(선택안함) 중 하나를 보내주세요.\n\n" +
+            "gender에는 \"FEMALE\"(여성), \"MALE\"(남성), \"NONE\"(선택안함) 중 하나를 보내주세요.\n\n" +
             "accessToken에는 카카오에서 발급 받은 access token을 담아주세요."
     )
     public ApiResponse<AuthResponse.loginDto> signin(@RequestBody @Valid MemberRequest.kakaoSigninRequest request) {
@@ -78,7 +78,7 @@ public class MemberController {
 
     @PatchMapping("/gender/update")
     @Operation(summary = "회원 성별 수정 API", description = "해당 회원의 성별을 수정하는 API 입니다.\n\n" +
-            "gender에는 \"F\"(여성), \"M\"(남성), \"N\"(선택안함) 중 하나를 보내주세요")
+            "gender에는 \"FEMALE\"(여성), \"MALE\"(남성), \"NONE\"(선택안함) 중 하나를 보내주세요")
     public ApiResponse<MemberResponse.memberGenderUpdateResultDto> updateMemberGender(@RequestBody @Valid MemberRequest.genderUpdateRequest request) {
         Long memberId = SecurityUtil.getCurrentMemberId();
         Member member = memberService.updateMemberGender(request, memberId);

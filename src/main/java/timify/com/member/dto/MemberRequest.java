@@ -5,14 +5,15 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import timify.com.member.domain.Gender;
 
 import java.time.LocalDate;
 
 public class MemberRequest {
     @Getter
     public static class kakaoSigninRequest {
-        @NotBlank
-        String gender;
+        @NotNull
+        Gender gender;
 
         @NotBlank
         String job;
@@ -45,8 +46,8 @@ public class MemberRequest {
 
     @Getter
     public static class genderUpdateRequest {
-        @Size(min = 1, max = 1)
-        String gender;
+        @NotNull
+        Gender gender;
     }
 
 
