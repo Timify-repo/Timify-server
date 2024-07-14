@@ -57,9 +57,7 @@ public class MemberService {
     @Transactional
     public Member updateMemberName(MemberRequest.nameUpdateRequest request, Long memberId) {
         // member 엔티티 조회 및 검증
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
+        Member member = findMember(memberId);
         member.updateName(request.getNewName());
 
         return member;
@@ -68,9 +66,7 @@ public class MemberService {
     @Transactional
     public Member updateMemberBirth(MemberRequest.birthUpdateRequest request, Long memberId) {
         // member 엔티티 조회 및 검증
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
+        Member member = findMember(memberId);
         member.updateBirth(request.getBirth());
 
         return member;
@@ -79,9 +75,7 @@ public class MemberService {
     @Transactional
     public Member updateMemberJob(MemberRequest.jobUpdateRequest request, Long memberId) {
         // member 엔티티 조회 및 검증
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
+        Member member = findMember(memberId);
         member.updateJob(request.getNewJob());
 
         return member;
@@ -90,9 +84,7 @@ public class MemberService {
     @Transactional
     public Member updateMemberGender(MemberRequest.genderUpdateRequest request, Long memberId) {
         // member 엔티티 조회 및 검증
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
+        Member member = findMember(memberId);
         member.updateGender(request.getGender());
 
         return member;
