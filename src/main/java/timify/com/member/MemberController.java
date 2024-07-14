@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import timify.com.auth.dto.AuthResponse;
 import timify.com.auth.security.SecurityUtil;
@@ -26,7 +25,7 @@ public class MemberController {
 
     @PostMapping("/signin/kakao")
     @Operation(summary = "카카오 회원가입 API", description = "카카오 소셜 회원 가입 API 입니다.\n\n" +
-            "gender에는 \"F\"(여성), \"M\"(남성), \"N\"(선택안함) 중 하나를 보내주세요.\n\n" +
+            "gender에는 \"FEMALE\"(여성), \"MALE\"(남성), \"NONE\"(선택안함) 중 하나를 보내주세요.\n\n" +
             "accessToken에는 카카오에서 발급 받은 access token을 담아주세요."
     )
     public ApiResponse<AuthResponse.loginDto> signin(@RequestBody @Valid MemberRequest.kakaoSigninRequest request) {
@@ -34,16 +33,14 @@ public class MemberController {
         return ApiResponse.of(SuccessStatus.JOIN_SUCCESS, memberService.kakaoSignin(request));
     }
 
-    @GetMapping("/test")
-    @Operation(summary = "테스트용 회원 정보 조회 API", description = "jwt 테스트용, 로그인한 회원 정보를 조회하는 API 입니다.")
-    public ApiResponse<MemberResponse.myInfoDto> getMyInfo(Authentication authentication) {
+    @GetMapping
+    @Operation(summary = "개인 정보 조회 API", description = "해당 회원의 개인 정보를 조회하는 API 입니다.")
+    public ApiResponse<MemberResponse.memberInfoDto> getInfo() {
         Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
 
-        MemberResponse.myInfoDto response = MemberResponse.myInfoDto.builder()
-                .socialId(member.getSocialId())
+        MemberResponse.memberInfoDto response = MemberResponse.memberInfoDto.builder()
                 .name(member.getName())
                 .email(member.getEmail())
-                .loginType(member.getLoginType())
                 .job(member.getJob())
                 .gender(member.getGender())
                 .birth(member.getBirth())
@@ -52,5 +49,41 @@ public class MemberController {
         return ApiResponse.onSuccess(response);
     }
 
+    @PatchMapping("/name/update")
+    @Operation(summary = "회원 이름 수정 API", description = "해당 회원의 이름을 수정하는 API 입니다.")
+    public ApiResponse<MemberResponse.memberNameUpdateResultDto> updateMemberName(@RequestBody @Valid MemberRequest.nameUpdateRequest request) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberService.updateMemberName(request, memberId);
+
+        return ApiResponse.onSuccess(MemberConverter.toMemberNameUpdateResultDto(member));
+    }
+
+    @PatchMapping("/birth/update")
+    @Operation(summary = "회원 생년월일 수정 API", description = "해당 회원의 생년월일을 수정하는 API 입니다.")
+    public ApiResponse<MemberResponse.memberBirthUpdateResultDto> updateMemberBirth(@RequestBody @Valid MemberRequest.birthUpdateRequest request) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberService.updateMemberBirth(request, memberId);
+
+        return ApiResponse.onSuccess(MemberConverter.toMemberBirthUpdateResultDto(member));
+    }
+
+    @PatchMapping("/job/update")
+    @Operation(summary = "회원 직업 수정 API", description = "해당 회원의 직업을 수정하는 API 입니다.")
+    public ApiResponse<MemberResponse.memberJobUpdateResultDto> updateMemberJob(@RequestBody @Valid MemberRequest.jobUpdateRequest request) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberService.updateMemberJob(request, memberId);
+
+        return ApiResponse.onSuccess(MemberConverter.toMemberJobUpdateResultDto(member));
+    }
+
+    @PatchMapping("/gender/update")
+    @Operation(summary = "회원 성별 수정 API", description = "해당 회원의 성별을 수정하는 API 입니다.\n\n" +
+            "gender에는 \"FEMALE\"(여성), \"MALE\"(남성), \"NONE\"(선택안함) 중 하나를 보내주세요")
+    public ApiResponse<MemberResponse.memberGenderUpdateResultDto> updateMemberGender(@RequestBody @Valid MemberRequest.genderUpdateRequest request) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberService.updateMemberGender(request, memberId);
+
+        return ApiResponse.onSuccess(MemberConverter.toMemberGenderUpdateResultDto(member));
+    }
 
 }

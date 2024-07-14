@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import timify.com.member.domain.Gender;
-import timify.com.member.domain.LoginType;
 
 import java.time.LocalDate;
 
@@ -15,14 +14,46 @@ public class MemberResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class myInfoDto {
-        Long socialId;
+    public static class memberInfoDto {
         String name;
         String email;
-        LoginType loginType;
         String job;
         Gender gender;
         LocalDate birth;
+    }
+
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class memberNameUpdateResultDto {
+        String name;
+    }
+
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class memberBirthUpdateResultDto {
+        LocalDate birth;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class memberJobUpdateResultDto {
+        String job;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class memberGenderUpdateResultDto {
+        Gender gender;
     }
 
 }
