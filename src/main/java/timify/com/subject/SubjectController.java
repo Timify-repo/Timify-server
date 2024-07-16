@@ -6,7 +6,6 @@ import static timify.com.subject.dto.SubjectResponse.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -23,7 +22,6 @@ import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
 import timify.com.common.apiPayload.exception.handler.SubjectHandler;
 import timify.com.subject.dto.SubjectResponse.subjectInfoDto;
-import timify.com.todo.dto.TodoRequest.todoRequest;
 
 @RestController
 @RequiredArgsConstructor
