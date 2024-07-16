@@ -6,6 +6,7 @@ import static timify.com.subject.dto.SubjectResponse.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -22,6 +23,7 @@ import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
 import timify.com.common.apiPayload.exception.handler.SubjectHandler;
 import timify.com.subject.dto.SubjectResponse.subjectInfoDto;
+import timify.com.todo.dto.TodoRequest.todoRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,27 +34,26 @@ public class SubjectController {
 
   private final SubjectService subjectService;
 
-  @GetMapping()
-  @Operation(summary = "항목 조회 API", description = "항목 API 입니다.")
-  public ApiResponse<getListDto> getSubjectAll() {
-    getListDto subjectList = subjectService.getSubjectAll();
-
-    return ApiResponse.onSuccess(subjectList);
-  }
-
   @PostMapping("/insert")
   @Operation(summary = "항목 등록 API", description = "항목 API 입니다.")
   public ApiResponse<subjectInfoDto> registerSubject(
       @RequestBody @Valid subjectRequest subject,
       BindingResult bindingResult) {
 
-    // 공백일 경우, 예외 처리
     if (bindingResult.hasErrors()) {
       throw new SubjectHandler(ErrorStatus.INVALID_REQUEST);
     }
 
     subjectInfoDto subjectDto = subjectService.registerSubject(subject);
     return ApiResponse.onSuccess(subjectDto);
+  }
+
+  @GetMapping("/active")
+  @Operation(summary = "항목 조회 API", description = "활성화된 항목 조회 API 입니다.")
+  public ApiResponse<getListDto> activeSubjectAll() {
+    getListDto activeSubjectList = subjectService.activeSubjectAll();
+
+    return ApiResponse.onSuccess(activeSubjectList);
   }
 
   @DeleteMapping("/delete/{id}")
@@ -78,5 +79,27 @@ public class SubjectController {
 
     return ApiResponse.of(SuccessStatus.TITLE_CHANGE_SUCCESS, updateTitleNameDto);
   }
+
+  @PutMapping("/{id}/store")
+  @Operation(summary = "항목 보관함 이동 API", description = "항목을 보관함으로 이동시키는 API 입니다.")
+  public ApiResponse<Long> storeSubject(@PathVariable Long id) {
+    subjectService.storeSubject(id);
+    return ApiResponse.of(SuccessStatus.STORE_SUBJECT_SUCCESS, id);
+  }
+
+  @PutMapping("/{id}/restore")
+  @Operation(summary = "항목 홈 이동 API", description = "보관된 항목을 홈으로 이동시키는 API 입니다.")
+  public ApiResponse<Long> storeHome(@PathVariable Long id) {
+    subjectService.restoreSubject(id);
+    return ApiResponse.of(SuccessStatus.RESTORE_SUBJECT_SUCCESS, id);
+  }
+
+  @GetMapping("/inactive")
+  @Operation(summary = "보관함 조회 API", description = "보관된 항목 조회하는 API 입니다.")
+  public ApiResponse<getListDto> inactiveSubjectAll() {
+    getListDto inactiveSubjectList = subjectService.inactiveSubjectAll();
+    return ApiResponse.onSuccess(inactiveSubjectList);
+  }
+
 
 }

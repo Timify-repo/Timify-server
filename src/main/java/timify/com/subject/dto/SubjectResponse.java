@@ -27,7 +27,6 @@ public class SubjectResponse {
     String title;
     int orderNum;
     SubjectStatus status;
-    LocalDate createAt;
   }
 
   @Builder
@@ -37,7 +36,6 @@ public class SubjectResponse {
   public static class updateOrderNumDto {
     Long id;
     int orderNum;
-    LocalDate updateAt;
   }
 
   @Builder
@@ -47,7 +45,13 @@ public class SubjectResponse {
   public static class updateTitleNameDto {
     Long id;
     String title;
-    LocalDate updateAt;
   }
 
+  @Builder
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class deleteTitleDto {
+    Long id;
+  }
 }
