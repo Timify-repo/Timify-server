@@ -1,8 +1,6 @@
 package timify.com.member;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +34,6 @@ public class MemberController {
     }
 
     @Operation(summary = "개인 정보 조회 API", description = "해당 회원의 개인 정보를 조회하는 API 입니다.")
-    @Parameters({
-            @Parameter(name = "member", hidden = true),
-    })
     @GetMapping
     public ApiResponse<MemberResponse.memberInfoDto> getInfo(@AuthMember Member member) {
 
@@ -54,33 +49,30 @@ public class MemberController {
     }
 
     @Operation(summary = "회원 이름 수정 API", description = "해당 회원의 이름을 수정하는 API 입니다.")
-    @Parameters({
-            @Parameter(name = "member", hidden = true),
-    })
     @PatchMapping("/name/update")
-    public ApiResponse<MemberResponse.memberNameUpdateResultDto> updateMemberName(@AuthMember Member member, @RequestBody @Valid MemberRequest.nameUpdateRequest request) {
+    public ApiResponse<MemberResponse.memberNameUpdateResultDto> updateMemberName(
+            @AuthMember Member member,
+            @RequestBody @Valid MemberRequest.nameUpdateRequest request) {
         Member updatedMember = memberService.updateMemberName(request, member);
 
         return ApiResponse.onSuccess(MemberConverter.toMemberNameUpdateResultDto(updatedMember));
     }
 
     @Operation(summary = "회원 생년월일 수정 API", description = "해당 회원의 생년월일을 수정하는 API 입니다.")
-    @Parameters({
-            @Parameter(name = "member", hidden = true),
-    })
     @PatchMapping("/birth/update")
-    public ApiResponse<MemberResponse.memberBirthUpdateResultDto> updateMemberBirth(@AuthMember Member member, @RequestBody @Valid MemberRequest.birthUpdateRequest request) {
+    public ApiResponse<MemberResponse.memberBirthUpdateResultDto> updateMemberBirth(
+            @AuthMember Member member,
+            @RequestBody @Valid MemberRequest.birthUpdateRequest request) {
         Member updatedMember = memberService.updateMemberBirth(request, member);
 
         return ApiResponse.onSuccess(MemberConverter.toMemberBirthUpdateResultDto(updatedMember));
     }
 
     @Operation(summary = "회원 직업 수정 API", description = "해당 회원의 직업을 수정하는 API 입니다.")
-    @Parameters({
-            @Parameter(name = "member", hidden = true),
-    })
     @PatchMapping("/job/update")
-    public ApiResponse<MemberResponse.memberJobUpdateResultDto> updateMemberJob(@AuthMember Member member, @RequestBody @Valid MemberRequest.jobUpdateRequest request) {
+    public ApiResponse<MemberResponse.memberJobUpdateResultDto> updateMemberJob(
+            @AuthMember Member member,
+            @RequestBody @Valid MemberRequest.jobUpdateRequest request) {
         Member updatedMember = memberService.updateMemberJob(request, member);
 
         return ApiResponse.onSuccess(MemberConverter.toMemberJobUpdateResultDto(updatedMember));
@@ -88,11 +80,10 @@ public class MemberController {
 
     @Operation(summary = "회원 성별 수정 API", description = "해당 회원의 성별을 수정하는 API 입니다.\n\n" +
             "gender에는 \"FEMALE\"(여성), \"MALE\"(남성), \"NONE\"(선택안함) 중 하나를 보내주세요")
-    @Parameters({
-            @Parameter(name = "member", hidden = true),
-    })
     @PatchMapping("/gender/update")
-    public ApiResponse<MemberResponse.memberGenderUpdateResultDto> updateMemberGender(@AuthMember Member member, @RequestBody @Valid MemberRequest.genderUpdateRequest request) {
+    public ApiResponse<MemberResponse.memberGenderUpdateResultDto> updateMemberGender(
+            @AuthMember Member member,
+            @RequestBody @Valid MemberRequest.genderUpdateRequest request) {
         Member updatedMember = memberService.updateMemberGender(request, member);
 
         return ApiResponse.onSuccess(MemberConverter.toMemberGenderUpdateResultDto(updatedMember));
