@@ -1,27 +1,18 @@
 package timify.com.subject;
 
-import static timify.com.subject.dto.SubjectRequest.*;
-import static timify.com.subject.dto.SubjectResponse.*;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import timify.com.auth.annotation.AuthMember;
 import timify.com.common.apiPayload.ApiResponse;
-import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
-import timify.com.common.apiPayload.exception.handler.SubjectHandler;
-import timify.com.subject.dto.SubjectResponse.subjectInfoDto;
+import timify.com.member.domain.Member;
+
+import static timify.com.subject.dto.SubjectRequest.subjectRequest;
+import static timify.com.subject.dto.SubjectResponse.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,53 +21,56 @@ import timify.com.subject.dto.SubjectResponse.subjectInfoDto;
 @Tag(name = "Subject", description = "Subject 관련 API")
 public class SubjectController {
 
-  private final SubjectService subjectService;
+    private final SubjectService subjectService;
 
-  @GetMapping()
-  @Operation(summary = "항목 조회 API", description = "항목 API 입니다.")
-  public ApiResponse<getListDto> getSubjectAll() {
-    getListDto subjectList = subjectService.getSubjectAll();
+    @Operation(summary = "항목 조회 API", description = "항목 API 입니다.")
+    @GetMapping
+    public ApiResponse<getListDto> getSubjectAll(@AuthMember Member member) {
+        getListDto subjectList = subjectService.getSubjectAll(member);
 
-    return ApiResponse.onSuccess(subjectList);
-  }
-
-  @PostMapping("/insert")
-  @Operation(summary = "항목 등록 API", description = "항목 API 입니다.")
-  public ApiResponse<subjectInfoDto> registerSubject(
-      @RequestBody @Valid subjectRequest subject,
-      BindingResult bindingResult) {
-
-    // 공백일 경우, 예외 처리
-    if (bindingResult.hasErrors()) {
-      throw new SubjectHandler(ErrorStatus.INVALID_REQUEST);
+        return ApiResponse.onSuccess(subjectList);
     }
 
-    subjectInfoDto subjectDto = subjectService.registerSubject(subject);
-    return ApiResponse.onSuccess(subjectDto);
-  }
+    @Operation(summary = "항목 등록 API", description = "항목 API 입니다.")
+    @PostMapping("/insert")
+    public ApiResponse<subjectInfoDto> registerSubject(
+            @AuthMember Member member,
+            @RequestBody @Valid subjectRequest subject) {
 
-  @DeleteMapping("/delete/{id}")
-  @Operation(summary = "항목 삭제 API", description = "항목 삭제 API 입니다.")
-  public ApiResponse<Long> deleteSubject(@PathVariable Long id) {
-    Long deleteId = subjectService.deleteSubject(id);
+        subjectInfoDto subjectDto = subjectService.registerSubject(member, subject);
+        return ApiResponse.onSuccess(subjectDto);
+    }
 
-    return ApiResponse.of(SuccessStatus.SUBJECT_DELETE_SUCCESS, deleteId);
-  }
+    @Operation(summary = "항목 삭제 API", description = "항목 삭제 API 입니다.")
+    @DeleteMapping("/delete/{id}")
+    public ApiResponse<Long> deleteSubject(
+            @AuthMember Member member,
+            @PathVariable Long id) {
+        Long deleteId = subjectService.deleteSubject(member, id);
 
-  @PutMapping("/order/{id}/{orderNum}")
-  @Operation(summary = "항목 순서 변경 API", description = "항목의 순서를 변경하는 API 입니다.")
-  public ApiResponse<updateOrderNumDto> changeOrder(@PathVariable Long id, @PathVariable int orderNum) {
-    updateOrderNumDto updateOrderNumDto = subjectService.changeOrder(id, orderNum);
+        return ApiResponse.of(SuccessStatus.SUBJECT_DELETE_SUCCESS, deleteId);
+    }
 
-    return ApiResponse.of(SuccessStatus.ORDER_CHANGE_SUCCESS, updateOrderNumDto);
-  }
+    @Operation(summary = "항목 순서 변경 API", description = "항목의 순서를 변경하는 API 입니다.")
+    @PutMapping("/order/{id}/{orderNum}")
+    public ApiResponse<updateOrderNumDto> changeOrder(
+            @AuthMember Member member,
+            @PathVariable Long id,
+            @PathVariable int orderNum) {
+        updateOrderNumDto updateOrderNumDto = subjectService.changeOrder(member, id, orderNum);
 
-  @PutMapping("/insert/{id}")
-  @Operation(summary = "항목 이름 변경 API", description = "항목의 이름을 변경하는 API 입니다.")
-  public ApiResponse<updateTitleNameDto> updateTitle(@RequestBody @Valid subjectRequest request, @PathVariable Long id) {
-    updateTitleNameDto updateTitleNameDto = subjectService.updateTitle(request, id);
+        return ApiResponse.of(SuccessStatus.ORDER_CHANGE_SUCCESS, updateOrderNumDto);
+    }
 
-    return ApiResponse.of(SuccessStatus.TITLE_CHANGE_SUCCESS, updateTitleNameDto);
-  }
+    @Operation(summary = "항목 이름 변경 API", description = "항목의 이름을 변경하는 API 입니다.")
+    @PutMapping("/insert/{id}")
+    public ApiResponse<updateTitleNameDto> updateTitle(
+            @AuthMember Member member,
+            @RequestBody @Valid subjectRequest request,
+            @PathVariable Long id) {
+        updateTitleNameDto updateTitleNameDto = subjectService.updateTitle(member, request, id);
+
+        return ApiResponse.of(SuccessStatus.TITLE_CHANGE_SUCCESS, updateTitleNameDto);
+    }
 
 }
