@@ -51,11 +51,14 @@ public class Subject extends BaseDateTimeEntity {
         this.title = title;
     }
 
+    public void updateStatus(SubjectStatus subjectStatus) {
+        this.status = subjectStatus;
+    }
+
     public void linkFromMember(Member member) {
         this.member = member;
         member.addSubject(this);
     }
-
 
     public void unlinkFromMember() {
         if (this.member != null) {
@@ -63,5 +66,6 @@ public class Subject extends BaseDateTimeEntity {
             this.member = null;
         }
     }
+
 
 }
