@@ -8,9 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import timify.com.auth.security.SecurityUtil;
+import timify.com.auth.annotation.AuthMember;
 import timify.com.common.apiPayload.ApiResponse;
-import timify.com.member.MemberService;
 import timify.com.member.domain.Member;
 import timify.com.study.domain.StudyMethod;
 import timify.com.study.domain.StudyPlace;
@@ -28,24 +27,21 @@ import java.util.stream.Collectors;
 @Tag(name = "Member", description = "Member 관련 API")
 public class StudyController {
 
-    private final MemberService memberService;
     private final StudyService studyService;
 
-
-    @PostMapping("/type/insert")
     @Operation(summary = "공부 분류 등록 API", description = "공부 분류를 추가하는 API 입니다.")
-    public ApiResponse<StudyResponse.studyTypeDto> insertStudyType(@RequestBody @Valid StudyRequest.studyTypeRequest request) {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId()); // Member의 ACTIVE 여부 검증은 filter에서 이미 진행함
-
+    @PostMapping("/type/insert")
+    public ApiResponse<StudyResponse.studyTypeDto> insertStudyType(
+            @AuthMember Member member,
+            @RequestBody @Valid StudyRequest.studyTypeRequest request) {
         StudyType studyType = studyService.insertStudyType(request, member);
 
         return ApiResponse.onSuccess(StudyConverter.toStudyTypeDto(studyType));
     }
 
-    @GetMapping("/type")
     @Operation(summary = "공부 분류 조회 API", description = "공부 분류 목록을 조회하는 API 입니다.")
-    public ApiResponse<List<StudyResponse.studyTypeDto>> getStudyType() {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+    @GetMapping("/type")
+    public ApiResponse<List<StudyResponse.studyTypeDto>> getStudyType(@AuthMember Member member) {
         List<StudyType> studyTypeList = studyService.getStudyTypes(member);
         List<StudyResponse.studyTypeDto> dtoList = studyTypeList.stream()
                 .map(StudyConverter::toStudyTypeDto)
@@ -54,47 +50,47 @@ public class StudyController {
         return ApiResponse.onSuccess(dtoList);
     }
 
-    @PostMapping("/type/{studyTypeId}/update")
     @Operation(summary = "공부 분류 수정 API", description = "특정 공부 분류의 이름을 수정하는 API 입니다.")
-    @Parameters(value = {
+    @Parameters({
             @Parameter(name = "studyTypeId", description = "공부 분류의 id 입니다.")
     })
+    @PostMapping("/type/{studyTypeId}/update")
     public ApiResponse<StudyResponse.studyTypeDto> updateStudyType(
+            @AuthMember Member member,
             @RequestBody @Valid StudyRequest.studyTypeRequest request,
             @PathVariable(name = "studyTypeId") Long studyTypeId
     ) {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
         StudyType studyType = studyService.updateStudyType(request, studyTypeId, member);
 
         return ApiResponse.onSuccess(StudyConverter.toStudyTypeDto(studyType));
     }
 
-    @DeleteMapping("/type/{studyTypeId}/delete")
     @Operation(summary = "공부 분류 삭제 API", description = "특정 공부 분류를 삭제 처리하는 API 입니다.")
-    @Parameters(value = {
+    @Parameters({
             @Parameter(name = "studyTypeId", description = "공부 분류의 id 입니다.")
     })
-    public ApiResponse<String> deleteStudyType(@PathVariable(name = "studyTypeId") Long studyTypeId) {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+    @DeleteMapping("/type/{studyTypeId}/delete")
+    public ApiResponse<String> deleteStudyType(
+            @AuthMember Member member,
+            @PathVariable(name = "studyTypeId") Long studyTypeId) {
         studyService.deleteStudyType(studyTypeId, member);
 
         return ApiResponse.onSuccess("공부 분류 삭제 성공");
     }
 
-    @PostMapping("/method/insert")
     @Operation(summary = "공부 방법 등록 API", description = "공부 방법을 추가하는 API 입니다.")
-    public ApiResponse<StudyResponse.studyMethodDto> insertStudyMethod(@RequestBody @Valid StudyRequest.studyMethodRequest request) {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
-
+    @PostMapping("/method/insert")
+    public ApiResponse<StudyResponse.studyMethodDto> insertStudyMethod(
+            @AuthMember Member member,
+            @RequestBody @Valid StudyRequest.studyMethodRequest request) {
         StudyMethod studyMethod = studyService.insertStudyMethod(request, member);
 
         return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
     }
 
-    @GetMapping("/method")
     @Operation(summary = "공부 방법 조회 API", description = "공부 방법 목록을 조회하는 API 입니다.")
-    public ApiResponse<List<StudyResponse.studyMethodDto>> getStudyMethod() {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+    @GetMapping("/method")
+    public ApiResponse<List<StudyResponse.studyMethodDto>> getStudyMethod(@AuthMember Member member) {
         List<StudyMethod> studyMethodList = studyService.getStudyMethods(member);
         List<StudyResponse.studyMethodDto> dtoList = studyMethodList.stream()
                 .map(StudyConverter::toStudyMethodDto)
@@ -103,47 +99,48 @@ public class StudyController {
         return ApiResponse.onSuccess(dtoList);
     }
 
-    @PostMapping("/method/{studyMethodId}/update")
     @Operation(summary = "공부 방법 수정 API", description = "특정 공부 방법의 이름을 수정하는 API 입니다.")
-    @Parameters(value = {
+    @Parameters({
             @Parameter(name = "studyMethodId", description = "공부 방법의 id 입니다.")
     })
+    @PostMapping("/method/{studyMethodId}/update")
     public ApiResponse<StudyResponse.studyMethodDto> updateStudyMethod(
+            @AuthMember Member member,
             @RequestBody @Valid StudyRequest.studyMethodRequest request,
             @PathVariable(name = "studyMethodId") Long studyMethodId
     ) {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
         StudyMethod studyMethod = studyService.updateStudyMethod(request, studyMethodId, member);
 
         return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
     }
 
-    @DeleteMapping("/method/{studyMethodId}/delete")
     @Operation(summary = "공부 방법 삭제 API", description = "특정 공부 방법을 삭제 처리하는 API 입니다.")
-    @Parameters(value = {
+    @Parameters({
             @Parameter(name = "studyMethodId", description = "공부 방법의 id 입니다.")
     })
-    public ApiResponse<String> deleteStudyMethod(@PathVariable(name = "studyMethodId") Long studyMethodId) {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+    @DeleteMapping("/method/{studyMethodId}/delete")
+    public ApiResponse<String> deleteStudyMethod(
+            @AuthMember Member member,
+            @PathVariable(name = "studyMethodId") Long studyMethodId) {
         studyService.deleteStudyMethod(studyMethodId, member);
 
         return ApiResponse.onSuccess("공부 방법 삭제 성공");
     }
 
-    @PostMapping("/place/insert")
-    @Operation(summary = "공부 장소 등록 API", description = "공부 장소를 추가하는 API 입니다.")
-    public ApiResponse<StudyResponse.studyPlaceDto> insertStudyPlace(@RequestBody @Valid StudyRequest.studyPlaceRequest request) {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
 
+    @Operation(summary = "공부 장소 등록 API", description = "공부 장소를 추가하는 API 입니다.")
+    @PostMapping("/place/insert")
+    public ApiResponse<StudyResponse.studyPlaceDto> insertStudyPlace(
+            @AuthMember Member member,
+            @RequestBody @Valid StudyRequest.studyPlaceRequest request) {
         StudyPlace studyPlace = studyService.insertStudyPlace(request, member);
 
         return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(studyPlace));
     }
 
-    @GetMapping("/place")
     @Operation(summary = "공부 장소 조회 API", description = "공부 장소 목록을 조회하는 API 입니다.")
-    public ApiResponse<List<StudyResponse.studyPlaceDto>> getStudyPlace() {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+    @GetMapping("/place")
+    public ApiResponse<List<StudyResponse.studyPlaceDto>> getStudyPlace(@AuthMember Member member) {
         List<StudyPlace> studyPlaceList = studyService.getStudyPlaces(member);
         List<StudyResponse.studyPlaceDto> dtoList = studyPlaceList.stream()
                 .map(StudyConverter::toStudyPlaceDto)
@@ -152,28 +149,29 @@ public class StudyController {
         return ApiResponse.onSuccess(dtoList);
     }
 
-    @PostMapping("/place/{studyPlaceId}/update")
     @Operation(summary = "공부 장소 수정 API", description = "특정 공부 장소의 이름을 수정하는 API 입니다.")
-    @Parameters(value = {
+    @Parameters({
             @Parameter(name = "studyPlaceId", description = "공부 장소의 id 입니다.")
     })
+    @PostMapping("/place/{studyPlaceId}/update")
     public ApiResponse<StudyResponse.studyPlaceDto> updateStudyPlace(
+            @AuthMember Member member,
             @RequestBody @Valid StudyRequest.studyPlaceRequest request,
             @PathVariable(name = "studyPlaceId") Long studyPlaceId
     ) {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
         StudyPlace studyPlace = studyService.updateStudyPlace(request, studyPlaceId, member);
 
         return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(studyPlace));
     }
 
-    @DeleteMapping("/place/{studyPlaceId}/delete")
     @Operation(summary = "공부 장소 삭제 API", description = "특정 공부 장소를 삭제 처리하는 API 입니다.")
-    @Parameters(value = {
+    @Parameters({
             @Parameter(name = "studyPlaceId", description = "공부 장소의 id 입니다.")
     })
-    public ApiResponse<String> deleteStudyPlace(@PathVariable(name = "studyPlaceId") Long studyPlaceId) {
-        Member member = memberService.findMember(SecurityUtil.getCurrentMemberId());
+    @DeleteMapping("/place/{studyPlaceId}/delete")
+    public ApiResponse<String> deleteStudyPlace(
+            @AuthMember Member member,
+            @PathVariable(name = "studyPlaceId") Long studyPlaceId) {
         studyService.deleteStudyPlace(studyPlaceId, member);
 
         return ApiResponse.onSuccess("공부 장소 삭제 성공");

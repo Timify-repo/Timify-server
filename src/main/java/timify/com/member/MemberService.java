@@ -55,36 +55,28 @@ public class MemberService {
     }
 
     @Transactional
-    public Member updateMemberName(MemberRequest.nameUpdateRequest request, Long memberId) {
-        // member 엔티티 조회 및 검증
-        Member member = findMember(memberId);
+    public Member updateMemberName(MemberRequest.nameUpdateRequest request, Member member) {
         member.updateName(request.getNewName());
 
         return member;
     }
 
     @Transactional
-    public Member updateMemberBirth(MemberRequest.birthUpdateRequest request, Long memberId) {
-        // member 엔티티 조회 및 검증
-        Member member = findMember(memberId);
+    public Member updateMemberBirth(MemberRequest.birthUpdateRequest request, Member member) {
         member.updateBirth(request.getBirth());
 
         return member;
     }
 
     @Transactional
-    public Member updateMemberJob(MemberRequest.jobUpdateRequest request, Long memberId) {
-        // member 엔티티 조회 및 검증
-        Member member = findMember(memberId);
+    public Member updateMemberJob(MemberRequest.jobUpdateRequest request, Member member) {
         member.updateJob(request.getNewJob());
 
         return member;
     }
 
     @Transactional
-    public Member updateMemberGender(MemberRequest.genderUpdateRequest request, Long memberId) {
-        // member 엔티티 조회 및 검증
-        Member member = findMember(memberId);
+    public Member updateMemberGender(MemberRequest.genderUpdateRequest request, Member member) {
         member.updateGender(request.getGender());
 
         return member;
