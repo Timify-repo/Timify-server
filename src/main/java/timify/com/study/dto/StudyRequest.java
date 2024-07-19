@@ -3,10 +3,12 @@ package timify.com.study.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class StudyRequest {
 
     @Getter
+    @NoArgsConstructor
     public static class studyTypeRequest {
 
         @NotBlank
@@ -15,6 +17,7 @@ public class StudyRequest {
     }
 
     @Getter
+    @NoArgsConstructor
     public static class studyMethodRequest {
 
         @NotBlank
@@ -23,6 +26,7 @@ public class StudyRequest {
     }
 
     @Getter
+    @NoArgsConstructor
     public static class studyPlaceRequest {
 
         @NotBlank

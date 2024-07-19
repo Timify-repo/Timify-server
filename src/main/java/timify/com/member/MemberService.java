@@ -27,12 +27,6 @@ public class MemberService {
     public AuthResponse.loginDto kakaoSignin(MemberRequest.kakaoSigninRequest request) {
         AuthResponse.kakaoResultDto userInfo = kakaoApiService.getUserInfo(request.getAccessToken());
 
-        // request의 Gender 값 검증
-        String gender = request.getGender();
-        if (!"F".equals(gender) && !"M".equals(gender) && !"N".equals(gender)) {
-            throw new MemberHandler(ErrorStatus.GENDER_BAD_REQUEST);
-        }
-
         // socialId와 loginType이 일치하는 사용자가 있는지 검증
         boolean isExist = memberRepository.existsBySocialIdAndLoginType(userInfo.getSocialId(), LoginType.KAKAO);
         if (isExist) {
@@ -58,6 +52,34 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member findMember(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+    }
+
+    @Transactional
+    public Member updateMemberName(MemberRequest.nameUpdateRequest request, Member member) {
+        member.updateName(request.getNewName());
+
+        return member;
+    }
+
+    @Transactional
+    public Member updateMemberBirth(MemberRequest.birthUpdateRequest request, Member member) {
+        member.updateBirth(request.getBirth());
+
+        return member;
+    }
+
+    @Transactional
+    public Member updateMemberJob(MemberRequest.jobUpdateRequest request, Member member) {
+        member.updateJob(request.getNewJob());
+
+        return member;
+    }
+
+    @Transactional
+    public Member updateMemberGender(MemberRequest.genderUpdateRequest request, Member member) {
+        member.updateGender(request.getGender());
+
+        return member;
     }
 
 

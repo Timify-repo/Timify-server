@@ -12,12 +12,34 @@ import java.util.Optional;
 
 public interface StudyTypeRepository extends JpaRepository<StudyType, Long> {
 
+    /*
+    SELECT *
+    FROM study_type
+    WHERE member_id = ? AND status = ?;
+    */
     List<StudyType> findAllByMemberAndStatus(Member member, CategoryStatus status);
 
+    /*
+    SELECT *
+    FROM study_type
+    WHERE member_id = ? AND status = ?;
+    */
     Optional<StudyType> findByIdAndStatus(Long id, CategoryStatus status);
 
+    /*
+    SELECT EXISTS (
+        SELECT 1
+        FROM study_type
+        WHERE member_id = ? AND title = ? AND status = ?
+    );
+    */
     boolean existsByMemberAndTitleAndStatus(Member member, String title, CategoryStatus status);
 
+    /*
+    SELECT COUNT(*)
+    FROM study_type
+    WHERE member_id = ? AND status = ?;
+    */
     @Query("SELECT COUNT(st) FROM StudyType st WHERE st.member = :member AND st.status = :status")
     long countByMemberAndStatus(@Param("member") Member member, @Param("status") CategoryStatus status);
 }

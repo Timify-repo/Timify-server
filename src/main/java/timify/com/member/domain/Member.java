@@ -97,4 +97,24 @@ public class Member extends BaseDateTimeEntity {
         }
     }
 
+
+    // 이름 수정을 위한 메소드
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    // 생일 수정을 위한 메소드
+    public void updateBirth(LocalDate birth) {
+        this.birth = birth;
+    }
+
+    // 직업 수정을 위한 메소드
+    public void updateJob(String job) {
+        this.job = job;
+    }
+
+    // 성별 수정을 위한 메소드
+    public void updateGender(Gender gender) {
+        this.gender = gender;
+    }
 }

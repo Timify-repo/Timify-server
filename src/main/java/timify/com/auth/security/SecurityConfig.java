@@ -41,12 +41,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         (authorizeRequests) -> {
                             authorizeRequests
-                                    .requestMatchers("/v1/auth/login").permitAll() // 로그인 엔드포인트 허용
                                     .requestMatchers("/v1/member/signin/kakao").permitAll()
                                     .requestMatchers("/v1/auth/reissue").permitAll()
                                     .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // 스웨거 관련 엔드포인트 허용
                                     .requestMatchers("/kakaoLoginPage", "/images/kakao_login_medium_narrow.png", "/accessToken").permitAll() // kakao access token 발급 화면 관련 엔드포인트 허용
-                                    .requestMatchers("/v1/auth/login/kakao", "/login/oauth2/code/kakao").permitAll() //
+                                    .requestMatchers("/v1/auth/login/kakao", "/login/oauth2/code/kakao").permitAll() // 카카오 로그인 엔드포인트 허용
+                                    .requestMatchers("/test/login").permitAll() // 테스트용 로그인 엔드포인트 허용
                                     .requestMatchers("/v1/**").hasAnyRole("MEMBER", "ADMIN")
                                     .requestMatchers("/admin/**").hasRole(RoleType.ADMIN.toString())
                                     .anyRequest().authenticated();
