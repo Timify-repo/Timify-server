@@ -10,10 +10,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import timify.com.auth.security.SecurityUtil;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.exception.handler.SubjectHandler;
-import timify.com.member.MemberService;
 import timify.com.member.domain.Member;
 import timify.com.subject.domain.Subject;
 import timify.com.subject.domain.SubjectStatus;
@@ -24,59 +22,47 @@ import timify.com.subject.repository.SubjectRepository;
 public class SubjectService {
 
     private final SubjectRepository subjectRepository;
-    private final MemberService memberService;
 
     @Transactional
-    public subjectInfoDto registerSubject(@Valid subjectRequest request) {
-        Member findMember = getMember();
+    public subjectInfoDto registerSubject(Member member, @Valid subjectRequest request) {
 
-        if (subjectRepository.countByMemberAndStatus(findMember, SubjectStatus.ACTIVE) >= 15) {
+        if (subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) >= 15) {
             throw new SubjectHandler(ErrorStatus.MAX_SUBJECT_ERROR);
         }
 
-        if (subjectRepository.existsByMemberAndTitle(findMember, request.getTitle())) {
+        if (subjectRepository.existsByMemberAndTitle(member, request.getTitle())) {
             throw new SubjectHandler(ErrorStatus.DUPLICATE_SUBJECT_TITLE);
         }
 
-        int orderNum =
-            subjectRepository.countByMemberAndStatus(findMember, SubjectStatus.ACTIVE) + 1;
+        int orderNum = subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) + 1;
         Subject registerSubject = subjectRepository.save(
-            SubjectConverter.toSubject(request, findMember, orderNum));
-        findMember.addSubject(registerSubject);
+            SubjectConverter.toSubject(request, member, orderNum));
+        member.addSubject(registerSubject);
 
-        return subjectInfoDto.builder()
-            .subjectId(registerSubject.getId())
-            .title(registerSubject.getTitle())
-            .orderNum(registerSubject.getOrderNum())
-            .status(registerSubject.getStatus())
-            .build();
+        return subjectInfoDto.builder().subjectId(registerSubject.getId())
+            .title(registerSubject.getTitle()).orderNum(registerSubject.getOrderNum())
+            .status(registerSubject.getStatus()).build();
     }
 
     @Transactional(readOnly = true)
-    public getListDto getSubjectAll(String status) {
-        Member findMember = getMember();
+    public getListDto getSubjectAll(Member member, String status) {
+
         SubjectStatus subjectStatus = Arrays.stream(SubjectStatus.values())
-            .filter(s -> s.name().equalsIgnoreCase(status))
-            .findFirst()
+            .filter(s -> s.name().equalsIgnoreCase(status)).findFirst()
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.INVALID_STATUS));
 
-        List<subjectInfoDto> subjectListAll = subjectRepository.findAllByMemberAndStatus(findMember,
-                subjectStatus).stream()
-            .map(subject -> subjectInfoDto.builder()
-                .subjectId(subject.getId())
-                .title(subject.getTitle())
-                .orderNum(subject.getOrderNum())
-                .status(subject.getStatus())
-                .build())
+        List<subjectInfoDto> subjectListAll = subjectRepository.findAllByMemberAndStatus(member,
+                subjectStatus).stream().map(
+                subject -> subjectInfoDto.builder().subjectId(subject.getId()).title(subject.getTitle())
+                    .orderNum(subject.getOrderNum()).status(subject.getStatus()).build())
             .collect(Collectors.toList());
 
-        return getListDto.builder()
-            .subjects(subjectListAll)
-            .build();
+        return getListDto.builder().subjects(subjectListAll).build();
     }
 
     @Transactional
-    public Long deleteSubject(Long subjectId) {
+    public Long deleteSubject(Member member, Long subjectId) {
+
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
 
@@ -91,10 +77,11 @@ public class SubjectService {
     }
 
     @Transactional
-    public updateOrderNumDto changeOrder(Long subjectId, int newOrderNum) {
+    public updateOrderNumDto changeOrder(Member member, Long subjectId, int newOrderNum) {
+
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
-        Member member = subject.getMember();
+
         List<Subject> subjects = subjectRepository.findAllByMemberAndStatus(member,
             SubjectStatus.ACTIVE);
 
@@ -102,37 +89,35 @@ public class SubjectService {
             throw new SubjectHandler(ErrorStatus.INVALID_ORDER_NUMBER);
         }
 
-        subjects.stream()
-            .filter(s -> s.getOrderNum() == newOrderNum)
+        subjects.stream().filter(s -> s.getOrderNum() == newOrderNum)
             .forEach(s -> s.updateOrderNum(subject.getOrderNum()));
 
         subject.updateOrderNum(newOrderNum);
 
-        return updateOrderNumDto.builder()
-            .subjectId(subject.getId())
-            .orderNum(subject.getOrderNum())
-            .build();
+        return updateOrderNumDto.builder().subjectId(subject.getId())
+            .orderNum(subject.getOrderNum()).build();
     }
 
     @Transactional
-    public updateTitleNameDto updateTitle(@Valid subjectRequest request, Long subjectId) {
+    public updateTitleNameDto updateTitle(Member member, @Valid subjectRequest request,
+        Long subjectId) {
+
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
 
-        if (subjectRepository.existsByMemberAndTitle(getMember(), request.getTitle())) {
+        if (subjectRepository.existsByMemberAndTitle(member, request.getTitle())) {
             throw new SubjectHandler(ErrorStatus.DUPLICATE_SUBJECT_TITLE);
         }
 
         subject.updateTitle(request.getTitle());
 
-        return updateTitleNameDto.builder()
-            .subjectId(subject.getId())
-            .title(subject.getTitle())
+        return updateTitleNameDto.builder().subjectId(subject.getId()).title(subject.getTitle())
             .build();
     }
 
     @Transactional
-    public void storeSubject(Long subjectId) {
+    public void storeSubject(Member member, Long subjectId) {
+
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
 
@@ -141,11 +126,12 @@ public class SubjectService {
         }
 
         subject.updateStatus(SubjectStatus.INACTIVE);
-        reorderSubject(subject);
+        reorderSubject(member);
     }
 
     @Transactional
-    public void restoreSubject(Long subjectId) {
+    public void restoreSubject(Member member, Long subjectId) {
+
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
 
@@ -154,13 +140,13 @@ public class SubjectService {
         }
 
         subject.updateStatus(SubjectStatus.ACTIVE);
-        reorderSubject(subject);
+        reorderSubject(member);
 
     }
 
 
-    private void reorderSubject(Subject subject) {
-        Member member = subject.getMember();
+    private void reorderSubject(Member member) {
+
         List<Subject> activeSubjects = subjectRepository.findAllByMemberAndStatus(member,
             SubjectStatus.ACTIVE);
         for (int i = 0; i < activeSubjects.size(); i++) {
@@ -172,10 +158,6 @@ public class SubjectService {
         for (int i = 0; i < inActiveSubjects.size(); i++) {
             inActiveSubjects.get(i).updateOrderNum(i + 1);
         }
-    }
-
-    private Member getMember() {
-        return memberService.findMember(SecurityUtil.getCurrentMemberId());
     }
 
 

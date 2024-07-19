@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 public class SubjectRequest {
 
     @Getter
+    @NoArgsConstructor
     public static class subjectRequest {
 
       @NotBlank
