@@ -10,48 +10,53 @@ import timify.com.subject.domain.SubjectStatus;
 
 public class SubjectResponse {
 
-  @Builder
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class getListDto {
-    List<subjectInfoDto> subjects;
-  }
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getListDto {
 
-  @Builder
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class subjectInfoDto {
-    Long id;
-    String title;
-    int orderNum;
-    SubjectStatus status;
-  }
+        List<subjectInfoDto> subjects;
+    }
 
-  @Builder
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class updateOrderNumDto {
-    Long id;
-    int orderNum;
-  }
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class subjectInfoDto {
 
-  @Builder
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class updateTitleNameDto {
-    Long id;
-    String title;
-  }
+        Long subjectId;
+        String title;
+        int orderNum;
+        SubjectStatus status;
+    }
 
-  @Builder
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class deleteTitleDto {
-    Long id;
-  }
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class updateOrderNumDto {
+
+        Long subjectId;
+        int orderNum;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class updateTitleNameDto {
+
+        Long subjectId;
+        String title;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class deleteTitleDto {
+
+        Long subjectId;
+    }
 }
