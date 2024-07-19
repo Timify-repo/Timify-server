@@ -9,6 +9,7 @@ import static timify.com.subject.dto.SubjectResponse.updateTitleNameDto;
 import jakarta.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -139,15 +140,14 @@ public class SubjectService {
     private void reorderSubject(Member member) {
         List<Subject> activeSubjects = subjectRepository.findAllByMemberAndStatus(member,
             SubjectStatus.ACTIVE);
-        for (int i = 0; i < activeSubjects.size(); i++) {
-            activeSubjects.get(i).updateOrderNum(i + 1);
-        }
+        AtomicInteger activeCounter = new AtomicInteger(1);
+        activeSubjects.forEach(subject -> subject.updateOrderNum(activeCounter.getAndIncrement()));
 
         List<Subject> inActiveSubjects = subjectRepository.findAllByMemberAndStatus(member,
             SubjectStatus.INACTIVE);
-        for (int i = 0; i < inActiveSubjects.size(); i++) {
-            inActiveSubjects.get(i).updateOrderNum(i + 1);
-        }
+        AtomicInteger inactiveCounter = new AtomicInteger(1);
+        inActiveSubjects.forEach(
+            subject -> subject.updateOrderNum(inactiveCounter.getAndIncrement()));
     }
 
     private void validateMember(Member member, Subject subject) {
