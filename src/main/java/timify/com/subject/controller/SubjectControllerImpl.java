@@ -93,6 +93,4 @@ public class SubjectControllerImpl implements SubjectController {
         subjectService.updateStatus(member, subjectId, status);
         return ApiResponse.of(SuccessStatus.STORE_SUBJECT_SUCCESS, subjectId);
     }
-
-
 }

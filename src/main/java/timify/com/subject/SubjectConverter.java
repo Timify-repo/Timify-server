@@ -17,5 +17,4 @@ public class SubjectConverter {
             .member(member)
             .build();
     }
-
 }
