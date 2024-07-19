@@ -1,21 +1,21 @@
 package timify.com.subject;
 
+import static timify.com.subject.domain.SubjectStatus.ACTIVE;
+
 import timify.com.member.domain.Member;
 import timify.com.subject.domain.Subject;
 import timify.com.subject.dto.SubjectRequest.subjectRequest;
-
-import static timify.com.subject.domain.SubjectStatus.ACTIVE;
 
 public class SubjectConverter {
 
     public static Subject toSubject(subjectRequest request, Member member, int orderNum) {
 
         return Subject.builder()
-                .title(request.getTitle())
-                .status(ACTIVE)
-                .orderNum(orderNum)
-                .member(member)
-                .build();
+            .title(request.getTitle())
+            .status(ACTIVE)
+            .orderNum(orderNum)
+            .member(member)
+            .build();
     }
 
 }

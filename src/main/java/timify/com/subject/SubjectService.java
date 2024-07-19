@@ -1,132 +1,181 @@
 package timify.com.subject;
 
+import static timify.com.subject.dto.SubjectRequest.*;
+import static timify.com.subject.dto.SubjectResponse.*;
+
+import jakarta.validation.Valid;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import timify.com.auth.security.SecurityUtil;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.exception.handler.SubjectHandler;
+import timify.com.member.MemberService;
 import timify.com.member.domain.Member;
 import timify.com.subject.domain.Subject;
 import timify.com.subject.domain.SubjectStatus;
 import timify.com.subject.repository.SubjectRepository;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static timify.com.subject.dto.SubjectRequest.subjectRequest;
-import static timify.com.subject.dto.SubjectResponse.*;
-
 @Service
 @RequiredArgsConstructor
 public class SubjectService {
+
     private final SubjectRepository subjectRepository;
+    private final MemberService memberService;
 
     @Transactional
-    public subjectInfoDto registerSubject(Member member, subjectRequest request) {
+    public subjectInfoDto registerSubject(@Valid subjectRequest request) {
+        Member findMember = getMember();
 
-        if (subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) >= 15) {
+        if (subjectRepository.countByMemberAndStatus(findMember, SubjectStatus.ACTIVE) >= 15) {
             throw new SubjectHandler(ErrorStatus.MAX_SUBJECT_ERROR);
         }
 
-        if (subjectRepository.existsByMemberAndTitle(member, request.getTitle())) {
+        if (subjectRepository.existsByMemberAndTitle(findMember, request.getTitle())) {
             throw new SubjectHandler(ErrorStatus.DUPLICATE_SUBJECT_TITLE);
         }
 
-        int orderNum = subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) + 1;
-        Subject registerSubject = subjectRepository.save(SubjectConverter.toSubject(request, member, orderNum));
-        member.addSubject(registerSubject);
+        int orderNum =
+            subjectRepository.countByMemberAndStatus(findMember, SubjectStatus.ACTIVE) + 1;
+        Subject registerSubject = subjectRepository.save(
+            SubjectConverter.toSubject(request, findMember, orderNum));
+        findMember.addSubject(registerSubject);
 
         return subjectInfoDto.builder()
-                .id(registerSubject.getId())
-                .title(registerSubject.getTitle())
-                .orderNum(registerSubject.getOrderNum())
-                .status(registerSubject.getStatus())
-                .createAt(LocalDate.from(registerSubject.getCreatedAt()))
-                .build();
+            .subjectId(registerSubject.getId())
+            .title(registerSubject.getTitle())
+            .orderNum(registerSubject.getOrderNum())
+            .status(registerSubject.getStatus())
+            .build();
     }
 
     @Transactional(readOnly = true)
-    public getListDto getSubjectAll(Member member) {
-        List<subjectInfoDto> subjectListAll = subjectRepository.findAllByMemberAndStatus(member, SubjectStatus.ACTIVE).stream()
-                .map(subject -> subjectInfoDto.builder()
-                        .id(subject.getId())
-                        .title(subject.getTitle())
-                        .orderNum(subject.getOrderNum())
-                        .status(subject.getStatus())
-                        .createAt(LocalDate.from(subject.getCreatedAt()))
-                        .build())
-                .collect(Collectors.toList());
+    public getListDto getSubjectAll(String status) {
+        Member findMember = getMember();
+        SubjectStatus subjectStatus = Arrays.stream(SubjectStatus.values())
+            .filter(s -> s.name().equalsIgnoreCase(status))
+            .findFirst()
+            .orElseThrow(() -> new SubjectHandler(ErrorStatus.INVALID_STATUS));
+
+        List<subjectInfoDto> subjectListAll = subjectRepository.findAllByMemberAndStatus(findMember,
+                subjectStatus).stream()
+            .map(subject -> subjectInfoDto.builder()
+                .subjectId(subject.getId())
+                .title(subject.getTitle())
+                .orderNum(subject.getOrderNum())
+                .status(subject.getStatus())
+                .build())
+            .collect(Collectors.toList());
 
         return getListDto.builder()
-                .subjects(subjectListAll)
-                .build();
+            .subjects(subjectListAll)
+            .build();
     }
 
     @Transactional
-    public Long deleteSubject(Member member, Long subjectId) {
-        Subject subject = validateAndGetSubject(member, subjectId);
-        member.removeSubject(subject);
+    public Long deleteSubject(Long subjectId) {
+        Subject subject = subjectRepository.findById(subjectId)
+            .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
+
+        if (subject.getStatus() != SubjectStatus.INACTIVE) {
+            throw new SubjectHandler(ErrorStatus.NO_SUBJECT_PERMISSION);
+        }
+
+        subject.getMember().removeSubject(subject);
         subjectRepository.delete(subject);
 
         return subjectId;
     }
 
     @Transactional
-    public updateOrderNumDto changeOrder(Member member, Long subjectId, int newOrderNum) {
-        Subject subject = validateAndGetSubject(member, subjectId);
-        List<Subject> subjects = subjectRepository.findAllByMemberAndStatus(member, SubjectStatus.ACTIVE);
+    public updateOrderNumDto changeOrder(Long subjectId, int newOrderNum) {
+        Subject subject = subjectRepository.findById(subjectId)
+            .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
+        Member member = subject.getMember();
+        List<Subject> subjects = subjectRepository.findAllByMemberAndStatus(member,
+            SubjectStatus.ACTIVE);
 
-        // 순서가 전체 갯수를 넘는 경우 에러 메시지 출력
         if (newOrderNum > subjects.size() || newOrderNum < 1) {
             throw new SubjectHandler(ErrorStatus.INVALID_ORDER_NUMBER);
         }
 
-        // 새로운 순서에 해당하는 항목을 찾고 순서 교체
-        subjects.forEach(s -> {
-            if (s.getOrderNum() == newOrderNum) {
-                s.updateOrderNum(subject.getOrderNum());
-            }
-        });
+        subjects.stream()
+            .filter(s -> s.getOrderNum() == newOrderNum)
+            .forEach(s -> s.updateOrderNum(subject.getOrderNum()));
+
         subject.updateOrderNum(newOrderNum);
 
         return updateOrderNumDto.builder()
-                .id(subject.getId())
-                .orderNum(subject.getOrderNum())
-                .updateAt(LocalDate.from(subject.getCreatedAt()))
-                .build();
+            .subjectId(subject.getId())
+            .orderNum(subject.getOrderNum())
+            .build();
     }
 
     @Transactional
-    public updateTitleNameDto updateTitle(Member member, subjectRequest request, Long id) {
-        Subject subject = validateAndGetSubject(member, id);
+    public updateTitleNameDto updateTitle(@Valid subjectRequest request, Long subjectId) {
+        Subject subject = subjectRepository.findById(subjectId)
+            .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
 
-        if (subjectRepository.existsByMemberAndTitle(member, request.getTitle())) {
+        if (subjectRepository.existsByMemberAndTitle(getMember(), request.getTitle())) {
             throw new SubjectHandler(ErrorStatus.DUPLICATE_SUBJECT_TITLE);
         }
 
         subject.updateTitle(request.getTitle());
 
         return updateTitleNameDto.builder()
-                .id(subject.getId())
-                .title(subject.getTitle())
-                .updateAt(LocalDate.from(subject.getCreatedAt()))
-                .build();
+            .subjectId(subject.getId())
+            .title(subject.getTitle())
+            .build();
     }
 
-    private Subject validateAndGetSubject(Member member, Long subjectId) {
+    @Transactional
+    public void storeSubject(Long subjectId) {
         Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
+            .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
 
-        if (!subject.getMember().equals(member)) {
-            throw new SubjectHandler(ErrorStatus.NO_SUBJECT_PERMISSION);
+        if (subject.getStatus().equals(SubjectStatus.INACTIVE)) {
+            throw new SubjectHandler(ErrorStatus.NOT_CHANGE_STATUS);
         }
 
-        if (subject.getStatus() != SubjectStatus.ACTIVE) {
-            throw new SubjectHandler(ErrorStatus.NO_SUBJECT_PERMISSION);
+        subject.updateStatus(SubjectStatus.INACTIVE);
+        reorderSubject(subject);
+    }
+
+    @Transactional
+    public void restoreSubject(Long subjectId) {
+        Subject subject = subjectRepository.findById(subjectId)
+            .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
+
+        if (subject.getStatus().equals(SubjectStatus.ACTIVE)) {
+            throw new SubjectHandler(ErrorStatus.NOT_CHANGE_STATUS);
         }
 
-        return subject;
+        subject.updateStatus(SubjectStatus.ACTIVE);
+        reorderSubject(subject);
+
+    }
+
+
+    private void reorderSubject(Subject subject) {
+        Member member = subject.getMember();
+        List<Subject> activeSubjects = subjectRepository.findAllByMemberAndStatus(member,
+            SubjectStatus.ACTIVE);
+        for (int i = 0; i < activeSubjects.size(); i++) {
+            activeSubjects.get(i).updateOrderNum(i + 1);
+        }
+
+        List<Subject> inActiveSubjects = subjectRepository.findAllByMemberAndStatus(member,
+            SubjectStatus.INACTIVE);
+        for (int i = 0; i < inActiveSubjects.size(); i++) {
+            inActiveSubjects.get(i).updateOrderNum(i + 1);
+        }
+    }
+
+    private Member getMember() {
+        return memberService.findMember(SecurityUtil.getCurrentMemberId());
     }
 
 

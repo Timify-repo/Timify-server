@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Subject extends BaseDateTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subject_id")
@@ -51,11 +52,14 @@ public class Subject extends BaseDateTimeEntity {
         this.title = title;
     }
 
+    public void updateStatus(SubjectStatus subjectStatus) {
+        this.status = subjectStatus;
+    }
+
     public void linkFromMember(Member member) {
         this.member = member;
         member.addSubject(this);
     }
-
 
     public void unlinkFromMember() {
         if (this.member != null) {
@@ -63,5 +67,6 @@ public class Subject extends BaseDateTimeEntity {
             this.member = null;
         }
     }
+
 
 }

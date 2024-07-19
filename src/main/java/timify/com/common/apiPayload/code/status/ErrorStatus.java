@@ -55,7 +55,9 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_ORDER_NUMBER(HttpStatus.BAD_REQUEST, "ORDER400", "유효하지 않은 순서 번호입니다."),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "잘못된 요청입니다."),
     MAX_SUBJECT_ERROR(HttpStatus.BAD_REQUEST, "SUBJECT4000", "최대 항목 개수를 초과했습니다."),
-    DUPLICATE_SUBJECT_TITLE(HttpStatus.BAD_REQUEST, "SUBJECT4001", "항목 제목이 중복되었습니다.");
+    DUPLICATE_SUBJECT_TITLE(HttpStatus.BAD_REQUEST, "SUBJECT4001", "항목 제목이 중복되었습니다."),
+    NOT_CHANGE_STATUS(HttpStatus.BAD_REQUEST, "SUBJECT4002", "항목의 상태를 변경할 수 없습니다."),
+    INVALID_STATUS(HttpStatus.BAD_REQUEST, "SUBJECT4003", "올바르지 않은 항목의 상태입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

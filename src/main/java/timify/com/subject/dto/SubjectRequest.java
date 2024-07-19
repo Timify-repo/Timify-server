@@ -5,10 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class SubjectRequest {
+
     @Getter
-    @NoArgsConstructor
     public static class subjectRequest {
-        @NotBlank
+
+      @NotBlank
         String title;
     }
 }

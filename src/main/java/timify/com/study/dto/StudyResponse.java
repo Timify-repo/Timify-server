@@ -6,11 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class StudyResponse {
+
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class studyTypeDto {
+
         Long studyTypeId;
         Integer order;
         String studyTypeTitle;
@@ -21,6 +23,7 @@ public class StudyResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class studyMethodDto {
+
         Long studyMethodId;
         Integer order;
         String studyMethodTitle;
@@ -31,6 +34,7 @@ public class StudyResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class studyPlaceDto {
+
         Long studyPlaceId;
         Integer order;
         String studyPlaceTitle;
