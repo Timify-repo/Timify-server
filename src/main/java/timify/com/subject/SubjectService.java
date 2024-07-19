@@ -116,32 +116,18 @@ public class SubjectService {
     }
 
     @Transactional
-    public void storeSubject(Member member, Long subjectId) {
-
+    public void updateStatus(Member member, Long subjectId, String status) {
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
 
-        if (subject.getStatus().equals(SubjectStatus.INACTIVE)) {
+        SubjectStatus newStatus = SubjectStatus.valueOf(status.toUpperCase());
+
+        if (subject.getStatus() == newStatus) {
             throw new SubjectHandler(ErrorStatus.NOT_CHANGE_STATUS);
         }
 
-        subject.updateStatus(SubjectStatus.INACTIVE);
+        subject.updateStatus(newStatus);
         reorderSubject(member);
-    }
-
-    @Transactional
-    public void restoreSubject(Member member, Long subjectId) {
-
-        Subject subject = subjectRepository.findById(subjectId)
-            .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
-
-        if (subject.getStatus().equals(SubjectStatus.ACTIVE)) {
-            throw new SubjectHandler(ErrorStatus.NOT_CHANGE_STATUS);
-        }
-
-        subject.updateStatus(SubjectStatus.ACTIVE);
-        reorderSubject(member);
-
     }
 
 

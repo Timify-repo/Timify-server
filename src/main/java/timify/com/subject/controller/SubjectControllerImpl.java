@@ -1,7 +1,9 @@
 package timify.com.subject.controller;
 
-import static timify.com.subject.dto.SubjectRequest.*;
-import static timify.com.subject.dto.SubjectResponse.*;
+import static timify.com.subject.dto.SubjectRequest.subjectRequest;
+import static timify.com.subject.dto.SubjectResponse.getListDto;
+import static timify.com.subject.dto.SubjectResponse.updateOrderNumDto;
+import static timify.com.subject.dto.SubjectResponse.updateTitleNameDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +49,7 @@ public class SubjectControllerImpl implements SubjectController {
         return ApiResponse.onSuccess(subjectDto);
     }
 
-    @GetMapping("/active")
+    @GetMapping("/all")
     public ApiResponse<getListDto> activeSubjectAll(@AuthMember Member member,
         @RequestParam("status") String status) {
         getListDto activeSubjectList = subjectService.getSubjectAll(member, status);
@@ -84,18 +86,12 @@ public class SubjectControllerImpl implements SubjectController {
         return ApiResponse.of(SuccessStatus.TITLE_CHANGE_SUCCESS, updateTitleNameDto);
     }
 
-    @PutMapping("/{subjectId}/store")
-    public ApiResponse<Long> storeSubject(@AuthMember Member member,
+    @PutMapping("/{subjectId}/update-status")
+    public ApiResponse<Long> updateStatus(@AuthMember Member member,
+        @RequestParam(name = "status") String status,
         @PathVariable(name = "subjectId") Long subjectId) {
-        subjectService.storeSubject(member, subjectId);
+        subjectService.updateStatus(member, subjectId, status);
         return ApiResponse.of(SuccessStatus.STORE_SUBJECT_SUCCESS, subjectId);
-    }
-
-    @PutMapping("/{subjectId}/restore")
-    public ApiResponse<Long> storeHome(@AuthMember Member member,
-        @PathVariable(name = "subjectId") Long subjectId) {
-        subjectService.restoreSubject(member, subjectId);
-        return ApiResponse.of(SuccessStatus.RESTORE_SUBJECT_SUCCESS, subjectId);
     }
 
 
