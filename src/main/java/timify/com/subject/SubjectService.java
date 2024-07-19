@@ -1,7 +1,10 @@
 package timify.com.subject;
 
-import static timify.com.subject.dto.SubjectRequest.*;
-import static timify.com.subject.dto.SubjectResponse.*;
+import static timify.com.subject.dto.SubjectRequest.subjectRequest;
+import static timify.com.subject.dto.SubjectResponse.getListDto;
+import static timify.com.subject.dto.SubjectResponse.subjectInfoDto;
+import static timify.com.subject.dto.SubjectResponse.updateOrderNumDto;
+import static timify.com.subject.dto.SubjectResponse.updateTitleNameDto;
 
 import jakarta.validation.Valid;
 import java.util.Arrays;
@@ -25,7 +28,6 @@ public class SubjectService {
 
     @Transactional
     public subjectInfoDto registerSubject(Member member, @Valid subjectRequest request) {
-
         if (subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) >= 15) {
             throw new SubjectHandler(ErrorStatus.MAX_SUBJECT_ERROR);
         }
@@ -46,7 +48,6 @@ public class SubjectService {
 
     @Transactional(readOnly = true)
     public getListDto getSubjectAll(Member member, String status) {
-
         SubjectStatus subjectStatus = Arrays.stream(SubjectStatus.values())
             .filter(s -> s.name().equalsIgnoreCase(status)).findFirst()
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.INVALID_STATUS));
@@ -62,9 +63,10 @@ public class SubjectService {
 
     @Transactional
     public Long deleteSubject(Member member, Long subjectId) {
-
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
+
+        validateMember(member, subject);
 
         if (subject.getStatus() != SubjectStatus.INACTIVE) {
             throw new SubjectHandler(ErrorStatus.NO_SUBJECT_PERMISSION);
@@ -78,9 +80,10 @@ public class SubjectService {
 
     @Transactional
     public updateOrderNumDto changeOrder(Member member, Long subjectId, int newOrderNum) {
-
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
+
+        validateMember(member, subject);
 
         List<Subject> subjects = subjectRepository.findAllByMemberAndStatus(member,
             SubjectStatus.ACTIVE);
@@ -101,9 +104,10 @@ public class SubjectService {
     @Transactional
     public updateTitleNameDto updateTitle(Member member, @Valid subjectRequest request,
         Long subjectId) {
-
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
+
+        validateMember(member, subject);
 
         if (subjectRepository.existsByMemberAndTitle(member, request.getTitle())) {
             throw new SubjectHandler(ErrorStatus.DUPLICATE_SUBJECT_TITLE);
@@ -120,6 +124,8 @@ public class SubjectService {
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
 
+        validateMember(member, subject);
+
         SubjectStatus newStatus = SubjectStatus.valueOf(status.toUpperCase());
 
         if (subject.getStatus() == newStatus) {
@@ -130,9 +136,7 @@ public class SubjectService {
         reorderSubject(member);
     }
 
-
     private void reorderSubject(Member member) {
-
         List<Subject> activeSubjects = subjectRepository.findAllByMemberAndStatus(member,
             SubjectStatus.ACTIVE);
         for (int i = 0; i < activeSubjects.size(); i++) {
@@ -146,5 +150,9 @@ public class SubjectService {
         }
     }
 
-
+    private void validateMember(Member member, Subject subject) {
+        if (!subject.getMember().equals(member)) {
+            throw new SubjectHandler(ErrorStatus.NO_SUBJECT_PERMISSION);
+        }
+    }
 }
