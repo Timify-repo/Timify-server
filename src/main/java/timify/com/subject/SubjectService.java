@@ -127,7 +127,10 @@ public class SubjectService {
 
         validateMember(member, subject);
 
-        SubjectStatus newStatus = SubjectStatus.valueOf(status.toUpperCase());
+        SubjectStatus newStatus = Arrays.stream(SubjectStatus.values())
+            .filter(s -> s.name().equalsIgnoreCase(status))
+            .findFirst()
+            .orElseThrow(() -> new SubjectHandler(ErrorStatus.INVALID_STATUS));
 
         if (subject.getStatus() == newStatus) {
             throw new SubjectHandler(ErrorStatus.NOT_CHANGE_STATUS);
