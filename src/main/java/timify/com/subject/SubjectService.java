@@ -98,7 +98,7 @@ public class SubjectService {
         List<Subject> subjects = subjectRepository.findAllByMemberAndStatus(member,
             SubjectStatus.ACTIVE);
 
-        if(subject.getStatus() != SubjectStatus.ACTIVE) {
+        if (subject.getStatus() != SubjectStatus.ACTIVE) {
             throw new SubjectHandler(ErrorStatus.NO_CHANGE_SUBJECT_PERMISSION);
         }
 
@@ -127,7 +127,7 @@ public class SubjectService {
             throw new SubjectHandler(ErrorStatus.DUPLICATE_SUBJECT_TITLE);
         }
 
-        if(subject.getStatus() != SubjectStatus.ACTIVE) {
+        if (subject.getStatus() != SubjectStatus.ACTIVE) {
             throw new SubjectHandler(ErrorStatus.NO_CHANGE_SUBJECT_PERMISSION);
         }
 

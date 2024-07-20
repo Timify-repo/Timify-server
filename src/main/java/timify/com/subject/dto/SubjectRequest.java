@@ -10,7 +10,7 @@ public class SubjectRequest {
     @NoArgsConstructor
     public static class subjectRequest {
 
-      @NotBlank
+        @NotBlank
         String title;
     }
 }
