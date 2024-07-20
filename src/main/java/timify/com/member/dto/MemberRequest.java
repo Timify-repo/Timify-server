@@ -4,23 +4,24 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import timify.com.common.validation.NotBlankIfNotNull;
 import timify.com.member.domain.Gender;
 
-import java.time.LocalDate;
-
 public class MemberRequest {
+
     @Getter
     @NoArgsConstructor
     public static class kakaoSigninRequest {
+
         @NotNull
         Gender gender;
 
-        @NotBlank
+        @NotBlankIfNotNull
         String job;
 
-        @NotNull
         LocalDate birth;
 
         @NotBlank
@@ -30,6 +31,7 @@ public class MemberRequest {
     @Getter
     @NoArgsConstructor
     public static class nameUpdateRequest {
+
         @Size(min = 1, max = 30)
         String newName;
     }
@@ -37,6 +39,7 @@ public class MemberRequest {
     @Getter
     @NoArgsConstructor
     public static class birthUpdateRequest {
+
         @Past
         @NotNull
         LocalDate birth;
@@ -45,6 +48,7 @@ public class MemberRequest {
     @Getter
     @NoArgsConstructor
     public static class jobUpdateRequest {
+
         @Size(min = 1, max = 50)
         String newJob;
     }
@@ -52,6 +56,7 @@ public class MemberRequest {
     @Getter
     @NoArgsConstructor
     public static class genderUpdateRequest {
+
         @NotNull
         Gender gender;
     }
