@@ -51,7 +51,9 @@ public enum ErrorStatus implements BaseErrorCode {
     MAX_STUDY_ERROR(HttpStatus.BAD_REQUEST, "STUDY4010", "최대 등록 개수를 초과했습니다."),
 
     NO_SUBJECT_FOUND(HttpStatus.NOT_FOUND, "SUBJECT4040", "해당 항목을 찾지 못하였습니다."),
-    NO_SUBJECT_PERMISSION(HttpStatus.FORBIDDEN, "SUBJECT4030", "해당 항목을 삭제할 권한이 없습니다."),
+    NO_ACCESS_SUBJECT_PERMISSION(HttpStatus.FORBIDDEN, "SUBJECT4030", "해당 항목을 접근할 권한이 없습니다."),
+    NO_DELETE_SUBJECT_PERMISSION(HttpStatus.FORBIDDEN, "SUBJECT4030", "해당 항목을 삭제할 권한이 없습니다."),
+    NO_CHANGE_SUBJECT_PERMISSION(HttpStatus.FORBIDDEN, "SUBJECT4030", "해당 항목을 변경할 권한이 없습니다."),
     INVALID_ORDER_NUMBER(HttpStatus.BAD_REQUEST, "ORDER400", "유효하지 않은 순서 번호입니다."),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "잘못된 요청입니다."),
     MAX_SUBJECT_ERROR(HttpStatus.BAD_REQUEST, "SUBJECT4000", "최대 항목 개수를 초과했습니다."),
@@ -66,20 +68,20 @@ public enum ErrorStatus implements BaseErrorCode {
     @Override
     public ErrorReasonDTO getReason() {
         return ErrorReasonDTO.builder()
-                .message(message)
-                .code(code)
-                .isSuccess(false)
-                .build();
+            .message(message)
+            .code(code)
+            .isSuccess(false)
+            .build();
     }
 
     @Override
     public ErrorReasonDTO getReasonHttpStatus() {
         return ErrorReasonDTO.builder()
-                .message(message)
-                .code(code)
-                .isSuccess(false)
-                .httpStatus(httpStatus)
-                .build();
+            .message(message)
+            .code(code)
+            .isSuccess(false)
+            .httpStatus(httpStatus)
+            .build();
     }
 
 }
