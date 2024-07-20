@@ -77,7 +77,7 @@ public class SubjectService {
         validateMember(member, subject);
 
         if (subject.getStatus() != SubjectStatus.INACTIVE) {
-            throw new SubjectHandler(ErrorStatus.NO_SUBJECT_PERMISSION);
+            throw new SubjectHandler(ErrorStatus.NO_DELETE_SUBJECT_PERMISSION);
         }
 
         subject.getMember().removeSubject(subject);
@@ -97,6 +97,10 @@ public class SubjectService {
 
         List<Subject> subjects = subjectRepository.findAllByMemberAndStatus(member,
             SubjectStatus.ACTIVE);
+
+        if(subject.getStatus() != SubjectStatus.ACTIVE) {
+            throw new SubjectHandler(ErrorStatus.NO_CHANGE_SUBJECT_PERMISSION);
+        }
 
         if (newOrderNum > subjects.size() || newOrderNum < 1) {
             throw new SubjectHandler(ErrorStatus.INVALID_ORDER_NUMBER);
@@ -121,6 +125,10 @@ public class SubjectService {
 
         if (subjectRepository.existsByMemberAndTitle(member, request.getTitle())) {
             throw new SubjectHandler(ErrorStatus.DUPLICATE_SUBJECT_TITLE);
+        }
+
+        if(subject.getStatus() != SubjectStatus.ACTIVE) {
+            throw new SubjectHandler(ErrorStatus.NO_CHANGE_SUBJECT_PERMISSION);
         }
 
         subject.updateTitle(request.getTitle());
@@ -166,7 +174,7 @@ public class SubjectService {
 
     private void validateMember(Member member, Subject subject) {
         if (!subject.getMember().equals(member)) {
-            throw new SubjectHandler(ErrorStatus.NO_SUBJECT_PERMISSION);
+            throw new SubjectHandler(ErrorStatus.NO_ACCESS_SUBJECT_PERMISSION);
         }
     }
 }
