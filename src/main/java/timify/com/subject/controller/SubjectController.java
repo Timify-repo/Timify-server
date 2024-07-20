@@ -25,8 +25,7 @@ public interface SubjectController {
     @Operation(summary = "항목 등록 API", description = "항목 등록 API 입니다.")
     ApiResponse<subjectInfoDto> registerSubject(
         @AuthMember Member member,
-        @RequestBody @Valid subjectRequest subject,
-        BindingResult bindingResult);
+        @RequestBody @Valid subjectRequest subject);
 
     @Operation(summary = "항목 조회 API", description = "항목 조회 API 입니다.")
     @Parameters(value = {

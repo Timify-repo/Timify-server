@@ -8,7 +8,6 @@ import static timify.com.subject.dto.SubjectResponse.updateTitleNameDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import timify.com.auth.annotation.AuthMember;
 import timify.com.common.apiPayload.ApiResponse;
-import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
-import timify.com.common.apiPayload.exception.handler.SubjectHandler;
 import timify.com.member.domain.Member;
 import timify.com.subject.SubjectService;
 import timify.com.subject.dto.SubjectResponse.subjectInfoDto;
@@ -38,18 +35,13 @@ public class SubjectControllerImpl implements SubjectController {
     @PostMapping("/insert")
     public ApiResponse<subjectInfoDto> registerSubject(
         @AuthMember Member member,
-        @RequestBody @Valid subjectRequest subject,
-        BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            throw new SubjectHandler(ErrorStatus.INVALID_REQUEST);
-        }
+        @RequestBody @Valid subjectRequest subject) {
 
         subjectInfoDto subjectDto = subjectService.registerSubject(member, subject);
         return ApiResponse.onSuccess(subjectDto);
     }
 
-    @GetMapping("/all")
+    @GetMapping()
     public ApiResponse<getListDto> activeSubjectAll(@AuthMember Member member,
         @RequestParam("status") String status) {
         getListDto activeSubjectList = subjectService.getSubjectAll(member, status);
