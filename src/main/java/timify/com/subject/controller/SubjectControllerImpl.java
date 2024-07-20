@@ -83,6 +83,6 @@ public class SubjectControllerImpl implements SubjectController {
         @PathVariable(name = "subjectId") Long subjectId) {
 
         subjectService.updateStatus(member, subjectId, status);
-        return ApiResponse.of(SuccessStatus.STORE_SUBJECT_SUCCESS, subjectId);
+        return ApiResponse.of(SuccessStatus.UPDATE_STATUS_SUCCESS, subjectId);
     }
 }
