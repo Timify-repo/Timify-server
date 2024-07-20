@@ -145,11 +145,13 @@ public class SubjectService {
             throw new SubjectHandler(ErrorStatus.NOT_CHANGE_STATUS);
         }
 
+        SubjectStatus ordinalStatus = subject.getStatus();
+
         int newOrderNum = subjectRepository.countByMemberAndStatus(member, newStatus) + 1;
         subject.updateOrderNum(newOrderNum);
         subject.updateStatus(newStatus);
 
-        reorderSubject(member, subject.getStatus());
+        reorderSubject(member, ordinalStatus);
     }
 
     private void reorderSubject(Member member, SubjectStatus ordinalStatus) {
