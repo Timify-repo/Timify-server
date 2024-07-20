@@ -44,27 +44,26 @@ public class SubjectControllerImpl implements SubjectController {
     @GetMapping()
     public ApiResponse<getListDto> activeSubjectAll(@AuthMember Member member,
         @RequestParam("status") String status) {
-        getListDto activeSubjectList = subjectService.getSubjectAll(member, status);
 
+        getListDto activeSubjectList = subjectService.getSubjectAll(member, status);
         return ApiResponse.onSuccess(activeSubjectList);
     }
 
     @DeleteMapping("/delete/{subjectId}")
     public ApiResponse<Long> deleteSubject(@AuthMember Member member,
         @PathVariable(name = "subjectId") Long subjectId) {
-        Long deleteId = subjectService.deleteSubject(member, subjectId);
 
+        Long deleteId = subjectService.deleteSubject(member, subjectId);
         return ApiResponse.of(SuccessStatus.SUBJECT_DELETE_SUCCESS, deleteId);
     }
 
     @PutMapping("/order/{subjectId}/{orderNum}")
     public ApiResponse<updateOrderNumDto> changeOrder(@AuthMember Member member,
-
         @PathVariable(name = "subjectId") Long subjectId,
         @PathVariable int orderNum) {
+
         updateOrderNumDto updateOrderNumDto = subjectService.changeOrder(member, subjectId,
             orderNum);
-
         return ApiResponse.of(SuccessStatus.ORDER_CHANGE_SUCCESS, updateOrderNumDto);
     }
 
@@ -72,9 +71,9 @@ public class SubjectControllerImpl implements SubjectController {
     public ApiResponse<updateTitleNameDto> updateTitle(@AuthMember Member member,
         @RequestBody @Valid subjectRequest request,
         @PathVariable(name = "subjectId") Long subjectId) {
+
         updateTitleNameDto updateTitleNameDto = subjectService.updateTitle(member, request,
             subjectId);
-
         return ApiResponse.of(SuccessStatus.TITLE_CHANGE_SUCCESS, updateTitleNameDto);
     }
 
@@ -82,6 +81,7 @@ public class SubjectControllerImpl implements SubjectController {
     public ApiResponse<Long> updateStatus(@AuthMember Member member,
         @RequestParam(name = "status") String status,
         @PathVariable(name = "subjectId") Long subjectId) {
+
         subjectService.updateStatus(member, subjectId, status);
         return ApiResponse.of(SuccessStatus.STORE_SUBJECT_SUCCESS, subjectId);
     }

@@ -8,6 +8,7 @@ import static timify.com.subject.dto.SubjectResponse.updateTitleNameDto;
 
 import jakarta.validation.Valid;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -54,9 +55,15 @@ public class SubjectService {
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.INVALID_STATUS));
 
         List<subjectInfoDto> subjectListAll = subjectRepository.findAllByMemberAndStatus(member,
-                subjectStatus).stream().map(
-                subject -> subjectInfoDto.builder().subjectId(subject.getId()).title(subject.getTitle())
-                    .orderNum(subject.getOrderNum()).status(subject.getStatus()).build())
+                subjectStatus)
+            .stream()
+            .sorted(Comparator.comparingInt(Subject::getOrderNum))
+            .map(subject -> subjectInfoDto.builder()
+                .subjectId(subject.getId())
+                .title(subject.getTitle())
+                .orderNum(subject.getOrderNum())
+                .status(subject.getStatus())
+                .build())
             .collect(Collectors.toList());
 
         return getListDto.builder().subjects(subjectListAll).build();
@@ -75,6 +82,8 @@ public class SubjectService {
 
         subject.getMember().removeSubject(subject);
         subjectRepository.delete(subject);
+
+        reorderSubject(member, subject.getStatus());
 
         return subjectId;
     }
@@ -136,21 +145,21 @@ public class SubjectService {
             throw new SubjectHandler(ErrorStatus.NOT_CHANGE_STATUS);
         }
 
+        int newOrderNum = subjectRepository.countByMemberAndStatus(member, newStatus) + 1;
+        subject.updateOrderNum(newOrderNum);
         subject.updateStatus(newStatus);
-        reorderSubject(member);
+
+        reorderSubject(member, subject.getStatus());
     }
 
-    private void reorderSubject(Member member) {
+    private void reorderSubject(Member member, SubjectStatus ordinalStatus) {
         List<Subject> activeSubjects = subjectRepository.findAllByMemberAndStatus(member,
-            SubjectStatus.ACTIVE);
+                ordinalStatus)
+            .stream()
+            .sorted(Comparator.comparingInt(Subject::getOrderNum))
+            .toList();
         AtomicInteger activeCounter = new AtomicInteger(1);
         activeSubjects.forEach(subject -> subject.updateOrderNum(activeCounter.getAndIncrement()));
-
-        List<Subject> inActiveSubjects = subjectRepository.findAllByMemberAndStatus(member,
-            SubjectStatus.INACTIVE);
-        AtomicInteger inactiveCounter = new AtomicInteger(1);
-        inActiveSubjects.forEach(
-            subject -> subject.updateOrderNum(inactiveCounter.getAndIncrement()));
     }
 
     private void validateMember(Member member, Subject subject) {
