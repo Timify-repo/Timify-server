@@ -40,11 +40,10 @@ public class SubjectService {
         }
 
         int orderNum = subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) + 1;
-        Subject registerSubject = subjectRepository.save(
-            SubjectConverter.toSubject(request, orderNum));
 
-        //연관관계 매핑
-        registerSubject.setMember(member);
+        Subject registerSubject = SubjectConverter.toSubject(request, orderNum);
+        registerSubject.associateMember(member);
+        subjectRepository.save(registerSubject);
 
         return subjectInfoDto.builder().subjectId(registerSubject.getId())
             .title(registerSubject.getTitle()).orderNum(registerSubject.getOrderNum())
@@ -57,7 +56,8 @@ public class SubjectService {
             .filter(s -> s.name().equalsIgnoreCase(status)).findFirst()
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.INVALID_STATUS));
 
-        List<subjectInfoDto> subjectListAll = subjectRepository.findAllByMemberAndStatus(member, subjectStatus)
+        List<subjectInfoDto> subjectListAll = subjectRepository.findAllByMemberAndStatus(member,
+                subjectStatus)
             .stream()
             .sorted(Comparator.comparingInt(Subject::getOrderNum))
             .map(subject -> subjectInfoDto.builder()
@@ -73,18 +73,18 @@ public class SubjectService {
 
     @Transactional
     public Long deleteSubject(Member member, Long subjectId) {
-        Subject subject = subjectRepository.findById(subjectId)
+        Subject deleteSubject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
 
-        validateMember(member, subject);
+        validateMember(member, deleteSubject);
 
-        if (subject.getStatus() != SubjectStatus.INACTIVE) {
+        if (deleteSubject.getStatus() != SubjectStatus.INACTIVE) {
             throw new SubjectHandler(ErrorStatus.NO_DELETE_SUBJECT_PERMISSION);
         }
 
-        subjectRepository.delete(subject);
-
-        reorderSubject(member, subject.getStatus());
+        deleteSubject.disassociateMember(member);
+        subjectRepository.delete(deleteSubject);
+        reorderSubject(member, deleteSubject.getStatus());
 
         return subjectId;
     }

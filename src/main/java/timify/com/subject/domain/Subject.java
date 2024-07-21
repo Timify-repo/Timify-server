@@ -59,12 +59,20 @@ public class Subject extends BaseDateTimeEntity {
     private List<StudyTime> studyTimeList = new ArrayList<>();
 
     // 연관관계 메소드
-    public void setMember(Member member) {
+    public void associateMember(Member member) {
         if (this.member != null) {
             this.member.getSubjectList().remove(this);
         }
         this.member = member;
         this.member.getSubjectList().add(this);
+    }
+
+    // 연관관계 해제 메소드
+    public void disassociateMember(Member member) {
+        if (member != null) {
+            member.getSubjectList().remove(this);
+            this.member = null;
+        }
     }
 
     public void updateOrderNum(int newOrderNum) {

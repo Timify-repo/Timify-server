@@ -68,7 +68,7 @@ public class Member extends BaseDateTimeEntity {
     @Column(nullable = false, columnDefinition = "VARCHAR(20)")
     private RoleType roleType;
 
-    // subject 양방향 매핑  LAZY 둘 다임? 일단 ㅇㅋ
+    // subject 양방향 매핑
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subject> subjectList = new ArrayList<>();
 
