@@ -1,19 +1,31 @@
 package timify.com.member.domain;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import timify.com.domain.MemberMission;
 import timify.com.domain.StudyTime;
-import timify.com.subject.domain.Subject;
 import timify.com.domain.Todo;
 import timify.com.domain.common.BaseDateTimeEntity;
 import timify.com.study.domain.StudyMethod;
 import timify.com.study.domain.StudyPlace;
 import timify.com.study.domain.StudyType;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import timify.com.subject.domain.Subject;
 
 @Entity
 @Getter
@@ -21,6 +33,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Member extends BaseDateTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -55,7 +68,7 @@ public class Member extends BaseDateTimeEntity {
     @Column(nullable = false, columnDefinition = "VARCHAR(20)")
     private RoleType roleType;
 
-    // subject 양방향 매핑  LAZY 둘 다임? 일단 ㅇㅋ
+    // subject 양방향 매핑
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subject> subjectList = new ArrayList<>();
 
@@ -82,21 +95,6 @@ public class Member extends BaseDateTimeEntity {
     // MemberMission 양방향 매핑
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberMission> memberMissionList = new ArrayList<>();
-
-    public void addSubject(Subject subject) {
-        if (!this.getSubjectList().contains(subject)) {
-            subjectList.add(subject);
-            subject.linkFromMember(this);
-        }
-    }
-
-    public void removeSubject(Subject subject) {
-        if (subjectList.contains(subject)) {
-            subjectList.remove(subject);
-            subject.unlinkFromMember();
-        }
-    }
-
 
     // 이름 수정을 위한 메소드
     public void updateName(String name) {

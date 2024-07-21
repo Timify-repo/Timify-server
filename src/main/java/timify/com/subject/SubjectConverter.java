@@ -8,13 +8,12 @@ import timify.com.subject.dto.SubjectRequest.subjectRequest;
 
 public class SubjectConverter {
 
-    public static Subject toSubject(subjectRequest request, Member member, int orderNum) {
+    public static Subject toSubject(subjectRequest request, int orderNum) {
 
         return Subject.builder()
             .title(request.getTitle())
             .status(ACTIVE)
             .orderNum(orderNum)
-            .member(member)
             .build();
     }
 }

@@ -58,6 +58,23 @@ public class Subject extends BaseDateTimeEntity {
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     private List<StudyTime> studyTimeList = new ArrayList<>();
 
+    // 연관관계 메소드
+    public void associateMember(Member member) {
+        if (this.member != null) {
+            this.member.getSubjectList().remove(this);
+        }
+        this.member = member;
+        this.member.getSubjectList().add(this);
+    }
+
+    // 연관관계 해제 메소드
+    public void disassociateMember(Member member) {
+        if (member != null) {
+            member.getSubjectList().remove(this);
+            this.member = null;
+        }
+    }
+
     public void updateOrderNum(int newOrderNum) {
         this.orderNum = newOrderNum;
     }
@@ -68,17 +85,5 @@ public class Subject extends BaseDateTimeEntity {
 
     public void updateStatus(SubjectStatus subjectStatus) {
         this.status = subjectStatus;
-    }
-
-    public void linkFromMember(Member member) {
-        this.member = member;
-        member.addSubject(this);
-    }
-
-    public void unlinkFromMember() {
-        if (this.member != null) {
-            this.member.getSubjectList().remove(this);
-            this.member = null;
-        }
     }
 }

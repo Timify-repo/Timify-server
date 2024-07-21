@@ -27,10 +27,11 @@ import timify.com.subject.repository.SubjectRepository;
 public class SubjectService {
 
     private final SubjectRepository subjectRepository;
+    private final static long COUNT_LIMIT = 15L;
 
     @Transactional
     public subjectInfoDto registerSubject(Member member, @Valid subjectRequest request) {
-        if (subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) >= 15) {
+        if (subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) >= COUNT_LIMIT) {
             throw new SubjectHandler(ErrorStatus.MAX_SUBJECT_ERROR);
         }
 
@@ -39,9 +40,10 @@ public class SubjectService {
         }
 
         int orderNum = subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) + 1;
-        Subject registerSubject = subjectRepository.save(
-            SubjectConverter.toSubject(request, member, orderNum));
-        member.addSubject(registerSubject);
+
+        Subject registerSubject = SubjectConverter.toSubject(request, orderNum);
+        registerSubject.associateMember(member);
+        subjectRepository.save(registerSubject);
 
         return subjectInfoDto.builder().subjectId(registerSubject.getId())
             .title(registerSubject.getTitle()).orderNum(registerSubject.getOrderNum())
@@ -71,19 +73,18 @@ public class SubjectService {
 
     @Transactional
     public Long deleteSubject(Member member, Long subjectId) {
-        Subject subject = subjectRepository.findById(subjectId)
+        Subject deleteSubject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
 
-        validateMember(member, subject);
+        validateMember(member, deleteSubject);
 
-        if (subject.getStatus() != SubjectStatus.INACTIVE) {
+        if (deleteSubject.getStatus() != SubjectStatus.INACTIVE) {
             throw new SubjectHandler(ErrorStatus.NO_DELETE_SUBJECT_PERMISSION);
         }
 
-        subject.getMember().removeSubject(subject);
-        subjectRepository.delete(subject);
-
-        reorderSubject(member, subject.getStatus());
+        deleteSubject.disassociateMember(member);
+        subjectRepository.delete(deleteSubject);
+        reorderSubject(member, deleteSubject.getStatus());
 
         return subjectId;
     }
