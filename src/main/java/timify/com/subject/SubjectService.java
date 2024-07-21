@@ -27,10 +27,11 @@ import timify.com.subject.repository.SubjectRepository;
 public class SubjectService {
 
     private final SubjectRepository subjectRepository;
+    private final static long COUNT_LIMIT = 15L;
 
     @Transactional
     public subjectInfoDto registerSubject(Member member, @Valid subjectRequest request) {
-        if (subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) >= 15) {
+        if (subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) >= COUNT_LIMIT) {
             throw new SubjectHandler(ErrorStatus.MAX_SUBJECT_ERROR);
         }
 
@@ -40,8 +41,10 @@ public class SubjectService {
 
         int orderNum = subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) + 1;
         Subject registerSubject = subjectRepository.save(
-            SubjectConverter.toSubject(request, member, orderNum));
-        member.addSubject(registerSubject);
+            SubjectConverter.toSubject(request, orderNum));
+
+        //연관관계 매핑
+        registerSubject.setMember(member);
 
         return subjectInfoDto.builder().subjectId(registerSubject.getId())
             .title(registerSubject.getTitle()).orderNum(registerSubject.getOrderNum())
@@ -54,8 +57,7 @@ public class SubjectService {
             .filter(s -> s.name().equalsIgnoreCase(status)).findFirst()
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.INVALID_STATUS));
 
-        List<subjectInfoDto> subjectListAll = subjectRepository.findAllByMemberAndStatus(member,
-                subjectStatus)
+        List<subjectInfoDto> subjectListAll = subjectRepository.findAllByMemberAndStatus(member, subjectStatus)
             .stream()
             .sorted(Comparator.comparingInt(Subject::getOrderNum))
             .map(subject -> subjectInfoDto.builder()
@@ -80,7 +82,6 @@ public class SubjectService {
             throw new SubjectHandler(ErrorStatus.NO_DELETE_SUBJECT_PERMISSION);
         }
 
-        subject.getMember().removeSubject(subject);
         subjectRepository.delete(subject);
 
         reorderSubject(member, subject.getStatus());
