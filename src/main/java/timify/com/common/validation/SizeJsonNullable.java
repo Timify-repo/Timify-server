@@ -7,15 +7,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = NotBlankIfNotNullValidator.class)
+@Constraint(validatedBy = SizeJsonNullableValidator.class)
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NotBlankIfNotNull {
+public @interface SizeJsonNullable {
 
-    String message() default "null이 아닌 경우, 공백일 수 없습니다.";
+    int min() default 0;
+
+    int max() default Integer.MAX_VALUE;
+
+    String message() default "크기가 {min} 에서 {max} 사이여야 합니다.";
+
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
-
 }

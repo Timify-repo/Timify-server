@@ -7,12 +7,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = NotBlankIfNotNullValidator.class)
+@Constraint(validatedBy = NotBlankJsonNullableValidator.class)
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NotBlankIfNotNull {
+public @interface NotBlankJsonNullable {
 
-    String message() default "null이 아닌 경우, 공백일 수 없습니다.";
+    String message() default "공백일 수 없습니다.";
 
     Class<?>[] groups() default {};
 

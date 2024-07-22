@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import timify.com.auth.annotation.AuthMember;
 import timify.com.auth.dto.AuthResponse.loginDto;
 import timify.com.common.apiPayload.ApiResponse;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
-import timify.com.member.MemberConverter;
 import timify.com.member.MemberService;
 import timify.com.member.domain.Member;
 import timify.com.member.dto.MemberRequest;
+import timify.com.member.dto.MemberRequest.memberUpdateRequest;
 import timify.com.member.dto.MemberResponse;
+import timify.com.member.dto.MemberResponse.memberInfoDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +27,7 @@ public class MemberControllerImpl implements MemberController {
 
     private final MemberService memberService;
 
+    @Override
     @PostMapping("/signin/kakao")
     public ApiResponse<loginDto> signin(
         @RequestBody @Valid MemberRequest.kakaoSigninRequest request) {
@@ -34,8 +35,9 @@ public class MemberControllerImpl implements MemberController {
         return ApiResponse.of(SuccessStatus.JOIN_SUCCESS, memberService.kakaoSignin(request));
     }
 
+    @Override
     @GetMapping
-    public ApiResponse<MemberResponse.memberInfoDto> getInfo(@AuthMember Member member) {
+    public ApiResponse<MemberResponse.memberInfoDto> getInfo(Member member) {
 
         MemberResponse.memberInfoDto response = MemberResponse.memberInfoDto.builder()
             .name(member.getName())
@@ -48,39 +50,20 @@ public class MemberControllerImpl implements MemberController {
         return ApiResponse.onSuccess(response);
     }
 
-    @PatchMapping("/name/update")
-    public ApiResponse<MemberResponse.memberNameUpdateResultDto> updateMemberName(
-        @AuthMember Member member,
-        @RequestBody @Valid MemberRequest.nameUpdateRequest request) {
-        Member updatedMember = memberService.updateMemberName(request, member);
+    @Override
+    @PatchMapping
+    public ApiResponse<memberInfoDto> updateMember(Member member,
+        memberUpdateRequest request) {
 
-        return ApiResponse.onSuccess(MemberConverter.toMemberNameUpdateResultDto(updatedMember));
-    }
+        Member updatedMember = memberService.updateMemberInfo(request, member);
+        MemberResponse.memberInfoDto response = MemberResponse.memberInfoDto.builder()
+            .name(updatedMember.getName())
+            .email(updatedMember.getEmail())
+            .job(updatedMember.getJob())
+            .gender(updatedMember.getGender())
+            .birth(updatedMember.getBirth())
+            .build();
 
-    @PatchMapping("/birth/update")
-    public ApiResponse<MemberResponse.memberBirthUpdateResultDto> updateMemberBirth(
-        @AuthMember Member member,
-        @RequestBody @Valid MemberRequest.birthUpdateRequest request) {
-        Member updatedMember = memberService.updateMemberBirth(request, member);
-
-        return ApiResponse.onSuccess(MemberConverter.toMemberBirthUpdateResultDto(updatedMember));
-    }
-
-    @PatchMapping("/job/update")
-    public ApiResponse<MemberResponse.memberJobUpdateResultDto> updateMemberJob(
-        @AuthMember Member member,
-        @RequestBody @Valid MemberRequest.jobUpdateRequest request) {
-        Member updatedMember = memberService.updateMemberJob(request, member);
-
-        return ApiResponse.onSuccess(MemberConverter.toMemberJobUpdateResultDto(updatedMember));
-    }
-    
-    @PatchMapping("/gender/update")
-    public ApiResponse<MemberResponse.memberGenderUpdateResultDto> updateMemberGender(
-        @AuthMember Member member,
-        @RequestBody @Valid MemberRequest.genderUpdateRequest request) {
-        Member updatedMember = memberService.updateMemberGender(request, member);
-
-        return ApiResponse.onSuccess(MemberConverter.toMemberGenderUpdateResultDto(updatedMember));
+        return ApiResponse.onSuccess(response);
     }
 }

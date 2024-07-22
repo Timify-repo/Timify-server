@@ -25,25 +25,10 @@ public interface MemberController {
     @Operation(summary = "개인 정보 조회 API", description = "해당 회원의 개인 정보를 조회하는 API 입니다.")
     ApiResponse<MemberResponse.memberInfoDto> getInfo(@AuthMember Member member);
 
-    @Operation(summary = "회원 이름 수정 API", description = "해당 회원의 이름을 수정하는 API 입니다.")
-    ApiResponse<MemberResponse.memberNameUpdateResultDto> updateMemberName(
+    @Operation(summary = "회원 정보 수정 API", description = "해당 회원의 이름, 생년월일, 직업, 성별을 수정하는 API 입니다.")
+    ApiResponse<MemberResponse.memberInfoDto> updateMember(
         @AuthMember Member member,
-        @RequestBody @Valid MemberRequest.nameUpdateRequest request);
-
-    @Operation(summary = "회원 생년월일 수정 API", description = "해당 회원의 생년월일을 수정하는 API 입니다.")
-    ApiResponse<MemberResponse.memberBirthUpdateResultDto> updateMemberBirth(
-        @AuthMember Member member,
-        @RequestBody @Valid MemberRequest.birthUpdateRequest request);
-
-    @Operation(summary = "회원 직업 수정 API", description = "해당 회원의 직업을 수정하는 API 입니다.")
-    ApiResponse<MemberResponse.memberJobUpdateResultDto> updateMemberJob(
-        @AuthMember Member member,
-        @RequestBody @Valid MemberRequest.jobUpdateRequest request);
-
-    @Operation(summary = "회원 성별 수정 API", description = "해당 회원의 성별을 수정하는 API 입니다.\n\n" +
-        "gender에는 \"FEMALE\"(여성), \"MALE\"(남성), \"NONE\"(선택안함) 중 하나를 보내주세요")
-    ApiResponse<MemberResponse.memberGenderUpdateResultDto> updateMemberGender(
-        @AuthMember Member member,
-        @RequestBody @Valid MemberRequest.genderUpdateRequest request);
+        @RequestBody @Valid MemberRequest.memberUpdateRequest request
+    );
 
 }
