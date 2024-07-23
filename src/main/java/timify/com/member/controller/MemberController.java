@@ -25,7 +25,12 @@ public interface MemberController {
     @Operation(summary = "개인 정보 조회 API", description = "해당 회원의 개인 정보를 조회하는 API 입니다.")
     ApiResponse<MemberResponse.memberInfoDto> getInfo(@AuthMember Member member);
 
-    @Operation(summary = "회원 정보 수정 API", description = "해당 회원의 이름, 생년월일, 직업, 성별을 수정하는 API 입니다.")
+    @Operation(summary = "회원 정보 수정 API", description = "해당 회원의 이름, 생년월일, 직업, 성별을 수정하는 API 입니다.\n\n"
+        +
+        "name: 이름을 수정하는 경우에는 길이가 1이상 30이하인 string을 입력해주세요.\n\n" +
+        "birth: 생일을 수정하는 경우에는 \"YYYY-MM-DD\" 또는 null(선택안함)을 입력해주세요.\n\n" +
+        "job: 직업을 수정하는 경우에는 길이가 1이상 50이하인 string 또는 null(선택안함)을 입력해주세요.\n\n" +
+        "gender: 성별을 수정하는 경우에는 \"MALE\", \"FEMALE\", \"NONE\"(선택안함) 중 하나를 입력해주세요.")
     ApiResponse<MemberResponse.memberInfoDto> updateMember(
         @AuthMember Member member,
         @RequestBody @Valid MemberRequest.memberUpdateRequest request

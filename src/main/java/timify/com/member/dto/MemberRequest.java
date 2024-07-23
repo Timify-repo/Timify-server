@@ -43,7 +43,7 @@ public class MemberRequest {
         JsonNullable<LocalDate> birth;
 
         @SizeJsonNullable(min = 1, max = 50)
-        @NotBlankJsonNullable // 직업을 null로 설정할 수 있으며, null이 아니라면 반드시 공백이 아니어야 하고 길이가 1이상 30이하 여야함
+        @NotBlankJsonNullable // 직업을 null로 설정할 수 있으며, null이 아니라면 반드시 공백이 아니어야 하고 길이가 1이상 50이하 여야함
         JsonNullable<String> job;
 
         Gender gender;
