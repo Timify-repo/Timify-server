@@ -32,6 +32,7 @@ public class StudyControllerImpl implements StudyController {
 
     private final StudyService studyService;
 
+    @Override
     @PostMapping("/type/insert")
     public ApiResponse<studyTypeDto> insertStudyType(
         @AuthMember Member member,
@@ -41,6 +42,7 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess(StudyConverter.toStudyTypeDto(studyType));
     }
 
+    @Override
     @GetMapping("/type")
     public ApiResponse<List<studyTypeDto>> getStudyType(@AuthMember Member member) {
         List<StudyType> studyTypeList = studyService.getStudyTypes(member);
@@ -51,6 +53,7 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess(dtoList);
     }
 
+    @Override
     @PostMapping("/type/{studyTypeId}/update")
     public ApiResponse<StudyResponse.studyTypeDto> updateStudyType(
         @AuthMember Member member,
@@ -62,6 +65,7 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess(StudyConverter.toStudyTypeDto(studyType));
     }
 
+    @Override
     @DeleteMapping("/type/{studyTypeId}/delete")
     public ApiResponse<String> deleteStudyType(
         @AuthMember Member member,
@@ -71,6 +75,7 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess("공부 분류 삭제 성공");
     }
 
+    @Override
     @PostMapping("/method/insert")
     public ApiResponse<StudyResponse.studyMethodDto> insertStudyMethod(
         @AuthMember Member member,
@@ -80,6 +85,7 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
     }
 
+    @Override
     @GetMapping("/method")
     public ApiResponse<List<StudyResponse.studyMethodDto>> getStudyMethod(
         @AuthMember Member member) {
@@ -91,6 +97,7 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess(dtoList);
     }
 
+    @Override
     @PostMapping("/method/{studyMethodId}/update")
     public ApiResponse<StudyResponse.studyMethodDto> updateStudyMethod(
         @AuthMember Member member,
@@ -102,6 +109,7 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
     }
 
+    @Override
     @DeleteMapping("/method/{studyMethodId}/delete")
     public ApiResponse<String> deleteStudyMethod(
         @AuthMember Member member,
@@ -111,6 +119,7 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess("공부 방법 삭제 성공");
     }
 
+    @Override
     @PostMapping("/place/insert")
     public ApiResponse<StudyResponse.studyPlaceDto> insertStudyPlace(
         @AuthMember Member member,
@@ -120,6 +129,7 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(studyPlace));
     }
 
+    @Override
     @GetMapping("/place")
     public ApiResponse<List<StudyResponse.studyPlaceDto>> getStudyPlace(@AuthMember Member member) {
         List<StudyPlace> studyPlaceList = studyService.getStudyPlaces(member);
@@ -130,6 +140,7 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess(dtoList);
     }
 
+    @Override
     @PostMapping("/place/{studyPlaceId}/update")
     public ApiResponse<StudyResponse.studyPlaceDto> updateStudyPlace(
         @AuthMember Member member,
@@ -141,7 +152,7 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(studyPlace));
     }
 
-
+    @Override
     @DeleteMapping("/place/{studyPlaceId}/delete")
     public ApiResponse<String> deleteStudyPlace(
         @AuthMember Member member,
