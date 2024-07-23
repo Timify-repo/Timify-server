@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,6 +34,7 @@ public class SubjectControllerImpl implements SubjectController {
 
     private final SubjectService subjectService;
 
+    @Override
     @PostMapping("/insert")
     public ApiResponse<subjectDto> insertSubject(
         @AuthMember Member member,
@@ -42,6 +44,7 @@ public class SubjectControllerImpl implements SubjectController {
         return ApiResponse.onSuccess(SubjectConverter.toSubjectDto(insertSubject));
     }
 
+    @Override
     @GetMapping()
     public ApiResponse<List<subjectDto>> getSubjectList(@AuthMember Member member,
         @RequestParam("status") String status) {
@@ -53,6 +56,7 @@ public class SubjectControllerImpl implements SubjectController {
         return ApiResponse.onSuccess(dtoList);
     }
 
+    @Override
     @DeleteMapping("/delete/{subjectId}")
     public ApiResponse<SuccessStatus> deleteSubject(@AuthMember Member member,
         @PathVariable(name = "subjectId") Long subjectId) {
@@ -61,7 +65,8 @@ public class SubjectControllerImpl implements SubjectController {
         return ApiResponse.onSuccess(SuccessStatus.SUBJECT_DELETE_SUCCESS);
     }
 
-    @PutMapping("/order/{subjectId}/{orderNum}")
+    @Override
+    @PatchMapping("/order/{subjectId}/{orderNum}")
     public ApiResponse<subjectDto> updateOrder(@AuthMember Member member,
         @PathVariable(name = "subjectId") Long subjectId,
         @PathVariable int orderNum) {
@@ -71,7 +76,8 @@ public class SubjectControllerImpl implements SubjectController {
             SubjectConverter.toSubjectDto(updateOrderSubject));
     }
 
-    @PutMapping("/insert/{subjectId}")
+    @Override
+    @PatchMapping("/insert/{subjectId}")
     public ApiResponse<subjectDto> updateTitle(@AuthMember Member member,
         @RequestBody @Valid subjectRequest request,
         @PathVariable(name = "subjectId") Long subjectId) {
@@ -81,7 +87,8 @@ public class SubjectControllerImpl implements SubjectController {
             SubjectConverter.toSubjectDto(updateTitleSubject));
     }
 
-    @PutMapping("/{subjectId}/update-status")
+    @Override
+    @PatchMapping("/{subjectId}/update-status")
     public ApiResponse<subjectDto> updateStatus(@AuthMember Member member,
         @RequestParam(name = "status") String status,
         @PathVariable(name = "subjectId") Long subjectId) {
