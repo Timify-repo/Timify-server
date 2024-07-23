@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import timify.com.auth.annotation.AuthMember;
 import timify.com.auth.dto.AuthResponse.loginDto;
 import timify.com.common.apiPayload.ApiResponse;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
 import timify.com.member.MemberService;
 import timify.com.member.domain.Member;
 import timify.com.member.dto.MemberRequest;
-import timify.com.member.dto.MemberRequest.memberUpdateRequest;
 import timify.com.member.dto.MemberResponse;
 import timify.com.member.dto.MemberResponse.memberInfoDto;
 
@@ -37,7 +37,7 @@ public class MemberControllerImpl implements MemberController {
 
     @Override
     @GetMapping
-    public ApiResponse<MemberResponse.memberInfoDto> getInfo(Member member) {
+    public ApiResponse<MemberResponse.memberInfoDto> getInfo(@AuthMember Member member) {
 
         MemberResponse.memberInfoDto response = MemberResponse.memberInfoDto.builder()
             .name(member.getName())
@@ -52,8 +52,9 @@ public class MemberControllerImpl implements MemberController {
 
     @Override
     @PatchMapping
-    public ApiResponse<memberInfoDto> updateMember(Member member,
-        memberUpdateRequest request) {
+    public ApiResponse<memberInfoDto> updateMember(
+        @AuthMember Member member,
+        @RequestBody @Valid MemberRequest.memberUpdateRequest request) {
 
         Member updatedMember = memberService.updateMemberInfo(request, member);
         MemberResponse.memberInfoDto response = MemberResponse.memberInfoDto.builder()
