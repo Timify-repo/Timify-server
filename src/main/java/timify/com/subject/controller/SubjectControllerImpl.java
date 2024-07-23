@@ -1,11 +1,10 @@
 package timify.com.subject.controller;
 
 import static timify.com.subject.dto.SubjectRequest.subjectRequest;
-import static timify.com.subject.dto.SubjectResponse.getListDto;
-import static timify.com.subject.dto.SubjectResponse.updateOrderNumDto;
-import static timify.com.subject.dto.SubjectResponse.updateTitleNameDto;
 
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,8 +20,10 @@ import timify.com.auth.annotation.AuthMember;
 import timify.com.common.apiPayload.ApiResponse;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
 import timify.com.member.domain.Member;
+import timify.com.subject.SubjectConverter;
 import timify.com.subject.SubjectService;
-import timify.com.subject.dto.SubjectResponse.subjectInfoDto;
+import timify.com.subject.domain.Subject;
+import timify.com.subject.dto.SubjectResponse.subjectDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,56 +34,60 @@ public class SubjectControllerImpl implements SubjectController {
     private final SubjectService subjectService;
 
     @PostMapping("/insert")
-    public ApiResponse<subjectInfoDto> registerSubject(
+    public ApiResponse<subjectDto> insertSubject(
         @AuthMember Member member,
         @RequestBody @Valid subjectRequest subject) {
 
-        subjectInfoDto subjectDto = subjectService.registerSubject(member, subject);
-        return ApiResponse.onSuccess(subjectDto);
+        Subject insertSubject = subjectService.insertSubject(member, subject);
+        return ApiResponse.onSuccess(SubjectConverter.toSubjectDto(insertSubject));
     }
 
     @GetMapping()
-    public ApiResponse<getListDto> activeSubjectAll(@AuthMember Member member,
+    public ApiResponse<List<subjectDto>> getSubjectList(@AuthMember Member member,
         @RequestParam("status") String status) {
 
-        getListDto activeSubjectList = subjectService.getSubjectAll(member, status);
-        return ApiResponse.onSuccess(activeSubjectList);
+        List<Subject> subjectList = subjectService.getSubjectList(member, status);
+        List<subjectDto> dtoList = subjectList.stream()
+            .map(SubjectConverter::toSubjectDto)
+            .collect(Collectors.toList());
+        return ApiResponse.onSuccess(dtoList);
     }
 
     @DeleteMapping("/delete/{subjectId}")
-    public ApiResponse<Long> deleteSubject(@AuthMember Member member,
+    public ApiResponse<SuccessStatus> deleteSubject(@AuthMember Member member,
         @PathVariable(name = "subjectId") Long subjectId) {
 
-        Long deleteId = subjectService.deleteSubject(member, subjectId);
-        return ApiResponse.of(SuccessStatus.SUBJECT_DELETE_SUCCESS, deleteId);
+        subjectService.deleteSubject(member, subjectId);
+        return ApiResponse.onSuccess(SuccessStatus.SUBJECT_DELETE_SUCCESS);
     }
 
     @PutMapping("/order/{subjectId}/{orderNum}")
-    public ApiResponse<updateOrderNumDto> changeOrder(@AuthMember Member member,
+    public ApiResponse<subjectDto> updateOrder(@AuthMember Member member,
         @PathVariable(name = "subjectId") Long subjectId,
         @PathVariable int orderNum) {
 
-        updateOrderNumDto updateOrderNumDto = subjectService.changeOrder(member, subjectId,
-            orderNum);
-        return ApiResponse.of(SuccessStatus.ORDER_CHANGE_SUCCESS, updateOrderNumDto);
+        Subject updateOrderSubject = subjectService.updateOrder(member, subjectId, orderNum);
+        return ApiResponse.of(SuccessStatus.ORDER_CHANGE_SUCCESS,
+            SubjectConverter.toSubjectDto(updateOrderSubject));
     }
 
     @PutMapping("/insert/{subjectId}")
-    public ApiResponse<updateTitleNameDto> updateTitle(@AuthMember Member member,
+    public ApiResponse<subjectDto> updateTitle(@AuthMember Member member,
         @RequestBody @Valid subjectRequest request,
         @PathVariable(name = "subjectId") Long subjectId) {
 
-        updateTitleNameDto updateTitleNameDto = subjectService.updateTitle(member, request,
-            subjectId);
-        return ApiResponse.of(SuccessStatus.TITLE_CHANGE_SUCCESS, updateTitleNameDto);
+        Subject updateTitleSubject = subjectService.updateTitle(member, request, subjectId);
+        return ApiResponse.of(SuccessStatus.TITLE_CHANGE_SUCCESS,
+            SubjectConverter.toSubjectDto(updateTitleSubject));
     }
 
     @PutMapping("/{subjectId}/update-status")
-    public ApiResponse<Long> updateStatus(@AuthMember Member member,
+    public ApiResponse<subjectDto> updateStatus(@AuthMember Member member,
         @RequestParam(name = "status") String status,
         @PathVariable(name = "subjectId") Long subjectId) {
 
-        subjectService.updateStatus(member, subjectId, status);
-        return ApiResponse.of(SuccessStatus.UPDATE_STATUS_SUCCESS, subjectId);
+        Subject updateStatusSubject = subjectService.updateStatus(member, subjectId, status);
+        return ApiResponse.of(SuccessStatus.UPDATE_STATUS_SUCCESS,
+            SubjectConverter.toSubjectDto(updateStatusSubject));
     }
 }
