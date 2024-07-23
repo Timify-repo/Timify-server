@@ -25,10 +25,12 @@ public class MemberService {
 
     @Transactional
     public AuthResponse.loginDto kakaoSignin(MemberRequest.kakaoSigninRequest request) {
-        AuthResponse.kakaoResultDto userInfo = kakaoApiService.getUserInfo(request.getAccessToken());
+        AuthResponse.kakaoResultDto userInfo = kakaoApiService.getUserInfo(
+            request.getAccessToken());
 
         // socialId와 loginType이 일치하는 사용자가 있는지 검증
-        boolean isExist = memberRepository.existsBySocialIdAndLoginType(userInfo.getSocialId(), LoginType.KAKAO);
+        boolean isExist = memberRepository.existsBySocialIdAndLoginType(userInfo.getSocialId(),
+            LoginType.KAKAO);
         if (isExist) {
             throw new MemberHandler(ErrorStatus.MEMBER_EXISTS);
         }
@@ -38,49 +40,38 @@ public class MemberService {
         memberRepository.save(member);
 
         // 회원 저장 후 자동 로그인 처리
-        String accessToken = jwtUtil.createAccessToken(member.getId(), member.getSocialId(), member.getRoleType());
-        String refreshToken = refreshTokenService.generateRefreshToken(member.getSocialId(), member.getLoginType());
+        String accessToken = jwtUtil.createAccessToken(member.getId(), member.getSocialId(),
+            member.getRoleType());
+        String refreshToken = refreshTokenService.generateRefreshToken(member.getSocialId(),
+            member.getLoginType());
 
         return AuthResponse.loginDto.builder()
-                .memberId(member.getId())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .accessTokenExpiresIn(jwtUtil.getTokenExpirationTime(accessToken))
-                .build();
-    }
-
-    @Transactional(readOnly = true)
-    public Member findMember(Long memberId) {
-        return memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+            .memberId(member.getId())
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .accessTokenExpiresIn(jwtUtil.getTokenExpirationTime(accessToken))
+            .build();
     }
 
     @Transactional
-    public Member updateMemberName(MemberRequest.nameUpdateRequest request, Member member) {
-        member.updateName(request.getNewName());
+    public Member updateMemberInfo(MemberRequest.memberUpdateRequest request, Member member) {
+        if (request.getName() != null) {
+            member.updateName(request.getName());
+        }
+
+        if (request.getGender() != null) {
+            member.updateGender(request.getGender());
+        }
+
+        if (request.getBirth() != null) {
+            member.updateBirth(request.getBirth().get());
+        }
+
+        if (request.getJob() != null) {
+            member.updateJob(request.getJob().get());
+        }
 
         return member;
     }
-
-    @Transactional
-    public Member updateMemberBirth(MemberRequest.birthUpdateRequest request, Member member) {
-        member.updateBirth(request.getBirth());
-
-        return member;
-    }
-
-    @Transactional
-    public Member updateMemberJob(MemberRequest.jobUpdateRequest request, Member member) {
-        member.updateJob(request.getNewJob());
-
-        return member;
-    }
-
-    @Transactional
-    public Member updateMemberGender(MemberRequest.genderUpdateRequest request, Member member) {
-        member.updateGender(request.getGender());
-
-        return member;
-    }
-
 
 }

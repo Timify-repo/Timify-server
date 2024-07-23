@@ -51,7 +51,7 @@ public class Member extends BaseDateTimeEntity {
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
     private Gender gender;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String job;
 
     private LocalDate birth;

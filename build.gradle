@@ -51,6 +51,10 @@ dependencies {
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // jsonnullable
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.4'
+
 }
 
 tasks.named('test') {
