@@ -44,10 +44,9 @@ public class TodoService {
     private final StudyPlaceRepository studyPlaceRepository;
 
     @Transactional
-    public Todo insertTodo(Member member, Long subjectId, @Valid todoRequest request) {
+    public Todo insertTodo(Member member, Long subjectId, todoRequest request) {
 
-        Subject subject = subjectRepository.findById(subjectId)
-            .orElseThrow(() -> new SubjectHandler(NO_SUBJECT_FOUND));
+        Subject subject = validateSubject(subjectId, member);
         validateSubjectIsActive(subject);
 
         StudyType studyType = validateStudyType(request.getStudyTypeId(), member);
@@ -76,7 +75,7 @@ public class TodoService {
     }
 
     @Transactional
-    public Todo updateTodo(Member member, Long todoId, @Valid todoRequest request) {
+    public Todo updateTodo(Member member, Long todoId, todoRequest request) {
 
         Todo updateTodo = validateTodoOwner(member, todoId);
         validateSubjectIsActive(updateTodo.getSubject());
@@ -95,7 +94,7 @@ public class TodoService {
     }
 
     @Transactional
-    public List<Todo> copyTodo(Member member, Long todoId, @Valid copyTodoRequest request) {
+    public List<Todo> copyTodo(Member member, Long todoId, copyTodoRequest request) {
 
         Todo existingTodo = validateTodoOwner(member, todoId);
         Subject subject = existingTodo.getSubject();
@@ -126,6 +125,17 @@ public class TodoService {
         if (subject.getStatus() != SubjectStatus.ACTIVE) {
             throw new TodoHandler(ErrorStatus.MOVED_SUBJECT_RESTRICTION);
         }
+    }
+
+    private Subject validateSubject(Long subjectId, Member member) {
+        Subject subject = subjectRepository.findById(subjectId)
+            .orElseThrow(() -> new SubjectHandler(NO_SUBJECT_FOUND));
+
+        if(subject.getMember() != member) {
+            throw new TodoHandler(ErrorStatus.NOT_TODO_OWNER);
+        }
+
+        return subject;
     }
 
     private StudyType validateStudyType(Long studyTypeId, Member member) {
