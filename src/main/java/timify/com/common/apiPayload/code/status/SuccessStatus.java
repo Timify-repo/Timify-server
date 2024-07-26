@@ -16,7 +16,9 @@ public enum SuccessStatus implements BaseCode {
     SUBJECT_DELETE_SUCCESS(HttpStatus.NO_CONTENT, "DELETE200", "항목 삭제 성공"),
     ORDER_CHANGE_SUCCESS(HttpStatus.OK, "ORDER200", "항목 순서 변경 성공"),
     TITLE_CHANGE_SUCCESS(HttpStatus.OK, "SUBJECT200", "항목 이름 변경 성공"),
-    UPDATE_STATUS_SUCCESS(HttpStatus.OK, "STORE201", "항목 상태 변경 성공");
+    UPDATE_STATUS_SUCCESS(HttpStatus.OK, "STORE201", "항목 상태 변경 성공"),
+
+    TODO_DELETE_SUCCESS(HttpStatus.OK, "TODO200", "할 일 삭제 성공");
 
 
     private final HttpStatus httpStatus;

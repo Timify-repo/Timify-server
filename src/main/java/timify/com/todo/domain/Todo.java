@@ -1,9 +1,9 @@
-package timify.com.domain;
+package timify.com.todo.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import timify.com.domain.StudyTime;
 import timify.com.domain.common.BaseDateTimeEntity;
-import timify.com.domain.enums.TodoStatus;
 import timify.com.member.domain.Member;
 import timify.com.study.domain.StudyMethod;
 import timify.com.study.domain.StudyPlace;
@@ -26,7 +26,7 @@ public class Todo extends BaseDateTimeEntity {
     private Long id;
 
     @Column(nullable = false, length = 200)
-    private String contents;
+    private String content;
 
     @Column(nullable = false)
     private LocalDate date;
@@ -58,4 +58,58 @@ public class Todo extends BaseDateTimeEntity {
     // studyTime 양방향 매핑
     @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL)
     private List<StudyTime> studyTimeList = new ArrayList<>();
+
+    // 연관관계 메소드
+    public void associateMember(Member member) {
+        if (this.member != null) {
+            this.member.getTodoList().remove(this);
+        }
+        this.member = member;
+        this.member.getTodoList().add(this);
+    }
+
+    // 연관관계 해제 메소드
+    public void disassociateMember(Member member) {
+        if (member != null) {
+            member.getTodoList().remove(this);
+            this.member = null;
+        }
+    }
+
+    // 연관관계 메소드
+    public void associateSubject(Subject subject) {
+        if (this.subject != null) {
+            this.subject.getTodoList().remove(this);
+        }
+        this.subject = subject;
+        this.subject.getTodoList().add(this);
+    }
+
+    // 연관관계 해제 메소드
+    public void disassociateSubject(Subject subject) {
+        if (subject != null) {
+            subject.getTodoList().remove(this);
+            this.subject = null;
+        }
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public void updateStudyType(StudyType studyType) {
+        this.studyType = studyType;
+    }
+
+    public void updateStudyMethod(StudyMethod studyMethod) {
+        this.studyMethod = studyMethod;
+    }
+
+    public void updateStudyPlace(StudyPlace studyPlace) {
+        this.studyPlace = studyPlace;
+    }
 }

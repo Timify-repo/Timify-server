@@ -7,6 +7,7 @@ import timify.com.member.domain.Member;
 
 import java.time.LocalDateTime;
 import timify.com.subject.domain.Subject;
+import timify.com.todo.domain.Todo;
 
 @Entity
 @Getter

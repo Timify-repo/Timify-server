@@ -20,7 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import timify.com.domain.StudyTime;
-import timify.com.domain.Todo;
+import timify.com.todo.domain.Todo;
 import timify.com.domain.common.BaseDateTimeEntity;
 import timify.com.member.domain.Member;
 

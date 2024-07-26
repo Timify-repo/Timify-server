@@ -1,4 +1,4 @@
-package timify.com.domain.enums;
+package timify.com.todo.domain;
 
 public enum TodoStatus {
     NOT_STARTED, // 시작 전

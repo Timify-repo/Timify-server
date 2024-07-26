@@ -59,7 +59,12 @@ public enum ErrorStatus implements BaseErrorCode {
     MAX_SUBJECT_ERROR(HttpStatus.BAD_REQUEST, "SUBJECT4000", "최대 항목 개수를 초과했습니다."),
     DUPLICATE_SUBJECT_TITLE(HttpStatus.BAD_REQUEST, "SUBJECT4001", "항목 제목이 중복되었습니다."),
     NOT_CHANGE_STATUS(HttpStatus.BAD_REQUEST, "SUBJECT4002", "항목의 상태를 변경할 수 없습니다."),
-    INVALID_STATUS(HttpStatus.BAD_REQUEST, "SUBJECT4003", "올바르지 않은 항목의 상태입니다.");
+    INVALID_STATUS(HttpStatus.BAD_REQUEST, "SUBJECT4003", "올바르지 않은 항목의 상태입니다."),
+
+    // 항목 관련
+    NO_TODO_FOUND(HttpStatus.NOT_FOUND, "TODO4040", "해당 할 일을 찾지 못하였습니다."),
+    MOVED_SUBJECT_RESTRICTION(HttpStatus.BAD_REQUEST, "TODO4040", "보관함에 이동된 항목은 삭제 및 조회만 가능합니다."),
+    NOT_TODO_OWNER(HttpStatus.BAD_REQUEST, "TODO4009", "해당 회원의 할 일이 아닙니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
