@@ -88,6 +88,4 @@ public class TodoControllerImpl implements TodoController {
 
         return ApiResponse.of(SuccessStatus._OK, copyTodoList);
     }
-
-
 }

@@ -30,5 +30,9 @@ public class TodoResponse {
         Long studyMethodId;
 
         Long studyPlaceId;
+
+        Integer time;
+
+        Integer temp;
     }
 }

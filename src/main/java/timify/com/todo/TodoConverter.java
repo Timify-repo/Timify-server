@@ -33,6 +33,8 @@ public class TodoConverter {
             .studyTypeId(todo.getStudyType().getId())
             .studyMethodId(todo.getStudyMethod().getId())
             .studyPlaceId(todo.getStudyPlace().getId())
+            .time(0)
+            .temp(0)
             .build();
     }
 }
