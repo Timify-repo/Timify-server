@@ -27,9 +27,15 @@ public class TodoResponse {
 
         Long studyTypeId;
 
+        String studyTypeTitle;
+
         Long studyMethodId;
 
+        String studyMethodTitle;
+
         Long studyPlaceId;
+
+        String studyPlaceTitle;
 
         Integer time;
 

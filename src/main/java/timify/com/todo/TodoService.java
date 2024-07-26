@@ -45,12 +45,14 @@ public class TodoService {
 
     @Transactional
     public Todo insertTodo(Member member, Long subjectId, @Valid todoRequest request) {
-        Subject subject = findSubjectById(subjectId);
+
+        Subject subject = subjectRepository.findById(subjectId)
+            .orElseThrow(() -> new SubjectHandler(NO_SUBJECT_FOUND));
         validateSubjectIsActive(subject);
 
-        StudyType studyType = validateStudyType(request.getStudyTypeId());
-        StudyMethod studyMethod = validateStudyMethod(request.getStudyMethodId());
-        StudyPlace studyPlace = validateStudyPlace(request.getStudyPlaceId());
+        StudyType studyType = validateStudyType(request.getStudyTypeId(), member);
+        StudyMethod studyMethod = validateStudyMethod(request.getStudyMethodId(), member);
+        StudyPlace studyPlace = validateStudyPlace(request.getStudyPlaceId(), member);
 
         Todo insertTodo = TodoConverter.toTodo(request, studyType, studyMethod, studyPlace);
         insertTodo.associateMember(member);
@@ -64,9 +66,9 @@ public class TodoService {
     }
 
     @Transactional
-    public void deleteTodo(Member member, Long subjectId, Long todoId) {
+    public void deleteTodo(Member member, Long todoId) {
+
         Todo deleteTodo = validateTodoOwner(member, todoId);
-        findSubjectById(subjectId);
 
         deleteTodo.disassociateMember(member);
         deleteTodo.disassociateSubject(deleteTodo.getSubject());
@@ -74,14 +76,14 @@ public class TodoService {
     }
 
     @Transactional
-    public Todo updateTodo(Member member, Long subjectId, Long todoId, @Valid todoRequest request) {
-        Todo updateTodo = validateTodoOwner(member, todoId);
-        Subject subject = findSubjectById(subjectId);
-        validateSubjectIsActive(subject);
+    public Todo updateTodo(Member member, Long todoId, @Valid todoRequest request) {
 
-        StudyType studyType = validateStudyType(request.getStudyTypeId());
-        StudyMethod studyMethod = validateStudyMethod(request.getStudyMethodId());
-        StudyPlace studyPlace = validateStudyPlace(request.getStudyPlaceId());
+        Todo updateTodo = validateTodoOwner(member, todoId);
+        validateSubjectIsActive(updateTodo.getSubject());
+
+        StudyType studyType = validateStudyType(request.getStudyTypeId(), member);
+        StudyMethod studyMethod = validateStudyMethod(request.getStudyMethodId(), member);
+        StudyPlace studyPlace = validateStudyPlace(request.getStudyPlaceId(), member);
 
         updateTodo.updateContent(request.getContent());
         updateTodo.updateDate(request.getDate());
@@ -93,10 +95,10 @@ public class TodoService {
     }
 
     @Transactional
-    public List<Todo> copyTodo(Member member, Long subjectId, Long todoId,
-        @Valid copyTodoRequest request) {
+    public List<Todo> copyTodo(Member member, Long todoId, @Valid copyTodoRequest request) {
+
         Todo existingTodo = validateTodoOwner(member, todoId);
-        Subject subject = findSubjectById(subjectId);
+        Subject subject = existingTodo.getSubject();
         validateSubjectIsActive(subject);
 
         List<Todo> copiedTodos = new ArrayList<>();
@@ -120,30 +122,43 @@ public class TodoService {
         return copiedTodos;
     }
 
-    private Subject findSubjectById(Long subjectId) {
-        return subjectRepository.findById(subjectId)
-            .orElseThrow(() -> new SubjectHandler(NO_SUBJECT_FOUND));
-    }
-
     private void validateSubjectIsActive(Subject subject) {
         if (subject.getStatus() != SubjectStatus.ACTIVE) {
             throw new TodoHandler(ErrorStatus.MOVED_SUBJECT_RESTRICTION);
         }
     }
 
-    private StudyType validateStudyType(Long studyTypeId) {
-        return studyTypeRepository.findById(studyTypeId)
+    private StudyType validateStudyType(Long studyTypeId, Member member) {
+        StudyType studyType = studyTypeRepository.findById(studyTypeId)
             .orElseThrow(() -> new TodoHandler(STUDY_TYPE_NOT_FOUND));
+
+        if (studyType.getMember() != member) {
+            throw new TodoHandler(ErrorStatus.NOT_STUDY_TYPE_OWNER);
+        }
+
+        return studyType;
     }
 
-    private StudyMethod validateStudyMethod(Long studyMethodId) {
-        return studyMethodRepository.findById(studyMethodId)
+    private StudyMethod validateStudyMethod(Long studyMethodId, Member member) {
+        StudyMethod studyMethod = studyMethodRepository.findById(studyMethodId)
             .orElseThrow(() -> new TodoHandler(STUDY_METHOD_NOT_FOUND));
+
+        if (studyMethod.getMember() != member) {
+            throw new TodoHandler(ErrorStatus.NOT_STUDY_METHOD_OWNER);
+        }
+
+        return studyMethod;
     }
 
-    private StudyPlace validateStudyPlace(Long studyPlaceId) {
-        return studyPlaceRepository.findById(studyPlaceId)
+    private StudyPlace validateStudyPlace(Long studyPlaceId, Member member) {
+        StudyPlace studyPlace = studyPlaceRepository.findById(studyPlaceId)
             .orElseThrow(() -> new TodoHandler(STUDY_PLACE_NOT_FOUND));
+
+        if (studyPlace.getMember() != member) {
+            throw new TodoHandler(ErrorStatus.NOT_STUDY_PLACE_OWNER);
+        }
+
+        return studyPlace;
     }
 
     private Todo validateTodoOwner(Member member, Long todoId) {

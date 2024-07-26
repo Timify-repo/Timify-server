@@ -31,8 +31,11 @@ public class TodoConverter {
             .status(todo.getStatus())
             .subjectId(todo.getSubject().getId())
             .studyTypeId(todo.getStudyType().getId())
+            .studyTypeTitle(todo.getStudyType().getTitle())
             .studyMethodId(todo.getStudyMethod().getId())
+            .studyMethodTitle(todo.getStudyMethod().getTitle())
             .studyPlaceId(todo.getStudyPlace().getId())
+            .studyPlaceTitle(todo.getStudyPlace().getTitle())
             .time(0)
             .temp(0)
             .build();
