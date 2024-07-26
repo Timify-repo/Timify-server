@@ -27,7 +27,7 @@ public interface TodoController {
     })
     ApiResponse<todoDto> insertTodo(
         @AuthMember Member member,
-        @RequestParam(name = "subjectId") Long subjectId,
+        @PathVariable(name = "subjectId") Long subjectId,
         @RequestBody @Valid todoRequest request);
 
 
@@ -37,7 +37,7 @@ public interface TodoController {
     })
     ApiResponse<List<todoDto>> getTodoList(
         @AuthMember Member member,
-        @RequestParam(name = "subjectId") Long subjectId);
+        @PathVariable(name = "subjectId") Long subjectId);
 
 
     @Operation(summary = "할 일 수정 API", description = "할 일 수정 API 입니다.")

@@ -30,23 +30,23 @@ import timify.com.todo.dto.TodoResponse.todoDto;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/v1/subject/todo")
+@RequestMapping("/v1/subject")
 public class TodoControllerImpl implements TodoController {
 
     private final TodoService todoService;
 
-    @PostMapping("/insert")
+    @PostMapping("/{subjectId}/todo/insert")
     public ApiResponse<todoDto> insertTodo(@AuthMember Member member,
-        @RequestParam(name = "subjectId") Long subjectId,
+        @PathVariable(name = "subjectId") Long subjectId,
         @RequestBody @Valid todoRequest request) {
 
         Todo todo = todoService.insertTodo(member, subjectId, request);
         return ApiResponse.onSuccess(TodoConverter.toTodoDto(todo));
     }
 
-    @GetMapping()
+    @GetMapping("/{subjectId}/todo")
     public ApiResponse<List<todoDto>> getTodoList(@AuthMember Member member,
-        @RequestParam(name = "subjectId") Long subjectId) {
+        @PathVariable(name = "subjectId") Long subjectId) {
 
         List<Todo> todoList = todoService.getTodoList(member, subjectId);
         List<todoDto> dtoList = todoList.stream()
@@ -56,7 +56,7 @@ public class TodoControllerImpl implements TodoController {
         return ApiResponse.onSuccess(dtoList);
     }
 
-    @PatchMapping("/update/{todoId}")
+    @PatchMapping("/todo/update/{todoId}")
     public ApiResponse<todoDto> updateTodo(@AuthMember Member member,
         @PathVariable(name = "todoId") Long todoId,
         @RequestBody @Valid todoRequest request) {
@@ -66,7 +66,7 @@ public class TodoControllerImpl implements TodoController {
         return ApiResponse.of(SuccessStatus._OK, TodoConverter.toTodoDto(updateTodo));
     }
 
-    @DeleteMapping("/{todoId}")
+    @DeleteMapping("/todo/{todoId}")
     public ApiResponse<SuccessStatus> deleteTodo(@AuthMember Member member,
         @PathVariable(name = "todoId") Long todoId) {
 
@@ -75,7 +75,7 @@ public class TodoControllerImpl implements TodoController {
         return ApiResponse.onSuccess(TODO_DELETE_SUCCESS);
     }
 
-    @PostMapping("/copy/{todoId}")
+    @PostMapping("/todo/copy/{todoId}")
     public ApiResponse<List<todoDto>> copyTodo(@AuthMember Member member,
         @PathVariable(name = "todoId") Long todoId,
         @RequestBody @Valid copyTodoRequest request) {
