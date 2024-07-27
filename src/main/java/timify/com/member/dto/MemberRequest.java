@@ -2,6 +2,7 @@ package timify.com.member.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import lombok.Getter;
@@ -22,9 +23,11 @@ public class MemberRequest {
         @NotNull
         Gender gender = Gender.NONE;
 
-        @NotBlank
+        @Size(max = 50)
+        @NotBlankIfNotNull // 직업을 null로 설정할 수 있으며, null이 아니라면 반드시 공백이 아니어야 하고 길이가 1이상 50이하 여야함
         String job;
 
+        @Past
         LocalDate birth;
 
         @NotBlank
