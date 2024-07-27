@@ -27,11 +27,7 @@ public interface SubjectController {
 
 
     @Operation(summary = "항목 조회 API", description = "항목 조회 API 입니다.")
-    @Parameters(value = {
-        @Parameter(name = "status", description = "조회할 항목들의 status 을 입력해 주세요. (active 또는 inactive)")
-    })
-    ApiResponse<List<subjectDto>> getSubjectList(@AuthMember Member member,
-        @RequestParam("status") String status);
+    ApiResponse<List<subjectDto>> getSubjectList(@AuthMember Member member);
 
 
     @Operation(summary = "항목 삭제 API", description = "항목 삭제 API 입니다.")
@@ -69,5 +65,4 @@ public interface SubjectController {
     ApiResponse<subjectDto> updateStatus(@AuthMember Member member,
         @RequestParam(name = "status") String status,
         @PathVariable(name = "subjectId") Long subjectId);
-
 }

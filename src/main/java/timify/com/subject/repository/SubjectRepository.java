@@ -8,10 +8,11 @@ import timify.com.subject.domain.SubjectStatus;
 
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
-    List<Subject> findAllByMemberAndStatus(Member member, SubjectStatus status);
+    List<Subject> findAllByMember(Member member);
+
+    List<Subject> findAllByMemberAndStatus(Member member, SubjectStatus subjectStatus);
 
     int countByMemberAndStatus(Member member, SubjectStatus status);
 
     boolean existsByMemberAndTitle(Member member, String title);
-
 }
