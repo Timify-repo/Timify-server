@@ -15,8 +15,15 @@ public class SubjectResponse {
     public static class subjectDto {
 
         Long subjectId;
+
         String title;
+
         int orderNum;
+
         SubjectStatus status;
+
+        Integer time;
+
+        Integer temp;
     }
 }

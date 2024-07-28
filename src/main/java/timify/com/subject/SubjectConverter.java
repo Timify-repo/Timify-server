@@ -23,6 +23,8 @@ public class SubjectConverter {
             .title(subject.getTitle())
             .orderNum(subject.getOrderNum())
             .status(subject.getStatus())
+            .time(0)
+            .temp(0)
             .build();
     }
 }

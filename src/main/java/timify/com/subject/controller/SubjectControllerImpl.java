@@ -46,10 +46,9 @@ public class SubjectControllerImpl implements SubjectController {
 
     @Override
     @GetMapping()
-    public ApiResponse<List<subjectDto>> getSubjectList(@AuthMember Member member,
-        @RequestParam("status") String status) {
+    public ApiResponse<List<subjectDto>> getSubjectList(@AuthMember Member member) {
 
-        List<Subject> subjectList = subjectService.getSubjectList(member, status);
+        List<Subject> subjectList = subjectService.getSubjectList(member);
         List<subjectDto> dtoList = subjectList.stream()
             .map(SubjectConverter::toSubjectDto)
             .collect(Collectors.toList());

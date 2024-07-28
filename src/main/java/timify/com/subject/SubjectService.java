@@ -44,12 +44,8 @@ public class SubjectService {
     }
 
     @Transactional(readOnly = true)
-    public List<Subject> getSubjectList(Member member, String status) {
-        SubjectStatus subjectStatus = Arrays.stream(SubjectStatus.values())
-            .filter(s -> s.name().equalsIgnoreCase(status)).findFirst()
-            .orElseThrow(() -> new SubjectHandler(ErrorStatus.INVALID_STATUS));
-
-        return subjectRepository.findAllByMemberAndStatus(member, subjectStatus)
+    public List<Subject> getSubjectList(Member member) {
+        return subjectRepository.findAllByMember(member)
             .stream()
             .sorted(Comparator.comparingInt(Subject::getOrderNum))
             .collect(Collectors.toList());
@@ -98,8 +94,7 @@ public class SubjectService {
     }
 
     @Transactional
-    public Subject updateTitle(Member member, @Valid subjectRequest request,
-        Long subjectId) {
+    public Subject updateTitle(Member member, @Valid subjectRequest request, Long subjectId) {
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
 
@@ -120,6 +115,7 @@ public class SubjectService {
 
     @Transactional
     public Subject updateStatus(Member member, Long subjectId, String status) {
+
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(ErrorStatus.NO_SUBJECT_FOUND));
 
