@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 import timify.com.common.apiPayload.code.BaseCode;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
 
@@ -16,6 +17,8 @@ import timify.com.common.apiPayload.code.status.SuccessStatus;
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public class ApiResponse<T> {
 
+    private final int httpStatusCode;
+
     @JsonPropertyOrder("isSuccess")
     private final Boolean isSuccess;
     private final String code;
@@ -24,15 +27,18 @@ public class ApiResponse<T> {
     private T result;
 
     public static <T> ApiResponse<T> onSuccess(T result) {
-        return new ApiResponse<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), result);
+        return new ApiResponse<>(HttpStatus.OK.value(), true, SuccessStatus._OK.getCode(),
+            SuccessStatus._OK.getMessage(), result);
     }
 
     public static <T> ApiResponse<T> of(BaseCode code, T result) {
-        return new ApiResponse<>(true, code.getReasonHttpStatus().getCode(), code.getReasonHttpStatus().getMessage(), result);
+        return new ApiResponse<>(code.getReasonHttpStatus().getHttpStatus().value(), true,
+            code.getReasonHttpStatus().getCode(), code.getReasonHttpStatus().getMessage(), result);
     }
 
-    public static <T> ApiResponse<T> onFailure(String code, String message, T data) {
-        return new ApiResponse<>(false, code, message, data);
+    public static <T> ApiResponse<T> onFailure(HttpStatus httpStatus, String code, String message,
+        T data) {
+        return new ApiResponse<>(httpStatus.value(), false, code, message, data);
     }
 
     @Override

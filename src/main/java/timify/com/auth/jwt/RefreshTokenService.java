@@ -1,6 +1,9 @@
 package timify.com.auth.jwt;
 
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import timify.com.auth.dto.AuthRequest;
@@ -11,8 +14,7 @@ import timify.com.member.domain.LoginType;
 import timify.com.member.domain.Member;
 import timify.com.member.repository.MemberRepository;
 
-import java.util.UUID;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
@@ -31,7 +33,11 @@ public class RefreshTokenService {
      * @return
      */
     public String generateRefreshToken(Long socialId, LoginType loginType) {
-        Member member = memberRepository.findBySocialIdAndLoginType(socialId, loginType).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findBySocialIdAndLoginType(socialId, loginType)
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        // 해당 회원의 기존 refresh token 제거
+        deleteRefreshTokenByMemberId(member.getId());
 
         String tokenString = UUID.randomUUID().toString();
         RefreshToken refreshToken = new RefreshToken(tokenString, member.getId());
@@ -52,9 +58,10 @@ public class RefreshTokenService {
         }
 
         RefreshToken refreshToken = refreshTokenRepository.findById(request.getRefreshToken())
-                .orElseThrow(() -> new AuthHandler(ErrorStatus.INVALID_REFRESH_TOKEN));
+            .orElseThrow(() -> new AuthHandler(ErrorStatus.INVALID_REFRESH_TOKEN));
 
-        Member member = memberRepository.findById(refreshToken.getMemberId()).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findById(refreshToken.getMemberId())
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 기존 refresh token 삭제 및 새로운 refresh token 발급
         deleteRefreshToken(request.getRefreshToken());
@@ -71,8 +78,19 @@ public class RefreshTokenService {
         refreshTokenRepository.deleteById(token);
     }
 
+    public void deleteRefreshTokenByMemberId(Long memberId) {
+        Optional<RefreshToken> deleteToken = refreshTokenRepository.findByMemberId(memberId);
+        if (deleteToken.isPresent()) {
+            log.info("refreshToken findByMemberId:{}", deleteToken.get().getRefreshToken());
+        } else {
+            log.info("refreshToken not found");
+        }
+        deleteToken.ifPresent(refreshTokenRepository::delete);
+    }
+
     public RefreshToken getRefreshToken(String tokenId) {
-        return refreshTokenRepository.findById(tokenId).orElseThrow(() -> new AuthHandler(ErrorStatus.INVALID_REFRESH_TOKEN));
+        return refreshTokenRepository.findById(tokenId)
+            .orElseThrow(() -> new AuthHandler(ErrorStatus.INVALID_REFRESH_TOKEN));
     }
 
 }
