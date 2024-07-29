@@ -5,7 +5,6 @@ on:
     types: [ closed ]
   workflow_dispatch: # (2).수동 실행도 가능하도록
 
-
 jobs:
   my-action:
     runs-on: ubuntu-latest
