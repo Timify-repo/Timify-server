@@ -4,15 +4,11 @@ on:
   pull_request:
     types: [ closed ]
   workflow_dispatch: # (2).수동 실행도 가능하도록
-  push:
-    branches:
-      - '**'
-
 
 jobs:
   my-action:
     runs-on: ubuntu-latest
-    # if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
 
 
     steps:
