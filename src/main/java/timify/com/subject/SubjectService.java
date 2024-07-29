@@ -5,6 +5,7 @@ import static timify.com.subject.dto.SubjectRequest.subjectRequest;
 import jakarta.validation.Valid;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -74,21 +75,22 @@ public class SubjectService {
 
         validateMember(member, subject);
 
-        List<Subject> subjects = subjectRepository.findAllByMemberAndStatus(member,
-            SubjectStatus.ACTIVE);
-
-        if (subject.getStatus() != SubjectStatus.ACTIVE) {
-            throw new SubjectHandler(ErrorStatus.NO_CHANGE_SUBJECT_PERMISSION);
-        }
+        List<Subject> subjects = subjectRepository.findAllByMemberAndStatus(member, subject.getStatus());
 
         if (newOrderNum > subjects.size() || newOrderNum < 1) {
             throw new SubjectHandler(ErrorStatus.INVALID_ORDER_NUMBER);
         }
 
-        subjects.stream().filter(s -> s.getOrderNum() == newOrderNum)
-            .forEach(s -> s.updateOrderNum(subject.getOrderNum()));
+        if (subject.getOrderNum() == newOrderNum) {
+            throw new SubjectHandler(ErrorStatus.NOT_CHANGE_ORDER_NUMBER);
+        }
 
-        subject.updateOrderNum(newOrderNum);
+        LinkedList<Subject> subjectList = new LinkedList<>(subjects);
+        subjectList.remove(subject);
+        subjectList.add(newOrderNum - 1, subject);
+
+        AtomicInteger index = new AtomicInteger(1);
+        subjectList.forEach(subj -> subj.updateOrderNum(index.getAndIncrement()));
 
         return subject;
     }
