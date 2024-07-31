@@ -56,7 +56,7 @@ public class TodoControllerImpl implements TodoController {
         return ApiResponse.onSuccess(dtoList);
     }
 
-    @PatchMapping("/todo/update/{todoId}")
+    @PatchMapping("/todo/{todoId}/update")
     public ApiResponse<todoDto> updateTodo(@AuthMember Member member,
         @PathVariable(name = "todoId") Long todoId,
         @RequestBody @Valid todoRequest request) {
@@ -66,7 +66,7 @@ public class TodoControllerImpl implements TodoController {
         return ApiResponse.of(SuccessStatus._OK, TodoConverter.toTodoDto(updateTodo));
     }
 
-    @DeleteMapping("/todo/{todoId}")
+    @DeleteMapping("/todo/{todoId}/delete")
     public ApiResponse<SuccessStatus> deleteTodo(@AuthMember Member member,
         @PathVariable(name = "todoId") Long todoId) {
 
@@ -75,7 +75,7 @@ public class TodoControllerImpl implements TodoController {
         return ApiResponse.onSuccess(TODO_DELETE_SUCCESS);
     }
 
-    @PostMapping("/todo/copy/{todoId}")
+    @PostMapping("/todo/{todoId}/copy")
     public ApiResponse<List<todoDto>> copyTodo(@AuthMember Member member,
         @PathVariable(name = "todoId") Long todoId,
         @RequestBody @Valid copyTodoRequest request) {
