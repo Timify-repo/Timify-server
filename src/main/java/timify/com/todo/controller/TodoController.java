@@ -21,9 +21,9 @@ import timify.com.todo.dto.TodoResponse.todoDto;
 @Tag(name = "Todo", description = "Todo 관련 API")
 public interface TodoController {
 
-    @Operation(summary = "할 일 등록 API", description = "할 일 등록 API 입니다.")
+    @Operation(summary = "할 일 등록 API", description = "할 일 등록 API 입니다. (studyType, studyMethod, studyPlace 를 선택 안 하는 경우, 각 ID 값에 -1 입력해 주세요.)")
     @Parameters(value = {
-        @Parameter(name = "subjectId", description = "조회할 할 일에 해당하는 subjectId 을 입력해 주세요. (active 또는 inactive)")
+        @Parameter(name = "subjectId", description = "조회할 할 일에 해당하는 subjectId 을 입력해 주세요.")
     })
     ApiResponse<todoDto> insertTodo(
         @AuthMember Member member,
@@ -33,7 +33,7 @@ public interface TodoController {
 
     @Operation(summary = "할 일 목록 조회 API", description = "할 일 목록 조회 API 입니다.")
     @Parameters(value = {
-        @Parameter(name = "subjectId", description = "조회할 할 일에 해당하는 subjectId 을 입력해 주세요. (active 또는 inactive)")
+        @Parameter(name = "subjectId", description = "조회할 할 일에 해당하는 subjectId 을 입력해 주세요.")
     })
     ApiResponse<List<todoDto>> getTodoList(
         @AuthMember Member member,
