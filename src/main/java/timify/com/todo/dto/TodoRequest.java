@@ -21,10 +21,13 @@ public class TodoRequest {
         @NotNull
         LocalDate date;
 
+        @NotNull
         Long studyTypeId;
 
+        @NotNull
         Long studyMethodId;
 
+        @NotNull
         Long studyPlaceId;
     }
 
