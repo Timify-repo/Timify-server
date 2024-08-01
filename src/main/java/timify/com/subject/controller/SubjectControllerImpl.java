@@ -56,7 +56,7 @@ public class SubjectControllerImpl implements SubjectController {
     }
 
     @Override
-    @DeleteMapping("/delete/{subjectId}")
+    @DeleteMapping("/{subjectId}/delete")
     public ApiResponse<SuccessStatus> deleteSubject(@AuthMember Member member,
         @PathVariable(name = "subjectId") Long subjectId) {
 
@@ -65,7 +65,7 @@ public class SubjectControllerImpl implements SubjectController {
     }
 
     @Override
-    @PatchMapping("/order/{subjectId}/{orderNum}")
+    @PatchMapping("/{subjectId}/order/{orderNum}")
     public ApiResponse<subjectDto> updateOrder(@AuthMember Member member,
         @PathVariable(name = "subjectId") Long subjectId,
         @PathVariable int orderNum) {
@@ -76,7 +76,7 @@ public class SubjectControllerImpl implements SubjectController {
     }
 
     @Override
-    @PatchMapping("/insert/{subjectId}")
+    @PatchMapping("/update-title/{subjectId}")
     public ApiResponse<subjectDto> updateTitle(@AuthMember Member member,
         @RequestBody @Valid subjectRequest request,
         @PathVariable(name = "subjectId") Long subjectId) {
@@ -87,7 +87,7 @@ public class SubjectControllerImpl implements SubjectController {
     }
 
     @Override
-    @PatchMapping("/{subjectId}/update-status")
+    @PatchMapping("/update-status/{subjectId}")
     public ApiResponse<subjectDto> updateStatus(@AuthMember Member member,
         @RequestParam(name = "status") String status,
         @PathVariable(name = "subjectId") Long subjectId) {

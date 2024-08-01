@@ -139,6 +139,11 @@ public class TodoService {
     }
 
     private StudyType validateStudyType(Long studyTypeId, Member member) {
+
+        if (studyTypeId == -1) {
+            return null;
+        }
+
         StudyType studyType = studyTypeRepository.findById(studyTypeId)
             .orElseThrow(() -> new TodoHandler(STUDY_TYPE_NOT_FOUND));
 
@@ -150,6 +155,11 @@ public class TodoService {
     }
 
     private StudyMethod validateStudyMethod(Long studyMethodId, Member member) {
+
+        if (studyMethodId == -1) {
+            return null;
+        }
+
         StudyMethod studyMethod = studyMethodRepository.findById(studyMethodId)
             .orElseThrow(() -> new TodoHandler(STUDY_METHOD_NOT_FOUND));
 
@@ -161,6 +171,11 @@ public class TodoService {
     }
 
     private StudyPlace validateStudyPlace(Long studyPlaceId, Member member) {
+
+        if (studyPlaceId == -1) {
+            return null;
+        }
+
         StudyPlace studyPlace = studyPlaceRepository.findById(studyPlaceId)
             .orElseThrow(() -> new TodoHandler(STUDY_PLACE_NOT_FOUND));
 
