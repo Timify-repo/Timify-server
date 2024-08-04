@@ -3,8 +3,6 @@ package timify.com.subject.controller;
 import static timify.com.subject.dto.SubjectRequest.subjectRequest;
 
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,6 +21,7 @@ import timify.com.member.domain.Member;
 import timify.com.subject.SubjectConverter;
 import timify.com.subject.SubjectService;
 import timify.com.subject.domain.Subject;
+import timify.com.subject.dto.SubjectResponse;
 import timify.com.subject.dto.SubjectResponse.subjectDto;
 
 @RestController
@@ -45,14 +43,13 @@ public class SubjectControllerImpl implements SubjectController {
     }
 
     @Override
-    @GetMapping()
-    public ApiResponse<List<subjectDto>> getSubjectList(@AuthMember Member member) {
+    @GetMapping
+    public ApiResponse<SubjectResponse.homeDto> getSubjectList(
+        @AuthMember Member member,
+        @RequestParam(name = "date") String date
+    ) {
 
-        List<Subject> subjectList = subjectService.getSubjectList(member);
-        List<subjectDto> dtoList = subjectList.stream()
-            .map(SubjectConverter::toSubjectDto)
-            .collect(Collectors.toList());
-        return ApiResponse.onSuccess(dtoList);
+        return ApiResponse.onSuccess(subjectService.getSubjectList(member, date));
     }
 
     @Override

@@ -1,11 +1,21 @@
-package timify.com.domain;
+package timify.com.studytime.domain;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import timify.com.domain.common.BaseDateTimeEntity;
 import timify.com.member.domain.Member;
-
-import java.time.LocalDateTime;
 import timify.com.subject.domain.Subject;
 import timify.com.todo.domain.Todo;
 
@@ -15,6 +25,7 @@ import timify.com.todo.domain.Todo;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class StudyTime extends BaseDateTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "study_time_id")
@@ -27,10 +38,10 @@ public class StudyTime extends BaseDateTimeEntity {
     private LocalDateTime endTime;
 
     @Column(nullable = false)
-    private Double score;
+    private double score;
 
     @Column(nullable = false)
-    private Double temp;
+    private double temp;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

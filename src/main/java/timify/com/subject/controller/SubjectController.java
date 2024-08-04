@@ -8,13 +8,13 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import timify.com.auth.annotation.AuthMember;
 import timify.com.common.apiPayload.ApiResponse;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
 import timify.com.member.domain.Member;
+import timify.com.subject.dto.SubjectResponse;
 import timify.com.subject.dto.SubjectResponse.subjectDto;
 
 @Tag(name = "Subject", description = "Subject 관련 API")
@@ -27,7 +27,11 @@ public interface SubjectController {
 
 
     @Operation(summary = "항목 조회 API", description = "항목 조회 API 입니다.")
-    ApiResponse<List<subjectDto>> getSubjectList(@AuthMember Member member);
+    @Parameters(value = {
+        @Parameter(name = "date", description = "조회할 일자를 YYYYMMDD 형식의 string으로 입력해주세요.")
+    })
+    ApiResponse<SubjectResponse.homeDto> getSubjectList(@AuthMember Member member,
+        @RequestParam(name = "date") String date);
 
 
     @Operation(summary = "항목 삭제 API", description = "항목 삭제 API 입니다.")
