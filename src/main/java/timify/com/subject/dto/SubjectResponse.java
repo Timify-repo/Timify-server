@@ -1,5 +1,7 @@
 package timify.com.subject.dto;
 
+import java.time.LocalDate;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,8 +24,27 @@ public class SubjectResponse {
 
         SubjectStatus status;
 
-        Integer time;
+        int time;
 
-        Integer temp;
+        double temp;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class homeDto {
+
+        LocalDate date;
+
+        int totalTime;
+
+        double totalTemp;
+
+        List<subjectDto> activeSubjectDtoList;
+
+        List<subjectDto> inactiveSubjectDtoList;
+
+    }
+
 }

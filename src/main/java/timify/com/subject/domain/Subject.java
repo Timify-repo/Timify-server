@@ -19,10 +19,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import timify.com.domain.StudyTime;
-import timify.com.todo.domain.Todo;
 import timify.com.domain.common.BaseDateTimeEntity;
 import timify.com.member.domain.Member;
+import timify.com.timer.domain.StudyTime;
+import timify.com.todo.domain.Todo;
 
 @Entity
 @Getter

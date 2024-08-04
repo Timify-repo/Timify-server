@@ -3,6 +3,8 @@ package timify.com.subject;
 import static timify.com.subject.dto.SubjectRequest.subjectRequest;
 
 import jakarta.validation.Valid;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -17,13 +19,19 @@ import timify.com.common.apiPayload.exception.handler.SubjectHandler;
 import timify.com.member.domain.Member;
 import timify.com.subject.domain.Subject;
 import timify.com.subject.domain.SubjectStatus;
+import timify.com.subject.dto.SubjectResponse;
+import timify.com.subject.dto.SubjectResponse.subjectDto;
 import timify.com.subject.repository.SubjectRepository;
+import timify.com.timer.domain.StudyTime;
+import timify.com.timer.repository.StudyTimeRepository;
+import timify.com.utils.DateTimeUtil;
 
 @Service
 @RequiredArgsConstructor
 public class SubjectService {
 
     private final SubjectRepository subjectRepository;
+    private final StudyTimeRepository studyTimeRepository;
     private final static long COUNT_LIMIT = 15L;
 
     @Transactional
@@ -45,11 +53,63 @@ public class SubjectService {
     }
 
     @Transactional(readOnly = true)
-    public List<Subject> getSubjectList(Member member) {
-        return subjectRepository.findAllByMember(member)
+    public SubjectResponse.homeDto getSubjectList(Member member, String date) {
+        LocalDate localDate = DateTimeUtil.stringToLocalDate(date);
+
+        List<StudyTime> studyTimeList = studyTimeRepository.findAllByTodoDateAndMember(
+            localDate, member.getId());
+
+        int totalTime = calculateTotalStudyTime(studyTimeList);
+
+        double totalTemp = studyTimeList.stream().mapToDouble(StudyTime::getTemp).sum();
+
+        // ACTIVE인 subject 조회 후 subjectDtoList 생성
+        List<Subject> activeSubjectList = subjectRepository.findAllByMemberAndStatus(member,
+            SubjectStatus.ACTIVE);
+
+        List<subjectDto> activeSubjectDtoList = activeSubjectList.stream()
+            .map(subject -> {
+
+                List<StudyTime> studyTimes = studyTimeList.stream().filter(studyTime ->
+                    studyTime.getSubject().equals(subject)).collect(Collectors.toList());
+
+                int subjectTotalTime = calculateTotalStudyTime(studyTimes);
+
+                double subjectTotalTemp = studyTimes.stream().mapToDouble(StudyTime::getTemp).sum();
+
+                return SubjectConverter.toSubjectDto(subject, subjectTotalTime, subjectTotalTemp);
+            }).collect(Collectors.toList())
             .stream()
-            .sorted(Comparator.comparingInt(Subject::getOrderNum))
+            .sorted(Comparator.comparingInt(subjectDto::getOrderNum))
             .collect(Collectors.toList());
+
+        // INACTIVE인 subject 조회 후 subjectDtoList 생성
+        List<Subject> inactiveSubjectList = subjectRepository.findInactiveSubjectsWithTodosOnDate(
+            localDate, member.getId());
+
+        List<subjectDto> inactiveSubjectDtoList = inactiveSubjectList.stream()
+            .map(subject -> {
+
+                List<StudyTime> studyTimes = studyTimeList.stream().filter(studyTime ->
+                    studyTime.getSubject().equals(subject)).collect(Collectors.toList());
+
+                int subjectTotalTime = calculateTotalStudyTime(studyTimes);
+
+                double subjectTotalTemp = studyTimes.stream().mapToDouble(StudyTime::getTemp).sum();
+
+                return SubjectConverter.toSubjectDto(subject, subjectTotalTime, subjectTotalTemp);
+            }).collect(Collectors.toList())
+            .stream()
+            .sorted(Comparator.comparingInt(subjectDto::getOrderNum))
+            .collect(Collectors.toList());
+
+        return SubjectResponse.homeDto.builder()
+            .date(localDate)
+            .totalTemp(totalTemp)
+            .totalTime(totalTime)
+            .activeSubjectDtoList(activeSubjectDtoList)
+            .inactiveSubjectDtoList(inactiveSubjectDtoList)
+            .build();
     }
 
     @Transactional
@@ -75,7 +135,8 @@ public class SubjectService {
 
         validateMember(member, subject);
 
-        List<Subject> subjects = subjectRepository.findAllByMemberAndStatus(member, subject.getStatus());
+        List<Subject> subjects = subjectRepository.findAllByMemberAndStatus(member,
+            subject.getStatus());
 
         if (newOrderNum > subjects.size() || newOrderNum < 1) {
             throw new SubjectHandler(ErrorStatus.INVALID_ORDER_NUMBER);
@@ -157,5 +218,20 @@ public class SubjectService {
         if (!subject.getMember().equals(member)) {
             throw new SubjectHandler(ErrorStatus.NO_ACCESS_SUBJECT_PERMISSION);
         }
+    }
+
+    /**
+     * studyTimeList의 총 몰입 시간을 계산해 반환
+     *
+     * @param studyTimeList
+     * @return
+     */
+    private int calculateTotalStudyTime(List<StudyTime> studyTimeList) {
+        return studyTimeList.stream().mapToInt(studyTime -> {
+            long minutes = Duration.between(studyTime.getStartTime(),
+                    studyTime.getEndTime())
+                .toMinutes();
+            return (int) minutes;
+        }).sum();
     }
 }

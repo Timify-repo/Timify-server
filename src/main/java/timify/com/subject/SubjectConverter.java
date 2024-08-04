@@ -27,4 +27,15 @@ public class SubjectConverter {
             .temp(0)
             .build();
     }
+
+    public static SubjectResponse.subjectDto toSubjectDto(Subject subject, int time, double temp) {
+        return SubjectResponse.subjectDto.builder()
+            .subjectId(subject.getId())
+            .title(subject.getTitle())
+            .orderNum(subject.getOrderNum())
+            .status(subject.getStatus())
+            .time(time)
+            .temp(temp)
+            .build();
+    }
 }
