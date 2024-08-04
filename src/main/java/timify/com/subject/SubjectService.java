@@ -17,13 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
 import timify.com.common.apiPayload.exception.handler.SubjectHandler;
 import timify.com.member.domain.Member;
+import timify.com.studytime.domain.StudyTime;
+import timify.com.studytime.repository.StudyTimeRepository;
 import timify.com.subject.domain.Subject;
 import timify.com.subject.domain.SubjectStatus;
 import timify.com.subject.dto.SubjectResponse;
 import timify.com.subject.dto.SubjectResponse.subjectDto;
 import timify.com.subject.repository.SubjectRepository;
-import timify.com.timer.domain.StudyTime;
-import timify.com.timer.repository.StudyTimeRepository;
 import timify.com.utils.DateTimeUtil;
 
 @Service

@@ -25,8 +25,8 @@ import timify.com.member.domain.Member;
 import timify.com.study.domain.StudyMethod;
 import timify.com.study.domain.StudyPlace;
 import timify.com.study.domain.StudyType;
+import timify.com.studytime.domain.StudyTime;
 import timify.com.subject.domain.Subject;
-import timify.com.timer.domain.StudyTime;
 
 @Entity
 @Getter

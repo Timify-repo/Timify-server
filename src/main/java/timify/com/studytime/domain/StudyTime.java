@@ -1,4 +1,4 @@
-package timify.com.timer.domain;
+package timify.com.studytime.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,10 +38,10 @@ public class StudyTime extends BaseDateTimeEntity {
     private LocalDateTime endTime;
 
     @Column(nullable = false)
-    private Double score;
+    private double score;
 
     @Column(nullable = false)
-    private Double temp;
+    private double temp;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

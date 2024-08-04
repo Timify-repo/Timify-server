@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import timify.com.domain.common.BaseDateTimeEntity;
 import timify.com.member.domain.Member;
-import timify.com.timer.domain.StudyTime;
+import timify.com.studytime.domain.StudyTime;
 import timify.com.todo.domain.Todo;
 
 @Entity
