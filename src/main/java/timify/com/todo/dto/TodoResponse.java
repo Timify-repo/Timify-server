@@ -1,6 +1,7 @@
 package timify.com.todo.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,8 +38,20 @@ public class TodoResponse {
 
         String studyPlaceTitle;
 
-        Integer time;
+        int time;
 
-        Integer temp;
+        double temp;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class todoListDto {
+
+        LocalDate date;
+        int totalTime;
+        double totalTemp;
+        List<todoDto> todoDtoList;
     }
 }
