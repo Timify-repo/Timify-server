@@ -38,7 +38,7 @@ public class StudyTime extends BaseDateTimeEntity {
     private LocalDateTime endTime;
 
     @Column(nullable = false)
-    private double score;
+    private StudyTimeGrade grade; // 최상
 
     @Column(nullable = false)
     private double temp;
@@ -54,4 +54,53 @@ public class StudyTime extends BaseDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id", nullable = false)
     private Todo todo;
+
+    public void associateMember(Member member) {
+        if (this.member != null) {
+            this.member.getStudyTimeList().remove(this);
+        }
+        this.member = member;
+        this.member.getStudyTimeList().add(this);
+    }
+
+    public void disassociateMember(Member member) {
+        if (member != null) {
+            member.getStudyTimeList().remove(this);
+            this.member = null;
+        }
+    }
+
+    public void associateSubject(Subject subject) {
+        if (this.subject != null) {
+            this.subject.getStudyTimeList().remove(this);
+        }
+        this.subject = subject;
+        this.subject.getStudyTimeList().add(this);
+    }
+
+    // 연관관계 해제 메소드
+    public void disassociateSubject(Subject subject) {
+        if (subject != null) {
+            subject.getStudyTimeList().remove(this);
+            this.subject = null;
+        }
+    }
+
+    public void associateTodo(Todo todo) {
+        if (this.todo != null) {
+            this.todo.getStudyTimeList().remove(this);
+        }
+        this.todo = todo;
+        this.todo.getStudyTimeList().add(this);
+    }
+
+    // 연관관계 해제 메소드
+    public void disassociateTodo(Todo todo) {
+        if (todo != null) {
+            todo.getStudyTimeList().remove(this);
+            this.todo = null;
+        }
+    }
+
+
 }

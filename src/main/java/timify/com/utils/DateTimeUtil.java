@@ -1,6 +1,8 @@
 package timify.com.utils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class DateTimeUtil {
@@ -14,6 +16,18 @@ public class DateTimeUtil {
     public static LocalDate stringToLocalDate(String dateString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         return LocalDate.parse(dateString, formatter);
+    }
+
+    /**
+     * HHMMSS 형식의 string을 LocalTime type으로 변환
+     *
+     * @param timeString
+     * @return
+     */
+    public static LocalDateTime stringToLocalTime(String timeString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmmss");
+        LocalTime localTime = LocalTime.parse(timeString, formatter);
+        return LocalDateTime.of(LocalDate.now(), localTime);
     }
 
 }
