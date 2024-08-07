@@ -49,6 +49,7 @@ public class TodoResponse {
     @AllArgsConstructor
     public static class todoListDto {
 
+        String subjectTitle;
         LocalDate date;
         int totalTime;
         double totalTemp;
