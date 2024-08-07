@@ -68,7 +68,7 @@ public class TodoService {
     public TodoResponse.todoListDto getTodoList(Member member, Long subjectId, String date) {
         LocalDate localDate = DateTimeUtil.stringToLocalDate(date);
 
-        validateSubject(subjectId, member);
+        Subject subject = validateSubject(subjectId, member);
 
         List<Todo> todoList = todoRepository.findAllByMemberAndSubjectIdAndDate(
             member, subjectId, localDate);
@@ -94,6 +94,7 @@ public class TodoService {
         }).collect(Collectors.toList());
 
         return TodoResponse.todoListDto.builder()
+            .subjectTitle(subject.getTitle())
             .date(localDate)
             .totalTime(totalTime)
             .totalTemp(totalTemp)
