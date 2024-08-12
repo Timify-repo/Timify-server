@@ -25,8 +25,6 @@ public class StudyTimeResponse {
 
         double temp;
 
-        StudyTimeGrade score;
-
-        Double status;
+        StudyTimeGrade grade;
     }
 }

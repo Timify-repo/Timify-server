@@ -27,6 +27,7 @@ public class StudyTimeConverter {
             .endTime(studyTime.getEndTime())
             .totalTime((int) Duration.between(studyTime.getStartTime(), studyTime.getEndTime()).toMinutes())
             .temp(studyTime.getTemp())
+            .grade(studyTime.getGrade())
             .build();
     }
 

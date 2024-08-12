@@ -66,7 +66,15 @@ public enum ErrorStatus implements BaseErrorCode {
     // 할 일 관련
     NO_TODO_FOUND(HttpStatus.NOT_FOUND, "TODO4040", "해당 할 일을 찾지 못하였습니다."),
     MOVED_SUBJECT_RESTRICTION(HttpStatus.BAD_REQUEST, "TODO4040", "보관함에 이동된 항목은 삭제 및 조회만 가능합니다."),
-    NOT_TODO_OWNER(HttpStatus.BAD_REQUEST, "TODO4009", "해당 회원의 할 일이 아닙니다.");
+    NOT_TODO_OWNER(HttpStatus.BAD_REQUEST, "TODO4009", "해당 회원의 할 일이 아닙니다."),
+
+    // 몰입도 관련
+
+
+    NOT_STUDY_TIME_OWNER(HttpStatus.BAD_REQUEST, "STUDY_TIME4001", "해당 회원의 몰입도 기록이 아닙니다."),
+    OVERLAP_STUDY_TIME(HttpStatus.BAD_REQUEST, "STUDY_TIME4002", "겹치는 기록 시간이 존재합니다."),
+    NOT_POSSIBLE_STUDY_TIME(HttpStatus.BAD_REQUEST, "STUDY_TIME4003", "시간 설정이 올바르지 않습니다."),
+    NO_STUDY_TIME_FOUND(HttpStatus.NOT_FOUND, "STUDY_TIME4040", "해당 몰입도 기록을 찾지 못하였습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -8,7 +8,6 @@ import static timify.com.common.apiPayload.code.status.ErrorStatus.STUDY_PLACE_N
 import static timify.com.common.apiPayload.code.status.ErrorStatus.STUDY_TYPE_NOT_FOUND;
 import static timify.com.todo.dto.TodoRequest.todoRequest;
 
-import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

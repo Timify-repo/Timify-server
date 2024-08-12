@@ -2,12 +2,15 @@ package timify.com.studytime.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -38,6 +41,7 @@ public class StudyTime extends BaseDateTimeEntity {
     private LocalDateTime endTime;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private StudyTimeGrade grade; // 최상
 
     @Column(nullable = false)
@@ -54,6 +58,22 @@ public class StudyTime extends BaseDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id", nullable = false)
     private Todo todo;
+
+    public void updateStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void updateEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void updateGrade(StudyTimeGrade grade) {
+        this.grade = grade;
+    }
+
+    public void updateTemp(double temp) {
+        this.temp = temp;
+    }
 
     public void associateMember(Member member) {
         if (this.member != null) {
@@ -91,6 +111,7 @@ public class StudyTime extends BaseDateTimeEntity {
             this.todo.getStudyTimeList().remove(this);
         }
         this.todo = todo;
+        System.out.println(this.todo.getStudyTimeList());
         this.todo.getStudyTimeList().add(this);
     }
 
