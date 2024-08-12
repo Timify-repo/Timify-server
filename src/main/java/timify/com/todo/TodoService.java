@@ -8,9 +8,11 @@ import static timify.com.common.apiPayload.code.status.ErrorStatus.STUDY_PLACE_N
 import static timify.com.common.apiPayload.code.status.ErrorStatus.STUDY_TYPE_NOT_FOUND;
 import static timify.com.todo.dto.TodoRequest.todoRequest;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +27,16 @@ import timify.com.study.domain.StudyType;
 import timify.com.study.repository.StudyMethodRepository;
 import timify.com.study.repository.StudyPlaceRepository;
 import timify.com.study.repository.StudyTypeRepository;
+import timify.com.studytime.domain.StudyTime;
 import timify.com.subject.domain.Subject;
 import timify.com.subject.domain.SubjectStatus;
 import timify.com.subject.repository.SubjectRepository;
 import timify.com.todo.domain.Todo;
 import timify.com.todo.dto.TodoRequest.copyTodoRequest;
+import timify.com.todo.dto.TodoResponse;
+import timify.com.todo.dto.TodoResponse.todoDto;
 import timify.com.todo.repository.TodoRepository;
+import timify.com.utils.DateTimeUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -59,8 +65,41 @@ public class TodoService {
     }
 
     @Transactional(readOnly = true)
-    public List<Todo> getTodoList(Member member, Long subjectId) {
-        return todoRepository.findByMemberAndSubjectId(member, subjectId);
+    public TodoResponse.todoListDto getTodoList(Member member, Long subjectId, String date) {
+        LocalDate localDate = DateTimeUtil.stringToLocalDate(date);
+
+        Subject subject = validateSubject(subjectId, member);
+
+        List<Todo> todoList = todoRepository.findAllByMemberAndSubjectIdAndDate(
+            member, subjectId, localDate);
+
+        // 총 몰입 시간과 총 몰입 온도 계산
+        int totalTime = todoList.stream()
+            .mapToInt(todo -> calculateTotalStudyTime(todo.getStudyTimeList()))
+            .sum();
+
+        double totalTemp = todoList.stream()
+            .flatMap(todo -> todo.getStudyTimeList().stream())
+            .mapToDouble(StudyTime::getTemp)
+            .sum();
+
+        List<todoDto> todoDtoList = todoList.stream().map(todo -> {
+            // 각 todo 별 몰입 시간 및 몰입 온도 계산
+            int todoTotalTime = calculateTotalStudyTime(todo.getStudyTimeList());
+            double todoTotalTemp = todo.getStudyTimeList().stream().mapToDouble(StudyTime::getTemp)
+                .sum();
+
+            return TodoConverter.toTodoDto(todo, todoTotalTime, todoTotalTemp);
+
+        }).collect(Collectors.toList());
+
+        return TodoResponse.todoListDto.builder()
+            .subjectTitle(subject.getTitle())
+            .date(localDate)
+            .totalTime(totalTime)
+            .totalTemp(totalTemp)
+            .todoDtoList(todoDtoList)
+            .build();
     }
 
     @Transactional
@@ -130,7 +169,7 @@ public class TodoService {
         Subject subject = subjectRepository.findById(subjectId)
             .orElseThrow(() -> new SubjectHandler(NO_SUBJECT_FOUND));
 
-        if(subject.getMember() != member) {
+        if (subject.getMember() != member) {
             throw new TodoHandler(ErrorStatus.NOT_TODO_OWNER);
         }
 
@@ -192,5 +231,20 @@ public class TodoService {
             throw new StudyHandler(NOT_TODO_OWNER);
         }
         return todo;
+    }
+
+    /**
+     * studyTimeList의 총 몰입 시간을 계산해 반환
+     *
+     * @param studyTimeList
+     * @return
+     */
+    private int calculateTotalStudyTime(List<StudyTime> studyTimeList) {
+        return studyTimeList.stream().mapToInt(studyTime -> {
+            long minutes = Duration.between(studyTime.getStartTime(),
+                    studyTime.getEndTime())
+                .toMinutes();
+            return (int) minutes;
+        }).sum();
     }
 }
