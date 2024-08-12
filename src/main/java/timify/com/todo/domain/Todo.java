@@ -127,4 +127,8 @@ public class Todo extends BaseDateTimeEntity {
     public void updateStudyPlace(StudyPlace studyPlace) {
         this.studyPlace = studyPlace;
     }
+
+    public void updateStatus(TodoStatus newStatus) {
+        this.status = newStatus;
+    }
 }

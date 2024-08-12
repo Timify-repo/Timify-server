@@ -67,4 +67,13 @@ public interface TodoController {
         @AuthMember Member member,
         @PathVariable(name = "todoId") Long todoId,
         @RequestBody @Valid copyTodoRequest request);
+
+    @Operation(summary = "할 일 상태 변경 API", description = "할 일 상태를 변경하는 API 입니다.")
+    @Parameters(value = {
+        @Parameter(name = "todoId", description = "복사할 할 일의 todoId를 입력해 주세요.")
+    })
+    ApiResponse<todoDto> updateTodoStatus(
+        @AuthMember Member member,
+        @PathVariable(name = "todoId") Long todoId,
+        @RequestParam(name = "status") String status);
 }
