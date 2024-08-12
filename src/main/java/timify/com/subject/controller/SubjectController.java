@@ -26,7 +26,7 @@ public interface SubjectController {
         @RequestBody @Valid subjectRequest subject);
 
 
-    @Operation(summary = "항목 조회 API", description = "항목 조회 API 입니다.")
+    @Operation(summary = "항목 목록 조회 API", description = "특정 날짜의 항목 조회 API 입니다.")
     @Parameters(value = {
         @Parameter(name = "date", description = "조회할 일자를 YYYYMMDD 형식의 string으로 입력해주세요.")
     })

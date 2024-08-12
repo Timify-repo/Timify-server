@@ -25,6 +25,7 @@ import timify.com.member.domain.Member;
 import timify.com.todo.TodoConverter;
 import timify.com.todo.TodoService;
 import timify.com.todo.domain.Todo;
+import timify.com.todo.dto.TodoResponse;
 import timify.com.todo.dto.TodoResponse.todoDto;
 
 @RestController
@@ -45,15 +46,11 @@ public class TodoControllerImpl implements TodoController {
     }
 
     @GetMapping("/{subjectId}/todo")
-    public ApiResponse<List<todoDto>> getTodoList(@AuthMember Member member,
-        @PathVariable(name = "subjectId") Long subjectId) {
+    public ApiResponse<TodoResponse.todoListDto> getTodoList(@AuthMember Member member,
+        @PathVariable(name = "subjectId") Long subjectId,
+        @RequestParam(name = "date") String date) {
 
-        List<Todo> todoList = todoService.getTodoList(member, subjectId);
-        List<todoDto> dtoList = todoList.stream()
-            .map(TodoConverter::toTodoDto)
-            .collect(Collectors.toList());
-
-        return ApiResponse.onSuccess(dtoList);
+        return ApiResponse.onSuccess(todoService.getTodoList(member, subjectId, date));
     }
 
     @PatchMapping("/todo/{todoId}/update")

@@ -11,7 +11,8 @@ import timify.com.todo.dto.TodoResponse;
 
 public class TodoConverter {
 
-    public static Todo toTodo(todoRequest request, StudyType studyType, StudyMethod studyMethod, StudyPlace studyPlace) {
+    public static Todo toTodo(todoRequest request, StudyType studyType, StudyMethod studyMethod,
+        StudyPlace studyPlace) {
 
         return Todo.builder()
             .content(request.getContent())
@@ -40,6 +41,25 @@ public class TodoConverter {
             .studyPlaceTitle(todo.getStudyPlace() != null ? todo.getStudyPlace().getTitle() : null)
             .time(0)
             .temp(0)
+            .build();
+    }
+
+    public static TodoResponse.todoDto toTodoDto(Todo todo, int totalTime, double totalTemp) {
+
+        return TodoResponse.todoDto.builder()
+            .todoId(todo.getId())
+            .content(todo.getContent())
+            .date(todo.getDate())
+            .status(todo.getStatus())
+            .subjectId(todo.getSubject().getId())
+            .studyTypeId(todo.getStudyType().getId())
+            .studyTypeTitle(todo.getStudyType().getTitle())
+            .studyMethodId(todo.getStudyMethod().getId())
+            .studyMethodTitle(todo.getStudyMethod().getTitle())
+            .studyPlaceId(todo.getStudyPlace().getId())
+            .studyPlaceTitle(todo.getStudyPlace().getTitle())
+            .time(totalTime)
+            .temp(totalTemp)
             .build();
     }
 }

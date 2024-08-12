@@ -16,6 +16,7 @@ import timify.com.auth.annotation.AuthMember;
 import timify.com.common.apiPayload.ApiResponse;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
 import timify.com.member.domain.Member;
+import timify.com.todo.dto.TodoResponse;
 import timify.com.todo.dto.TodoResponse.todoDto;
 
 @Tag(name = "Todo", description = "Todo 관련 API")
@@ -31,13 +32,15 @@ public interface TodoController {
         @RequestBody @Valid todoRequest request);
 
 
-    @Operation(summary = "할 일 목록 조회 API", description = "할 일 목록 조회 API 입니다.")
+    @Operation(summary = "할 일 목록 조회 API", description = "특정 날짜의, 특정 항목에 속한 할 일 목록 조회 API 입니다.")
     @Parameters(value = {
-        @Parameter(name = "subjectId", description = "조회할 항목에 해당하는 subjectId 을 입력해 주세요.")
+        @Parameter(name = "subjectId", description = "path variable, 조회할 항목에 해당하는 subjectId 을 입력해 주세요."),
+        @Parameter(name = "date", description = "request param, 조회할 일자를 YYYYMMDD 형식의 string으로 입력해주세요.")
     })
-    ApiResponse<List<todoDto>> getTodoList(
+    ApiResponse<TodoResponse.todoListDto> getTodoList(
         @AuthMember Member member,
-        @PathVariable(name = "subjectId") Long subjectId);
+        @PathVariable(name = "subjectId") Long subjectId,
+        @RequestParam(name = "date") String date);
 
 
     @Operation(summary = "할 일 수정 API", description = "할 일 수정 API 입니다.")
