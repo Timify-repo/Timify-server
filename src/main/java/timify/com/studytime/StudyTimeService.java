@@ -25,9 +25,7 @@ import timify.com.studytime.domain.StudyTime;
 import timify.com.studytime.domain.StudyTimeGrade;
 import timify.com.studytime.dto.StudyTimeRequest.studyTimeRequest;
 import timify.com.studytime.repository.StudyTimeRepository;
-import timify.com.todo.TodoConverter;
 import timify.com.todo.domain.Todo;
-import timify.com.todo.dto.TodoRequest.todoRequest;
 import timify.com.todo.repository.TodoRepository;
 
 @Service
@@ -45,9 +43,12 @@ public class StudyTimeService {
         LocalDateTime startTime = stringToLocalTime(request.getStartTime());
         LocalDateTime endTime = stringToLocalTime(request.getEndTime());
 
-        // 중복되는 시간 확인
-        List<StudyTime> overlappingTimes = studyTimeRepository.findByTodoAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
-            todo, endTime, startTime);
+        validateStudyTimeRange(todo, startTime, endTime);
+
+        List<StudyTime> overlappingTimes = studyTimeRepository
+            .findByMemberAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(member, endTime,
+                startTime);
+
         if (!overlappingTimes.isEmpty()) {
             throw new StudyTimeHandler(OVERLAP_STUDY_TIME);
         }
@@ -58,7 +59,7 @@ public class StudyTimeService {
         LocalTime boundaryTime = LocalTime.of(4, 0);
         LocalDateTime boundaryDateTime = LocalDateTime.of(startTime.toLocalDate(), boundaryTime);
 
-        if (endTime.isBefore(startTime)) {
+        if (isInvalidStudyTime(startTime, endTime)) {
             throw new StudyTimeHandler(NOT_POSSIBLE_STUDY_TIME);
         }
 
@@ -79,17 +80,17 @@ public class StudyTimeService {
 
         StudyTime studyTime = validateStudyTimeOwner(member, studyTimeId);
 
-        studyTime.disassociateMember(member);
-        studyTime.disassociateSubject(studyTime.getTodo().getSubject());
-        studyTime.disassociateTodo(studyTime.getTodo());
-        studyTimeRepository.delete(studyTime);
-
-        if (studyTimeRepository.countByTodo(studyTime.getTodo()) == 1) {
+        if (studyTime.getTodo().getStudyTimeList().size() == 1) {
             StudyTime firstStudyTime = studyTimeRepository.findByTodoOrderByStartTimeAsc(
                 studyTime.getTodo()).get(0);
             double newTemp = firstStudyTime.getTemp() + DEFAULT_TEMP;
             firstStudyTime.updateTemp(newTemp);
         }
+
+        studyTime.disassociateMember(member);
+        studyTime.disassociateSubject(studyTime.getTodo().getSubject());
+        studyTime.disassociateTodo(studyTime.getTodo());
+        studyTimeRepository.delete(studyTime);
     }
 
     @Transactional(readOnly = true)
@@ -98,40 +99,64 @@ public class StudyTimeService {
     }
 
     @Transactional
-    public StudyTime updateStudyTime(Member member, Long studyTimeId, studyTimeRequest request) {
+    public List<StudyTime> updateStudyTime(Member member, Long studyTimeId,
+        studyTimeRequest request) {
 
         StudyTime studyTime = validateStudyTimeOwner(member, studyTimeId);
 
         LocalDateTime startTime = stringToLocalTime(request.getStartTime());
         LocalDateTime endTime = stringToLocalTime(request.getEndTime());
 
-        if (endTime.isBefore(startTime)) {
+        validateStudyTimeRange(studyTime.getTodo(), startTime, endTime);
+
+        List<StudyTime> overlappingTimes = studyTimeRepository
+            .findByMemberAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(member, endTime,
+                startTime);
+
+        if (!overlappingTimes.isEmpty()) {
+            throw new StudyTimeHandler(OVERLAP_STUDY_TIME);
+        }
+
+        List<StudyTime> studyTimes = new ArrayList<>();
+
+        // 4 AM 기준
+        LocalTime boundaryTime = LocalTime.of(4, 0);
+        LocalDateTime boundaryDateTime = LocalDateTime.of(startTime.toLocalDate(), boundaryTime);
+
+        if (isInvalidStudyTime(startTime, endTime)) {
             throw new StudyTimeHandler(NOT_POSSIBLE_STUDY_TIME);
         }
 
-        studyTime.updateStartTime(startTime);
-        studyTime.updateEndTime(endTime);
-        studyTime.updateGrade(request.getGrade());
-        studyTime.updateTemp(updateTemp(studyTime, studyTime.getTodo(), startTime, endTime,
-            request.getGrade()));
-
-        return studyTime;
-    }
-
-    private double updateTemp(StudyTime studyTime, Todo todo, LocalDateTime startTime,
-        LocalDateTime endTime, StudyTimeGrade grade) {
-
-        int minutes = (int) Duration.between(startTime, endTime).toMinutes();
-
-        List<StudyTime> studyTimes = studyTimeRepository.findByTodoOrderByStartTimeAsc(todo);
-
-        boolean isFirstStudyTime = studyTimes.get(0).getId().equals(studyTime.getId());
-
-        if (isFirstStudyTime) {
-            return DEFAULT_TEMP + (minutes * grade.getScore());
+        // 4 AM 넘는 경우
+        if (isCrossingBoundary(startTime, endTime, boundaryDateTime)) {
+            studyTimes.add(
+                saveStudyTimePart(member, studyTime.getTodo(), startTime, boundaryDateTime,
+                    request));
+            studyTimes.add(
+                saveStudyTimePartForNextDay(member, studyTime.getTodo(), boundaryDateTime, endTime,
+                    request));
+            return studyTimes;
         }
 
-        return minutes * grade.getScore();
+        studyTimes.add(saveStudyTime(member, studyTime.getTodo(), startTime, endTime, request));
+        return studyTimes;
+    }
+
+    private void validateStudyTimeRange(Todo todo, LocalDateTime startTime, LocalDateTime endTime) {
+        LocalDate todoDate = todo.getDate();
+
+        LocalDateTime startOfDay = LocalDateTime.of(todoDate.minusDays(1), LocalTime.of(4, 0));
+        LocalDateTime endOfDay = LocalDateTime.of(todoDate.plusDays(1), LocalTime.of(4, 0));
+
+        if (startTime.isBefore(startOfDay) || endTime.isAfter(endOfDay)) {
+            throw new StudyTimeHandler(NOT_POSSIBLE_STUDY_TIME);
+        }
+    }
+
+    private boolean isInvalidStudyTime(LocalDateTime startTime, LocalDateTime endTime) {
+        LocalDateTime now = LocalDateTime.now();
+
+        return endTime.isBefore(startTime) && (startTime.isAfter(now) || endTime.isAfter(now));
     }
 
     private boolean isCrossingBoundary(LocalDateTime startTime, LocalDateTime endTime,
@@ -143,7 +168,7 @@ public class StudyTimeService {
         LocalDateTime boundaryDateTime, studyTimeRequest request) {
         StudyTime studyTime = StudyTimeConverter.toStudyTime(
             new studyTimeRequest(request.getStartTime(),
-                boundaryDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
+                boundaryDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
                 request.getGrade()),
             calculateTemp(todo, startTime, boundaryDateTime, request.getGrade()));
         studyTime.associateMember(member);
@@ -155,12 +180,24 @@ public class StudyTimeService {
     private StudyTime saveStudyTimePartForNextDay(Member member, Todo todo,
         LocalDateTime boundaryDateTime, LocalDateTime endTime, studyTimeRequest request) {
 
-        Todo nextDayTodo = findOrCreateNextDayTodo(todo,
-            boundaryDateTime.toLocalDate().plusDays(1));
-        StudyTime studyTime = StudyTimeConverter.toStudyTime(new studyTimeRequest(
-                boundaryDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
+        Todo nextDayTodo = Todo.builder()
+            .content(todo.getContent())
+            .date(boundaryDateTime.toLocalDate().plusDays(1))
+            .studyType(todo.getStudyType())
+            .studyMethod(todo.getStudyMethod())
+            .studyPlace(todo.getStudyPlace())
+            .build();
+
+        nextDayTodo.associateMember(todo.getMember());
+        nextDayTodo.associateSubject(todo.getSubject());
+        nextDayTodo = todoRepository.save(nextDayTodo);
+
+        StudyTime studyTime = StudyTimeConverter.toStudyTime(
+            new studyTimeRequest(
+                boundaryDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
                 request.getEndTime(), request.getGrade()),
-            calculateTemp(nextDayTodo, boundaryDateTime, endTime, request.getGrade()));
+            calculateTemp(nextDayTodo, boundaryDateTime, endTime, request.getGrade())
+        );
 
         studyTime.associateMember(member);
         studyTime.associateSubject(nextDayTodo.getSubject());
@@ -179,27 +216,11 @@ public class StudyTimeService {
         return studyTimeRepository.save(studyTime);
     }
 
-    private Todo findOrCreateNextDayTodo(Todo todo, LocalDate nextDayDate) {
-        return todoRepository.findByMemberAndSubjectId(todo.getMember(), todo.getSubject().getId())
-            .stream().filter(existingTodo -> existingTodo.getDate().equals(nextDayDate)).findFirst()
-            .orElseGet(() -> {
-                Todo newTodo = TodoConverter.toTodo(new todoRequest(todo.getContent(), nextDayDate,
-                        todo.getStudyType() != null ? todo.getStudyType().getId() : null,
-                        todo.getStudyMethod() != null ? todo.getStudyMethod().getId() : null,
-                        todo.getStudyPlace() != null ? todo.getStudyPlace().getId() : null),
-                    todo.getStudyType(), todo.getStudyMethod(), todo.getStudyPlace());
-
-                newTodo.associateMember(todo.getMember());
-                newTodo.associateSubject(todo.getSubject());
-                return todoRepository.save(newTodo);
-            });
-    }
-
     private double calculateTemp(Todo todo, LocalDateTime startTime, LocalDateTime endTime,
         StudyTimeGrade grade) {
 
         int minutes = (int) Duration.between(startTime, endTime).toMinutes();
-        long countStudyTime = studyTimeRepository.countByTodo(todo);
+        long countStudyTime = todo.getStudyTimeList().size();
 
         if (countStudyTime == 0) {
             return DEFAULT_TEMP + (minutes * grade.getScore());

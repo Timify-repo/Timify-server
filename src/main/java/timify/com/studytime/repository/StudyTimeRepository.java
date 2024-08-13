@@ -23,9 +23,9 @@ public interface StudyTimeRepository extends JpaRepository<StudyTime, Long> {
 
     List<StudyTime> findByMemberAndTodoId(Member member, Long todoId);
 
-    long countByTodo(Todo todo);
 
     List<StudyTime> findByTodoOrderByStartTimeAsc(Todo todo);
 
-    List<StudyTime> findByTodoAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(Todo todo, LocalDateTime endTime, LocalDateTime startTime);
+    List<StudyTime> findByMemberAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(Member member, LocalDateTime endTime,
+        LocalDateTime startTime);
 }

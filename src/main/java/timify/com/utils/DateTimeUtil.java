@@ -19,13 +19,13 @@ public class DateTimeUtil {
     }
 
     /**
-     * yyyyMMddHHmmss 형식의 string을 LocalTime type으로 변환
+     * yyyyMMddHHmm 형식의 string을 LocalTime type으로 변환
      *
      * @param dateTimeString
      * @return
      */
     public static LocalDateTime stringToLocalTime(String dateTimeString) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
         return LocalDateTime.parse(dateTimeString, formatter);
     }
 }

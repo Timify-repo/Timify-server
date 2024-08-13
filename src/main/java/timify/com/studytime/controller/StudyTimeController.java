@@ -17,7 +17,7 @@ import timify.com.studytime.dto.StudyTimeResponse.studyTimeDto;
 public interface StudyTimeController {
 
     @Operation(summary = "몰입시간 기록 API", description = "몰입시간 기록하는 API 입니다. "
-        + "등록할 시간은 yyyyMMddHHmmss 형식, Grade에는 EXCELLENT, GOOD, AVERAGE, BELOW_AVERAGE, POOR 중 하나를 입력해 주세요. )")
+        + "등록할 시간은 yyyyMMddHHmm 형식, Grade에는 EXCELLENT, GOOD, AVERAGE, BELOW_AVERAGE, POOR 중 하나를 입력해 주세요. )")
     @Parameters(value = {
         @Parameter(name = "todoId", description = "몰입도를 기록할 할 일에 해당하는 todoId 을 입력해 주세요.")
     })
@@ -34,7 +34,7 @@ public interface StudyTimeController {
 
     @Operation(summary = "몰입 시간 조회 API", description = "몰입 시간을 조회하는 API 입니다.")
     @Parameters(value = {
-        @Parameter(name = "todoId", description = "몰입도를 기록할 할 일에 해당하는 todoId 을 입력해 주세요.")
+        @Parameter(name = "todoId", description = "시간 기록을 조회할 할 일에 해당하는 todoId 을 입력해 주세요.")
     })
     ApiResponse<List<studyTimeDto>> getStudyTimes(@AuthMember Member member,
         @PathVariable Long todoId);
@@ -43,7 +43,7 @@ public interface StudyTimeController {
     @Parameters(value = {
         @Parameter(name = "studyTimeId", description = "몰입 시간을 수정할 studyTimeId 을 입력해 주세요.")
     })
-    ApiResponse<studyTimeDto> updateStudyTime(@AuthMember Member member,
+    ApiResponse<List<studyTimeDto>> updateStudyTime(@AuthMember Member member,
         @PathVariable Long studyTimeId,
         @RequestBody studyTimeRequest request);
 

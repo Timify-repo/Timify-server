@@ -85,7 +85,7 @@ public class TodoControllerImpl implements TodoController {
         return ApiResponse.of(SuccessStatus._OK, copyTodoList);
     }
 
-    @PatchMapping("/todo/{todoId}/update")
+    @PatchMapping("/todo/{todoId}/update-status")
     public ApiResponse<todoDto> updateTodoStatus(@AuthMember Member member,
         @PathVariable Long todoId,
         @RequestParam(name = "status") String status) {

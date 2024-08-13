@@ -71,7 +71,7 @@ public interface TodoController {
         @PathVariable(name = "todoId") Long todoId,
         @RequestBody @Valid copyTodoRequest request);
 
-    @Operation(summary = "할 일 상태 변경 API", description = "할 일 상태를 변경하는 API 입니다.")
+    @Operation(summary = "할 일 상태 변경 API", description = "할 일 상태를 변경하는 API 입니다. status -> NOT_STARTED(시작 전), STOP(멈춤), NOT_COMPLETED(미완료), COMPLETED(완료)")
     @Parameters(value = {
         @Parameter(name = "todoId", description = "복사할 할 일의 todoId를 입력해 주세요.")
     })

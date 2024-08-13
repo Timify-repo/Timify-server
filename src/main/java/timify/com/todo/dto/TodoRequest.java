@@ -13,7 +13,6 @@ import org.springframework.cglib.core.Local;
 public class TodoRequest {
 
     @Getter
-    @AllArgsConstructor
     @NoArgsConstructor
     public static class todoRequest {
 

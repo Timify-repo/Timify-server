@@ -68,13 +68,17 @@ public class StudyTimeControllerImpl implements StudyTimeController{
         return ApiResponse.onSuccess(dtoList);
     }
 
-    @PatchMapping("/study/{studyTimeId}/update")
-    public ApiResponse<studyTimeDto> updateStudyTime(@AuthMember Member member,
+    @PatchMapping("/study/{studyTimeId}/update-status")
+    public ApiResponse<List<studyTimeDto>> updateStudyTime(@AuthMember Member member,
         @PathVariable Long studyTimeId,
         @RequestBody studyTimeRequest request) {
 
-        StudyTime studyTime = studyTimeService.updateStudyTime(member, studyTimeId, request);
-        return ApiResponse.onSuccess(StudyTimeConverter.toStudyTimeDto(studyTime));
+        List<StudyTime> dtoList = studyTimeService.updateStudyTime(member, studyTimeId, request);
+        List<studyTimeDto> studyTimes = dtoList.stream()
+            .map(StudyTimeConverter::toStudyTimeDto)
+            .collect(Collectors.toList());
+
+        return ApiResponse.onSuccess(studyTimes);
     }
 
 
