@@ -45,6 +45,10 @@ public class StudyTimeService {
 
         validateStudyTimeRange(todo, startTime, endTime);
 
+//        if (isInvalidStudyTime(startTime, endTime)) {
+//            throw new StudyTimeHandler(NOT_POSSIBLE_STUDY_TIME);
+//        }
+
         List<StudyTime> overlappingTimes = studyTimeRepository
             .findByMemberAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(member, endTime,
                 startTime);
@@ -58,10 +62,6 @@ public class StudyTimeService {
         // 4 AM 기준 시간 설정
         LocalTime boundaryTime = LocalTime.of(4, 0);
         LocalDateTime boundaryDateTime = LocalDateTime.of(startTime.toLocalDate(), boundaryTime);
-
-        if (isInvalidStudyTime(startTime, endTime)) {
-            throw new StudyTimeHandler(NOT_POSSIBLE_STUDY_TIME);
-        }
 
         // 4 AM 넘는 경우
         if (isCrossingBoundary(startTime, endTime, boundaryDateTime)) {
@@ -109,6 +109,12 @@ public class StudyTimeService {
 
         validateStudyTimeRange(studyTime.getTodo(), startTime, endTime);
 
+        if (isInvalidStudyTime(startTime, endTime)) {
+            throw new StudyTimeHandler(NOT_POSSIBLE_STUDY_TIME);
+        }
+
+        studyTimeRepository.delete(studyTime);
+
         List<StudyTime> overlappingTimes = studyTimeRepository
             .findByMemberAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(member, endTime,
                 startTime);
@@ -122,10 +128,6 @@ public class StudyTimeService {
         // 4 AM 기준
         LocalTime boundaryTime = LocalTime.of(4, 0);
         LocalDateTime boundaryDateTime = LocalDateTime.of(startTime.toLocalDate(), boundaryTime);
-
-        if (isInvalidStudyTime(startTime, endTime)) {
-            throw new StudyTimeHandler(NOT_POSSIBLE_STUDY_TIME);
-        }
 
         // 4 AM 넘는 경우
         if (isCrossingBoundary(startTime, endTime, boundaryDateTime)) {
@@ -145,8 +147,8 @@ public class StudyTimeService {
     private void validateStudyTimeRange(Todo todo, LocalDateTime startTime, LocalDateTime endTime) {
         LocalDate todoDate = todo.getDate();
 
-        LocalDateTime startOfDay = LocalDateTime.of(todoDate.minusDays(1), LocalTime.of(4, 0));
-        LocalDateTime endOfDay = LocalDateTime.of(todoDate.plusDays(1), LocalTime.of(4, 0));
+        LocalDateTime startOfDay = LocalDateTime.of(todoDate, LocalTime.of(4, 0));
+        LocalDateTime endOfDay = LocalDateTime.of(todoDate.plusDays(2), LocalTime.of(4, 0));
 
         if (startTime.isBefore(startOfDay) || endTime.isAfter(endOfDay)) {
             throw new StudyTimeHandler(NOT_POSSIBLE_STUDY_TIME);
@@ -156,7 +158,7 @@ public class StudyTimeService {
     private boolean isInvalidStudyTime(LocalDateTime startTime, LocalDateTime endTime) {
         LocalDateTime now = LocalDateTime.now();
 
-        return endTime.isBefore(startTime) && (startTime.isAfter(now) || endTime.isAfter(now));
+        return endTime.isBefore(startTime) || (startTime.isAfter(now) || endTime.isAfter(now));
     }
 
     private boolean isCrossingBoundary(LocalDateTime startTime, LocalDateTime endTime,
@@ -182,10 +184,12 @@ public class StudyTimeService {
 
         Todo nextDayTodo = Todo.builder()
             .content(todo.getContent())
-            .date(boundaryDateTime.toLocalDate().plusDays(1))
+            .date(boundaryDateTime.toLocalDate())
             .studyType(todo.getStudyType())
             .studyMethod(todo.getStudyMethod())
             .studyPlace(todo.getStudyPlace())
+            .status(todo.getStatus())
+            .studyTimeList(new ArrayList<>())
             .build();
 
         nextDayTodo.associateMember(todo.getMember());
