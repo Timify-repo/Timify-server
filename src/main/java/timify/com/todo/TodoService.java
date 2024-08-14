@@ -11,6 +11,7 @@ import static timify.com.todo.dto.TodoRequest.todoRequest;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ import timify.com.subject.domain.Subject;
 import timify.com.subject.domain.SubjectStatus;
 import timify.com.subject.repository.SubjectRepository;
 import timify.com.todo.domain.Todo;
+import timify.com.todo.domain.TodoStatus;
 import timify.com.todo.dto.TodoRequest.copyTodoRequest;
 import timify.com.todo.dto.TodoResponse;
 import timify.com.todo.dto.TodoResponse.todoDto;
@@ -157,6 +159,24 @@ public class TodoService {
         }
 
         return copiedTodos;
+    }
+
+    @Transactional
+    public Todo updateStatus(Member member, Long todoId, String status) {
+        Todo todo = validateTodoOwner(member, todoId);
+
+        TodoStatus newStatus = Arrays.stream(TodoStatus.values())
+            .filter(s -> s.name().equalsIgnoreCase(status))
+            .findFirst()
+            .orElseThrow(() -> new TodoHandler(ErrorStatus.NOT_CHANGE_STATUS));
+
+        if(todo.getStatus() == newStatus) {
+            throw new TodoHandler(ErrorStatus.NOT_CHANGE_STATUS);
+        }
+
+        todo.updateStatus(newStatus);
+
+        return todo;
     }
 
     private void validateSubjectIsActive(Subject subject) {
