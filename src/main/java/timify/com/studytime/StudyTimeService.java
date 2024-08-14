@@ -5,6 +5,7 @@ import static timify.com.common.apiPayload.code.status.ErrorStatus.NOT_STUDY_TIM
 import static timify.com.common.apiPayload.code.status.ErrorStatus.NOT_TODO_OWNER;
 import static timify.com.common.apiPayload.code.status.ErrorStatus.NO_TODO_FOUND;
 import static timify.com.common.apiPayload.code.status.ErrorStatus.OVERLAP_STUDY_TIME;
+import static timify.com.common.apiPayload.code.status.ErrorStatus.OVER_24H_STUDY_TIME;
 import static timify.com.utils.DateTimeUtil.stringToLocalTime;
 
 import java.time.Duration;
@@ -45,9 +46,13 @@ public class StudyTimeService {
 
         validateStudyTimeRange(todo, startTime, endTime);
 
-//        if (isInvalidStudyTime(startTime, endTime)) {
-//            throw new StudyTimeHandler(NOT_POSSIBLE_STUDY_TIME);
-//        }
+        if (isInvalidStudyTime(startTime, endTime)) {
+            throw new StudyTimeHandler(NOT_POSSIBLE_STUDY_TIME);
+        }
+
+        if (Duration.between(startTime, endTime).toHours() > 24) {
+            throw new StudyTimeHandler(OVER_24H_STUDY_TIME);
+        }
 
         List<StudyTime> overlappingTimes = studyTimeRepository
             .findByMemberAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(member, endTime,
@@ -111,6 +116,10 @@ public class StudyTimeService {
 
         if (isInvalidStudyTime(startTime, endTime)) {
             throw new StudyTimeHandler(NOT_POSSIBLE_STUDY_TIME);
+        }
+
+        if (Duration.between(startTime, endTime).toHours() > 24) {
+            throw new StudyTimeHandler(OVER_24H_STUDY_TIME);
         }
 
         studyTimeRepository.delete(studyTime);
