@@ -73,7 +73,7 @@ public class SubjectControllerImpl implements SubjectController {
     }
 
     @Override
-    @PatchMapping("/update-title/{subjectId}")
+    @PatchMapping("/{subjectId}/update-title")
     public ApiResponse<subjectDto> updateTitle(@AuthMember Member member,
         @RequestBody @Valid subjectRequest request,
         @PathVariable(name = "subjectId") Long subjectId) {
@@ -84,7 +84,7 @@ public class SubjectControllerImpl implements SubjectController {
     }
 
     @Override
-    @PatchMapping("/update-status/{subjectId}")
+    @PatchMapping("/{subjectId}/update-status")
     public ApiResponse<subjectDto> updateStatus(@AuthMember Member member,
         @RequestParam(name = "status") String status,
         @PathVariable(name = "subjectId") Long subjectId) {
