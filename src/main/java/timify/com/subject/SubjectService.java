@@ -32,13 +32,9 @@ public class SubjectService {
 
     private final SubjectRepository subjectRepository;
     private final StudyTimeRepository studyTimeRepository;
-    private final static long COUNT_LIMIT = 15L;
 
     @Transactional
     public Subject insertSubject(Member member, @Valid subjectRequest request) {
-        if (subjectRepository.countByMemberAndStatus(member, SubjectStatus.ACTIVE) >= COUNT_LIMIT) {
-            throw new SubjectHandler(ErrorStatus.MAX_SUBJECT_ERROR);
-        }
 
         if (subjectRepository.existsByMemberAndTitle(member, request.getTitle())) {
             throw new SubjectHandler(ErrorStatus.DUPLICATE_SUBJECT_TITLE);
