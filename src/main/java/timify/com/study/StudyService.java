@@ -147,20 +147,37 @@ public class StudyService {
                 CategoryStatus.ACTIVE)
             .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_METHOD_NOT_FOUND));
 
-        // 해당 studyMethod가 member의 것이 맞는지 검증
-        if (!studyMethod.getMember().equals(member)) {
-            throw new StudyHandler(ErrorStatus.NOT_STUDY_METHOD_OWNER);
+        // title을 수정하는 경우
+        if (request.getTitle() != null) {
+            // 해당 studyMethod가 member의 것이 맞는지 검증
+            if (!studyMethod.getMember().equals(member)) {
+                throw new StudyHandler(ErrorStatus.NOT_STUDY_METHOD_OWNER);
+            }
+
+            // 활성화된 공부 방법과의 이름 중복 여부 검증
+            boolean exists = studyMethodRepository.existsByMemberAndTitleAndStatus(member,
+                request.getTitle(), CategoryStatus.ACTIVE);
+            if (exists) {
+                throw new StudyHandler(ErrorStatus.STUDY_METHOD_ALREADY_EXISTS);
+            }
+
+            // studyMethod의 이름 수정
+            studyMethod.setTitle(request.getTitle());
         }
 
-        // 활성화된 공부 방법과의 이름 중복 여부 검증
-        boolean exists = studyMethodRepository.existsByMemberAndTitleAndStatus(member,
-            request.getTitle(), CategoryStatus.ACTIVE);
-        if (exists) {
-            throw new StudyHandler(ErrorStatus.STUDY_METHOD_ALREADY_EXISTS);
-        }
+        // default 여부를 수정하는 경우
+        if (request.getIsDefault() != null) {
+            List<StudyMethod> defaultStudyMethod = member.getStudyMethodList().stream()
+                .filter(StudyMethod::isDefault).collect(Collectors.toList());
+            if (!defaultStudyMethod.isEmpty()) { // 기존 default 값이 존재하는 경우
 
-        // studyMethod의 이름 수정
-        studyMethod.setTitle(request.getTitle());
+                // 기존 default 값 해제
+                defaultStudyMethod.get(0).updateIsDefault(false);
+
+                // 요청한 studyMethod를 default true로 변경
+                studyMethod.updateIsDefault(true);
+            }
+        }
 
         return studyMethod;
     }

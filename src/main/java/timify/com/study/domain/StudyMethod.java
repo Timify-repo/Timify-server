@@ -59,4 +59,8 @@ public class StudyMethod extends BaseDateTimeEntity {
         this.member.getStudyMethodList().add(this);
     }
 
+    public void updateIsDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
 }

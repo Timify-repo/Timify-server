@@ -99,7 +99,7 @@ public class StudyControllerImpl implements StudyController {
     }
 
     @Override
-    @PostMapping("/method/{studyMethodId}/update")
+    @PatchMapping("/method/{studyMethodId}/update")
     public ApiResponse<StudyResponse.studyMethodDto> updateStudyMethod(
         @AuthMember Member member,
         @RequestBody @Valid StudyRequest.studyMethodRequest request,
