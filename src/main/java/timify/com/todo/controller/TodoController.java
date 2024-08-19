@@ -79,4 +79,13 @@ public interface TodoController {
         @AuthMember Member member,
         @PathVariable(name = "todoId") Long todoId,
         @RequestParam(name = "status") String status);
+
+    @Operation(summary = "할 일 이동 API", description = "할 일을 다른 날짜로 이동하는 API 입니다.")
+    @Parameters(value = {
+        @Parameter(name = "todoId", description = "이동할 할 일의 todoId를 입력해 주세요. date는 YYYYMMDD 형식으로 입력해 주세요.")
+    })
+    ApiResponse<todoDto> moveTodo(
+        @AuthMember Member member,
+        @PathVariable(name = "todoId") Long todoId,
+        @RequestParam(name = "date") String date);
 }

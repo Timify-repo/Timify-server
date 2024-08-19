@@ -59,18 +59,6 @@ public class StudyTime extends BaseDateTimeEntity {
     @JoinColumn(name = "todo_id", nullable = false)
     private Todo todo;
 
-    public void updateStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public void updateEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public void updateGrade(StudyTimeGrade grade) {
-        this.grade = grade;
-    }
-
     public void updateTemp(double temp) {
         this.temp = temp;
     }
@@ -122,6 +110,4 @@ public class StudyTime extends BaseDateTimeEntity {
             this.todo = null;
         }
     }
-
-
 }

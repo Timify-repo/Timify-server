@@ -37,15 +37,15 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 공부 분류, 방법, 장소 관련 에러
     STUDY_TYPE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "STUDY4001", "이미 존재하는 공부 분류 이름 입니다."),
-    STUDY_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY4002", "공부 분류를 찾을 수 없습니다."),
+    STUDY_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY4002", "해당하는 공부 분류가 존재하지 않습니다."),
     NOT_STUDY_TYPE_OWNER(HttpStatus.BAD_REQUEST, "STUDY4003", "해당 회원의 공부 분류가 아닙니다."),
 
     STUDY_METHOD_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "STUDY4004", "이미 존재하는 공부 방법 이름 입니다."),
-    STUDY_METHOD_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY4005", "공부 방법을 찾을 수 없습니다."),
+    STUDY_METHOD_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY4005", "해당하는 공부 방법이 존재하지 않습니다."),
     NOT_STUDY_METHOD_OWNER(HttpStatus.BAD_REQUEST, "STUDY4006", "해당 회원의 공부 방법이 아닙니다."),
 
     STUDY_PLACE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "STUDY4007", "이미 존재하는 공부 방법 이름 입니다."),
-    STUDY_PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY4008", "공부 방법을 찾을 수 없습니다."),
+    STUDY_PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY4008", "해당하는 공부 장소가 존재하지 않습니다."),
     NOT_STUDY_PLACE_OWNER(HttpStatus.BAD_REQUEST, "STUDY4009", "해당 회원의 공부 방법이 아닙니다."),
 
     MAX_STUDY_ERROR(HttpStatus.BAD_REQUEST, "STUDY4010", "최대 등록 개수를 초과했습니다."),
@@ -66,6 +66,7 @@ public enum ErrorStatus implements BaseErrorCode {
     // 할 일 관련
     NO_TODO_FOUND(HttpStatus.NOT_FOUND, "TODO4040", "해당 할 일을 찾지 못하였습니다."),
     MOVED_SUBJECT_RESTRICTION(HttpStatus.BAD_REQUEST, "TODO4040", "보관함에 이동된 항목은 삭제 및 조회만 가능합니다."),
+    NOT_CHANGE_DATE(HttpStatus.BAD_REQUEST, "TODO4040", "해당 날짜는 기존 날짜와 동일합니다.."),
     NOT_TODO_OWNER(HttpStatus.BAD_REQUEST, "TODO4009", "해당 회원의 할 일이 아닙니다."),
 
     // 몰입도 관련
