@@ -131,4 +131,9 @@ public class Todo extends BaseDateTimeEntity {
     public void updateStatus(TodoStatus newStatus) {
         this.status = newStatus;
     }
+
+    public void updateDateAndClearStudyTime(LocalDate date) {
+        this.date = date;
+        this.studyTimeList.clear();
+    }
 }

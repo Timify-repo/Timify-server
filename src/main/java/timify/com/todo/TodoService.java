@@ -7,6 +7,7 @@ import static timify.com.common.apiPayload.code.status.ErrorStatus.STUDY_METHOD_
 import static timify.com.common.apiPayload.code.status.ErrorStatus.STUDY_PLACE_NOT_FOUND;
 import static timify.com.common.apiPayload.code.status.ErrorStatus.STUDY_TYPE_NOT_FOUND;
 import static timify.com.todo.dto.TodoRequest.todoRequest;
+import static timify.com.utils.DateTimeUtil.stringToLocalDate;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -68,7 +69,7 @@ public class TodoService {
 
     @Transactional(readOnly = true)
     public TodoResponse.todoListDto getTodoList(Member member, Long subjectId, String date) {
-        LocalDate localDate = DateTimeUtil.stringToLocalDate(date);
+        LocalDate localDate = stringToLocalDate(date);
 
         Subject subject = validateSubject(subjectId, member);
 
@@ -176,6 +177,19 @@ public class TodoService {
 
         todo.updateStatus(newStatus);
 
+        return todo;
+    }
+
+    @Transactional
+    public Todo moveTodo(Member member, Long todoId, String date) {
+        Todo todo = validateTodoOwner(member, todoId);
+        LocalDate localDate = stringToLocalDate(date);
+
+        if(todo.getDate().equals(localDate)) {
+            throw new TodoHandler(ErrorStatus.NOT_CHANGE_DATE);
+        }
+
+        todo.updateDateAndClearStudyTime(localDate);
         return todo;
     }
 
