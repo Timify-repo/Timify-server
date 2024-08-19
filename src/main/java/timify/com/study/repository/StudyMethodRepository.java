@@ -1,14 +1,13 @@
 package timify.com.study.repository;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import timify.com.member.domain.Member;
 import timify.com.study.domain.CategoryStatus;
 import timify.com.study.domain.StudyMethod;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface StudyMethodRepository extends JpaRepository<StudyMethod, Long> {
 
@@ -41,6 +40,8 @@ public interface StudyMethodRepository extends JpaRepository<StudyMethod, Long> 
     WHERE member_id = ? AND status = ?;
      */
     @Query("SELECT COUNT(sm) FROM StudyMethod sm WHERE sm.member = :member AND sm.status = :status")
-    long countByMemberAndStatus(@Param("member") Member member, @Param("status") CategoryStatus status);
+    long countByMemberAndStatus(@Param("member") Member member,
+        @Param("status") CategoryStatus status);
 
+    List<StudyMethod> findAllByMember(Member member);
 }
