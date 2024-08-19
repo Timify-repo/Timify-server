@@ -59,4 +59,8 @@ public class StudyType extends BaseDateTimeEntity {
         this.member.getStudyTypeList().add(this);
     }
 
+    public void updateIsDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
 }
