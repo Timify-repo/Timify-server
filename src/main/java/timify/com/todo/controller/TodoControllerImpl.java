@@ -93,4 +93,13 @@ public class TodoControllerImpl implements TodoController {
         Todo todo = todoService.updateStatus(member, todoId, status);
         return ApiResponse.onSuccess(TodoConverter.toTodoDto(todo));
     }
+
+    @PatchMapping("/todo/{todoId}/move")
+    public ApiResponse<todoDto> moveTodo(@AuthMember Member member,
+        @PathVariable Long todoId,
+        @RequestParam(name = "date") String date) {
+
+        Todo todo = todoService.moveTodo(member, todoId, date);
+        return ApiResponse.onSuccess(TodoConverter.toTodoDto(todo));
+    }
 }

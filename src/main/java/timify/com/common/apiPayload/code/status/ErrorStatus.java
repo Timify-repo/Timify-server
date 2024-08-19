@@ -66,6 +66,7 @@ public enum ErrorStatus implements BaseErrorCode {
     // 할 일 관련
     NO_TODO_FOUND(HttpStatus.NOT_FOUND, "TODO4040", "해당 할 일을 찾지 못하였습니다."),
     MOVED_SUBJECT_RESTRICTION(HttpStatus.BAD_REQUEST, "TODO4040", "보관함에 이동된 항목은 삭제 및 조회만 가능합니다."),
+    NOT_CHANGE_DATE(HttpStatus.BAD_REQUEST, "TODO4040", "해당 날짜는 기존 날짜와 동일합니다.."),
     NOT_TODO_OWNER(HttpStatus.BAD_REQUEST, "TODO4009", "해당 회원의 할 일이 아닙니다."),
 
     // 몰입도 관련
