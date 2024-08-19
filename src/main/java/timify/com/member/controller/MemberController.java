@@ -36,4 +36,7 @@ public interface MemberController {
         @RequestBody @Valid MemberRequest.memberUpdateRequest request
     );
 
+    @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴 API 입니다.")
+    ApiResponse<String> deleteMember(@AuthMember Member member);
+
 }

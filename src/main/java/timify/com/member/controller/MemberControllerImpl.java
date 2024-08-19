@@ -3,6 +3,7 @@ package timify.com.member.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,5 +67,13 @@ public class MemberControllerImpl implements MemberController {
             .build();
 
         return ApiResponse.onSuccess(response);
+    }
+
+    @Override
+    @DeleteMapping("/signout")
+    public ApiResponse<String> deleteMember(@AuthMember Member member) {
+        memberService.deleteMember(member);
+
+        return ApiResponse.onSuccess("회원 탈퇴 성공");
     }
 }

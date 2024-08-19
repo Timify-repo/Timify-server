@@ -71,7 +71,7 @@ public class Todo extends BaseDateTimeEntity {
     private StudyPlace studyPlace;
 
     // studyTime 양방향 매핑
-    @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyTime> studyTimeList = new ArrayList<>();
 
     // 연관관계 메소드

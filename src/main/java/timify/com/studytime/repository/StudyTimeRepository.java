@@ -3,7 +3,6 @@ package timify.com.studytime.repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,6 +25,9 @@ public interface StudyTimeRepository extends JpaRepository<StudyTime, Long> {
 
     List<StudyTime> findByTodoOrderByStartTimeAsc(Todo todo);
 
-    List<StudyTime> findByMemberAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(Member member, LocalDateTime endTime,
+    List<StudyTime> findByMemberAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(Member member,
+        LocalDateTime endTime,
         LocalDateTime startTime);
+
+    List<StudyTime> findAllByMember(Member member);
 }

@@ -1,5 +1,6 @@
 package timify.com.member;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,18 @@ import timify.com.member.domain.LoginType;
 import timify.com.member.domain.Member;
 import timify.com.member.dto.MemberRequest;
 import timify.com.member.repository.MemberRepository;
+import timify.com.study.domain.StudyMethod;
+import timify.com.study.domain.StudyPlace;
+import timify.com.study.domain.StudyType;
+import timify.com.study.repository.StudyMethodRepository;
+import timify.com.study.repository.StudyPlaceRepository;
+import timify.com.study.repository.StudyTypeRepository;
+import timify.com.studytime.domain.StudyTime;
+import timify.com.studytime.repository.StudyTimeRepository;
+import timify.com.subject.domain.Subject;
+import timify.com.subject.repository.SubjectRepository;
+import timify.com.todo.domain.Todo;
+import timify.com.todo.repository.TodoRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +35,14 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final KakaoApiService kakaoApiService;
     private final RefreshTokenService refreshTokenService;
+
+    private final StudyTimeRepository studyTimeRepository;
+    private final TodoRepository todoRepository;
+    private final SubjectRepository subjectRepository;
+    private final StudyPlaceRepository studyPlaceRepository;
+    private final StudyMethodRepository studyMethodRepository;
+    private final StudyTypeRepository studyTypeRepository;
+
 
     @Transactional
     public AuthResponse.loginDto kakaoSignin(MemberRequest.kakaoSigninRequest request) {
@@ -72,6 +93,52 @@ public class MemberService {
         }
 
         return member;
+    }
+
+    @Transactional
+    public void deleteMember(Member member) {
+
+        // studyTime 데이터 삭제
+        List<StudyTime> studyTimeList = studyTimeRepository.findAllByMember(member);
+        if (!studyTimeList.isEmpty()) {
+            studyTimeRepository.deleteAllInBatch(studyTimeList);
+
+        }
+
+        // todo 데이터 삭제
+        List<Todo> todoList = todoRepository.findAllByMember(member);
+        if (!todoList.isEmpty()) {
+            todoRepository.deleteAllInBatch(todoList);
+
+        }
+
+        // subject 데이터 삭제
+        List<Subject> subjectList = subjectRepository.findAllByMember(member);
+        if (!subjectList.isEmpty()) {
+            subjectRepository.deleteAllInBatch(subjectList);
+        }
+
+        // studyMethod, studyType, studyPlace 데이터 삭제
+        List<StudyMethod> studyMethodList = studyMethodRepository.findAllByMember(member);
+        List<StudyType> studyTypeList = studyTypeRepository.findAllByMember(member);
+        List<StudyPlace> studyPlaceList = studyPlaceRepository.findAllByMember(member);
+
+        if (!studyMethodList.isEmpty()) {
+            studyMethodRepository.deleteAllInBatch(studyMethodList);
+        }
+
+        if (!studyTypeList.isEmpty()) {
+            studyTypeRepository.deleteAllInBatch(studyTypeList);
+
+        }
+
+        if (!studyPlaceList.isEmpty()) {
+            studyPlaceRepository.deleteAllInBatch(studyPlaceList);
+        }
+
+        // Member 엔티티 삭제
+        memberRepository.delete(member);
+
     }
 
 }
