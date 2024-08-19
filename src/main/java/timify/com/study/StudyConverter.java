@@ -22,6 +22,7 @@ public class StudyConverter {
             .studyTypeId(studyType.getId())
             .order(studyType.getOrderNum())
             .studyTypeTitle(studyType.getTitle())
+            .isDefault(studyType.isDefault())
             .build();
     }
 
@@ -39,6 +40,7 @@ public class StudyConverter {
             .studyMethodId(studyMethod.getId())
             .order(studyMethod.getOrderNum())
             .studyMethodTitle(studyMethod.getTitle())
+            .isDefault(studyMethod.isDefault())
             .build();
     }
 
@@ -56,6 +58,7 @@ public class StudyConverter {
             .studyPlaceId(studyPlace.getId())
             .order(studyPlace.getOrderNum())
             .studyPlaceTitle(studyPlace.getTitle())
+            .isDefault(studyPlace.isDefault())
             .build();
     }
 }
