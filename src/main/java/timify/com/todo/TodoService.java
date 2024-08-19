@@ -189,7 +189,7 @@ public class TodoService {
             throw new TodoHandler(ErrorStatus.NOT_CHANGE_DATE);
         }
 
-        todo.updateDate(localDate);
+        todo.updateDateAndClearStudyTime(localDate);
         return todo;
     }
 
