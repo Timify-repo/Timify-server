@@ -142,7 +142,7 @@ public class StudyControllerImpl implements StudyController {
     }
 
     @Override
-    @PostMapping("/place/{studyPlaceId}/update")
+    @PatchMapping("/place/{studyPlaceId}/update")
     public ApiResponse<StudyResponse.studyPlaceDto> updateStudyPlace(
         @AuthMember Member member,
         @RequestBody @Valid StudyRequest.studyPlaceRequest request,

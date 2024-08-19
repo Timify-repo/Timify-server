@@ -59,4 +59,8 @@ public class StudyPlace extends BaseDateTimeEntity {
         this.member.getStudyPlaceList().add(this);
     }
 
+    public void updateIsDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
 }
