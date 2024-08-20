@@ -3,6 +3,7 @@ package timify.com.study;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
@@ -17,6 +18,7 @@ import timify.com.study.repository.StudyMethodRepository;
 import timify.com.study.repository.StudyPlaceRepository;
 import timify.com.study.repository.StudyTypeRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StudyService {
@@ -91,6 +93,8 @@ public class StudyService {
                 defaultStudyType.get(0).updateIsDefault(false);
 
                 // 요청한 studyType을 default true로 변경
+                studyType.updateIsDefault(true);
+            } else {
                 studyType.updateIsDefault(true);
             }
         }
@@ -167,6 +171,7 @@ public class StudyService {
 
         // default 여부를 수정하는 경우
         if (request.getIsDefault() != null) {
+
             List<StudyMethod> defaultStudyMethod = member.getStudyMethodList().stream()
                 .filter(StudyMethod::isDefault).collect(Collectors.toList());
             if (!defaultStudyMethod.isEmpty()) { // 기존 default 값이 존재하는 경우
@@ -175,6 +180,8 @@ public class StudyService {
                 defaultStudyMethod.get(0).updateIsDefault(false);
 
                 // 요청한 studyMethod를 default true로 변경
+                studyMethod.updateIsDefault(true);
+            } else {
                 studyMethod.updateIsDefault(true);
             }
         }
@@ -259,6 +266,8 @@ public class StudyService {
                 defaultStudyPlace.get(0).updateIsDefault(false);
 
                 // 요청한 studyMethod를 default true로 변경
+                studyPlace.updateIsDefault(true);
+            } else {
                 studyPlace.updateIsDefault(true);
             }
         }

@@ -1,5 +1,6 @@
 package timify.com.member;
 
+import java.util.ArrayList;
 import timify.com.auth.dto.AuthResponse;
 import timify.com.member.domain.LoginType;
 import timify.com.member.domain.Member;
@@ -22,6 +23,9 @@ public class MemberConverter {
             .socialId(userInfo.getSocialId())
             .loginType(LoginType.KAKAO)
             .status(MemberStatus.ACTIVE)
+            .studyMethodList(new ArrayList<>())
+            .studyPlaceList(new ArrayList<>())
+            .studyTypeList(new ArrayList<>())
             .build();
     }
 }
