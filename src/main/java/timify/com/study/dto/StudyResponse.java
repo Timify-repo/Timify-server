@@ -16,6 +16,7 @@ public class StudyResponse {
         Long studyTypeId;
         Integer order;
         String studyTypeTitle;
+        Boolean isDefault;
     }
 
     @Builder
@@ -27,6 +28,7 @@ public class StudyResponse {
         Long studyMethodId;
         Integer order;
         String studyMethodTitle;
+        Boolean isDefault;
     }
 
     @Builder
@@ -38,5 +40,6 @@ public class StudyResponse {
         Long studyPlaceId;
         Integer order;
         String studyPlaceTitle;
+        Boolean isDefault;
     }
 }
