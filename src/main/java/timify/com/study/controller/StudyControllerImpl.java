@@ -1,6 +1,7 @@
 package timify.com.study.controller;
 
 import jakarta.validation.Valid;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,7 @@ public class StudyControllerImpl implements StudyController {
     public ApiResponse<List<studyTypeDto>> getStudyType(@AuthMember Member member) {
         List<StudyType> studyTypeList = studyService.getStudyTypes(member);
         List<StudyResponse.studyTypeDto> dtoList = studyTypeList.stream()
+            .sorted(Comparator.comparingInt(StudyType::getOrderNum))
             .map(StudyConverter::toStudyTypeDto)
             .collect(Collectors.toList());
 
