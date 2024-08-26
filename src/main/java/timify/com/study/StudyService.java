@@ -1,5 +1,6 @@
 package timify.com.study;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -103,6 +104,50 @@ public class StudyService {
     }
 
     @Transactional
+    public StudyType updateStudyTypeOrder(Long studyTypeId, Integer orderNum, Member member) {
+        if (orderNum < 1) {
+            throw new StudyHandler(ErrorStatus.INVALID_ORDER_NUMBER);
+        }
+
+        StudyType studyType = studyTypeRepository.findById(studyTypeId)
+            .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_TYPE_NOT_FOUND));
+
+        // 해당 studyType이 본인 것인지 검증
+        if (!member.equals(studyType.getMember())) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_TYPE_OWNER);
+        }
+
+        // 활성화된 studyType 리스트 추출 및 정렬
+        List<StudyType> studyTypeList = member.getStudyTypeList().stream()
+            .filter(type -> type.getStatus().equals(CategoryStatus.ACTIVE))
+            .sorted(Comparator.comparingInt(StudyType::getOrderNum))
+            .collect(Collectors.toList());
+
+        int targetIndex = orderNum - 1; // orderNum은 1부터 시작하므로
+
+        // studyTypeList에서 해당 studyType 제거
+        studyTypeList.removeIf(type -> type.getId().equals(studyType.getId()));
+
+        // targetIndex에 studyType 삽입
+        if (targetIndex >= studyTypeList.size()) {
+            // tartetIndex가 리스트 끝을 넘어서면 마지막에 추가
+            studyTypeList.add(studyType);
+        } else {
+            studyTypeList.add(targetIndex, studyType); // 지정된 위치에 추가
+        }
+
+        // 모든 studyType의 orderNum 재설정
+        for (int i = 0; i < studyTypeList.size(); i++) {
+            StudyType type = studyTypeList.get(i);
+            type.updateOrderNum(i + 1); // orderNum은 1부터 시작하도록 설정
+        }
+
+        studyTypeRepository.saveAll(studyTypeList);
+
+        return studyType;
+    }
+
+    @Transactional
     public void deleteStudyType(Long studyTypeId, Member member) {
         StudyType studyType = studyTypeRepository.findByIdAndStatus(studyTypeId,
                 CategoryStatus.ACTIVE)
@@ -190,6 +235,50 @@ public class StudyService {
     }
 
     @Transactional
+    public StudyMethod updateStudyMethodOrder(Long studyMethodId, Integer orderNum, Member member) {
+        if (orderNum < 1) {
+            throw new StudyHandler(ErrorStatus.INVALID_ORDER_NUMBER);
+        }
+
+        StudyMethod studyMethod = studyMethodRepository.findById(studyMethodId)
+            .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_METHOD_NOT_FOUND));
+
+        // 해당 studyMethod가 본인 것인지 검증
+        if (!member.equals(studyMethod.getMember())) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_METHOD_OWNER);
+        }
+
+        // 활성화된 studyMethod 리스트 추출 및 정렬
+        List<StudyMethod> studyMethodList = member.getStudyMethodList().stream()
+            .filter(method -> method.getStatus().equals(CategoryStatus.ACTIVE))
+            .sorted(Comparator.comparingInt(StudyMethod::getOrderNum))
+            .collect(Collectors.toList());
+
+        int targetIndex = orderNum - 1; // orderNum은 1부터 시작하므로
+
+        // studyMethodList에서 해당 studyMethod 제거
+        studyMethodList.removeIf(method -> method.getId().equals(studyMethod.getId()));
+
+        // targetIndex에 studyMethod 삽입
+        if (targetIndex >= studyMethodList.size()) {
+            // tartetIndex가 리스트 끝을 넘어서면 마지막에 추가
+            studyMethodList.add(studyMethod);
+        } else {
+            studyMethodList.add(targetIndex, studyMethod); // 지정된 위치에 추가
+        }
+
+        // 모든 studyMethod의 orderNum 재설정
+        for (int i = 0; i < studyMethodList.size(); i++) {
+            StudyMethod method = studyMethodList.get(i);
+            method.updateOrderNum(i + 1); // orderNum은 1부터 시작하도록 설정
+        }
+
+        studyMethodRepository.saveAll(studyMethodList);
+
+        return studyMethod;
+    }
+
+    @Transactional
     public void deleteStudyMethod(Long studyMethodId, Member member) {
         StudyMethod studyMethod = studyMethodRepository.findByIdAndStatus(studyMethodId,
                 CategoryStatus.ACTIVE)
@@ -271,6 +360,50 @@ public class StudyService {
                 studyPlace.updateIsDefault(true);
             }
         }
+
+        return studyPlace;
+    }
+
+    @Transactional
+    public StudyPlace updateStudyPlaceOrder(Long studyPlaceId, Integer orderNum, Member member) {
+        if (orderNum < 1) {
+            throw new StudyHandler(ErrorStatus.INVALID_ORDER_NUMBER);
+        }
+
+        StudyPlace studyPlace = studyPlaceRepository.findById(studyPlaceId)
+            .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_PLACE_NOT_FOUND));
+
+        // 해당 studyPlace가 본인 것인지 검증
+        if (!member.equals(studyPlace.getMember())) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_PLACE_OWNER);
+        }
+
+        // 활성화된 studyPlace 리스트 추출 및 정렬
+        List<StudyPlace> studyPlaceList = member.getStudyPlaceList().stream()
+            .filter(place -> place.getStatus().equals(CategoryStatus.ACTIVE))
+            .sorted(Comparator.comparingInt(StudyPlace::getOrderNum))
+            .collect(Collectors.toList());
+
+        int targetIndex = orderNum - 1; // orderNum은 1부터 시작하므로
+
+        // studyPlaceList에서 해당 studyPlace 제거
+        studyPlaceList.removeIf(place -> place.getId().equals(studyPlace.getId()));
+
+        // targetIndex에 studyPlace 삽입
+        if (targetIndex >= studyPlaceList.size()) {
+            // tartetIndex가 리스트 끝을 넘어서면 마지막에 추가
+            studyPlaceList.add(studyPlace);
+        } else {
+            studyPlaceList.add(targetIndex, studyPlace); // 지정된 위치에 추가
+        }
+
+        // 모든 studyPlace의 orderNum 재설정
+        for (int i = 0; i < studyPlaceList.size(); i++) {
+            StudyPlace place = studyPlaceList.get(i);
+            place.updateOrderNum(i + 1); // orderNum은 1부터 시작하도록 설정
+        }
+
+        studyPlaceRepository.saveAll(studyPlaceList);
 
         return studyPlace;
     }

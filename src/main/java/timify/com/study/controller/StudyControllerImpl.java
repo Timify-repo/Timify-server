@@ -1,6 +1,7 @@
 package timify.com.study.controller;
 
 import jakarta.validation.Valid;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import timify.com.study.domain.StudyPlace;
 import timify.com.study.domain.StudyType;
 import timify.com.study.dto.StudyRequest;
 import timify.com.study.dto.StudyResponse;
+import timify.com.study.dto.StudyResponse.studyPlaceDto;
 import timify.com.study.dto.StudyResponse.studyTypeDto;
 
 @RestController
@@ -48,6 +50,7 @@ public class StudyControllerImpl implements StudyController {
     public ApiResponse<List<studyTypeDto>> getStudyType(@AuthMember Member member) {
         List<StudyType> studyTypeList = studyService.getStudyTypes(member);
         List<StudyResponse.studyTypeDto> dtoList = studyTypeList.stream()
+            .sorted(Comparator.comparingInt(StudyType::getOrderNum))
             .map(StudyConverter::toStudyTypeDto)
             .collect(Collectors.toList());
 
@@ -64,6 +67,18 @@ public class StudyControllerImpl implements StudyController {
         StudyType studyType = studyService.updateStudyType(request, studyTypeId, member);
 
         return ApiResponse.onSuccess(StudyConverter.toStudyTypeDto(studyType));
+    }
+
+    @Override
+    @PatchMapping("/type/{studyTypeId}/order/{orderNum}")
+    public ApiResponse<studyTypeDto> updateStudyTypeOrder(
+        @AuthMember Member member,
+        @PathVariable(name = "studyTypeId") Long studyTypeId,
+        @PathVariable(name = "orderNum") Integer orderNum
+    ) {
+
+        return ApiResponse.onSuccess(StudyConverter.toStudyTypeDto(
+            studyService.updateStudyTypeOrder(studyTypeId, orderNum, member)));
     }
 
     @Override
@@ -92,6 +107,7 @@ public class StudyControllerImpl implements StudyController {
         @AuthMember Member member) {
         List<StudyMethod> studyMethodList = studyService.getStudyMethods(member);
         List<StudyResponse.studyMethodDto> dtoList = studyMethodList.stream()
+            .sorted(Comparator.comparingInt(StudyMethod::getOrderNum))
             .map(StudyConverter::toStudyMethodDto)
             .collect(Collectors.toList());
 
@@ -108,6 +124,18 @@ public class StudyControllerImpl implements StudyController {
         StudyMethod studyMethod = studyService.updateStudyMethod(request, studyMethodId, member);
 
         return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(studyMethod));
+    }
+
+    @Override
+    @PatchMapping("/method/{studyMethodId}/order/{orderNum}")
+    public ApiResponse<StudyResponse.studyMethodDto> updateStudyMethodOrder(
+        @AuthMember Member member,
+        @PathVariable(name = "studyMethodId") Long studyMethodId,
+        @PathVariable(name = "orderNum") Integer orderNum
+    ) {
+
+        return ApiResponse.onSuccess(StudyConverter.toStudyMethodDto(
+            studyService.updateStudyMethodOrder(studyMethodId, orderNum, member)));
     }
 
     @Override
@@ -135,6 +163,7 @@ public class StudyControllerImpl implements StudyController {
     public ApiResponse<List<StudyResponse.studyPlaceDto>> getStudyPlace(@AuthMember Member member) {
         List<StudyPlace> studyPlaceList = studyService.getStudyPlaces(member);
         List<StudyResponse.studyPlaceDto> dtoList = studyPlaceList.stream()
+            .sorted(Comparator.comparingInt(StudyPlace::getOrderNum))
             .map(StudyConverter::toStudyPlaceDto)
             .collect(Collectors.toList());
 
@@ -153,6 +182,17 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(studyPlace));
     }
 
+    @Override
+    @PatchMapping("/place/{studyPlaceId}/order/{orderNum}")
+    public ApiResponse<studyPlaceDto> updateStudyPlaceOrder(
+        @AuthMember Member member,
+        @PathVariable(name = "studyPlaceId") Long studyPlaceId,
+        @PathVariable(name = "orderNum") Integer orderNum
+    ) {
+        return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(
+            studyService.updateStudyPlaceOrder(studyPlaceId, orderNum, member)));
+    }
+    
     @Override
     @DeleteMapping("/place/{studyPlaceId}/delete")
     public ApiResponse<String> deleteStudyPlace(
