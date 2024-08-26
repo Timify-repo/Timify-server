@@ -162,6 +162,7 @@ public class StudyControllerImpl implements StudyController {
     public ApiResponse<List<StudyResponse.studyPlaceDto>> getStudyPlace(@AuthMember Member member) {
         List<StudyPlace> studyPlaceList = studyService.getStudyPlaces(member);
         List<StudyResponse.studyPlaceDto> dtoList = studyPlaceList.stream()
+            .sorted(Comparator.comparingInt(StudyPlace::getOrderNum))
             .map(StudyConverter::toStudyPlaceDto)
             .collect(Collectors.toList());
 
