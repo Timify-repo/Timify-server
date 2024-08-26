@@ -69,6 +69,18 @@ public class StudyControllerImpl implements StudyController {
     }
 
     @Override
+    @PatchMapping("/type/{studyTypeId}/order/{orderNum}")
+    public ApiResponse<studyTypeDto> updateStudyTypeOrder(
+        @AuthMember Member member,
+        @PathVariable(name = "studyTypeId") Long studyTypeId,
+        @PathVariable(name = "orderNum") Integer orderNum
+    ) {
+
+        return ApiResponse.onSuccess(StudyConverter.toStudyTypeDto(
+            studyService.updateStudyTypeOrder(studyTypeId, orderNum, member)));
+    }
+
+    @Override
     @DeleteMapping("/type/{studyTypeId}/delete")
     public ApiResponse<String> deleteStudyType(
         @AuthMember Member member,

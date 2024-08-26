@@ -1,5 +1,6 @@
 package timify.com.study;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -98,6 +99,51 @@ public class StudyService {
                 studyType.updateIsDefault(true);
             }
         }
+
+        return studyType;
+    }
+
+    @Transactional
+    public StudyType updateStudyTypeOrder(Long studyTypeId, Integer orderNum, Member member) {
+        if (orderNum < 1) {
+            throw new StudyHandler(ErrorStatus.INVALID_ORDER_NUMBER);
+        }
+
+        StudyType studyType = studyTypeRepository.findById(studyTypeId)
+            .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_TYPE_NOT_FOUND));
+
+        // 해당 studyType이 본인 것인지 검증
+        if (!member.equals(studyType.getMember())) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_TYPE_OWNER);
+        }
+
+        // 활성화/보관함 항목 리스트 추출 및 정렬
+        List<StudyType> studyTypeList = member.getStudyTypeList().stream()
+            .filter(type -> type.getStatus().equals(studyType.getStatus()))
+            .sorted(Comparator.comparingInt(StudyType::getOrderNum))
+            .collect(Collectors.toList());
+
+        int targetIndex = orderNum - 1; // orderNum은 1부터 시작하므로
+
+        // studyTypeList에서 해당 studyType 제거
+        studyTypeList.removeIf(type -> type.getId().equals(studyType.getId()));
+
+        // targetIndex에 studyType 삽입
+        if (targetIndex >= studyTypeList.size()) {
+            // tartetIndex가 리스트 끝을 넘어서면 마지막에 추가
+            studyTypeList.add(studyType);
+        } else {
+            studyTypeList.add(targetIndex, studyType); // 지정된 위치에 추가
+        }
+
+        // 모든 studyType의 orderNum 재설정
+        for (int i = 0; i < studyTypeList.size(); i++) {
+            StudyType type = studyTypeList.get(i);
+            type.updateOrderNum(i + 1); // orderNum은 1부터 시작하도록 설정
+        }
+
+        // 8. 변경 사항 저장
+        studyTypeRepository.saveAll(studyTypeList);
 
         return studyType;
     }
