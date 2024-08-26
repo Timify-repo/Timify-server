@@ -80,8 +80,10 @@ public class SubjectService {
             .collect(Collectors.toList());
 
         // INACTIVE인 subject 조회 후 subjectDtoList 생성
-        List<Subject> inactiveSubjectList = subjectRepository.findInactiveSubjectsWithTodosOnDate(
-            localDate, member.getId());
+        // List<Subject> inactiveSubjectList = subjectRepository.findInactiveSubjectsWithTodosOnDate(
+        //    localDate, member.getId());
+        List<Subject> inactiveSubjectList = subjectRepository.findAllByMemberAndStatus(
+            member, SubjectStatus.INACTIVE);
 
         List<subjectDto> inactiveSubjectDtoList = inactiveSubjectList.stream()
             .map(subject -> {
