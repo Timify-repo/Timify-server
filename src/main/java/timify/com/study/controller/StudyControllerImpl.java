@@ -106,6 +106,7 @@ public class StudyControllerImpl implements StudyController {
         @AuthMember Member member) {
         List<StudyMethod> studyMethodList = studyService.getStudyMethods(member);
         List<StudyResponse.studyMethodDto> dtoList = studyMethodList.stream()
+            .sorted(Comparator.comparingInt(StudyMethod::getOrderNum))
             .map(StudyConverter::toStudyMethodDto)
             .collect(Collectors.toList());
 
