@@ -63,4 +63,8 @@ public class StudyPlace extends BaseDateTimeEntity {
         this.isDefault = isDefault;
     }
 
+    public void updateOrderNum(int orderNum) {
+        this.orderNum = orderNum;
+    }
+
 }

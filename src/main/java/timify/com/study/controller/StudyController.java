@@ -115,6 +115,18 @@ public interface StudyController {
         @PathVariable(name = "studyPlaceId") Long studyPlaceId
     );
 
+    @Operation(summary = "공부 장소 순서 변경 API", description = "특정 공부 장소의 순서를 변경하는 API 입니다.")
+    @Parameters({
+        @Parameter(name = "studyPlaceId", description = "공부 장소의 id 입니다."),
+        @Parameter(name = "orderNum", description = "변경할 순서 번호 입니다. 1 이상의 int를 입력해주세요.")
+
+    })
+    ApiResponse<StudyResponse.studyPlaceDto> updateStudyPlaceOrder(
+        @AuthMember Member member,
+        @PathVariable(name = "studyPlaceId") Long studyPlaceId,
+        @PathVariable(name = "orderNum") Integer orderNum
+    );
+
     @Operation(summary = "공부 장소 삭제 API", description = "특정 공부 장소를 삭제 처리하는 API 입니다.")
     @Parameters({
         @Parameter(name = "studyPlaceId", description = "공부 장소의 id 입니다.")

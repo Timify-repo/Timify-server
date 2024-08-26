@@ -24,6 +24,7 @@ import timify.com.study.domain.StudyPlace;
 import timify.com.study.domain.StudyType;
 import timify.com.study.dto.StudyRequest;
 import timify.com.study.dto.StudyResponse;
+import timify.com.study.dto.StudyResponse.studyPlaceDto;
 import timify.com.study.dto.StudyResponse.studyTypeDto;
 
 @RestController
@@ -181,6 +182,17 @@ public class StudyControllerImpl implements StudyController {
         return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(studyPlace));
     }
 
+    @Override
+    @PatchMapping("/place/{studyPlaceId}/order/{orderNum}")
+    public ApiResponse<studyPlaceDto> updateStudyPlaceOrder(
+        @AuthMember Member member,
+        @PathVariable(name = "studyPlaceId") Long studyPlaceId,
+        @PathVariable(name = "orderNum") Integer orderNum
+    ) {
+        return ApiResponse.onSuccess(StudyConverter.toStudyPlaceDto(
+            studyService.updateStudyPlaceOrder(studyPlaceId, orderNum, member)));
+    }
+    
     @Override
     @DeleteMapping("/place/{studyPlaceId}/delete")
     public ApiResponse<String> deleteStudyPlace(

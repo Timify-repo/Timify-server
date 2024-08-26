@@ -365,6 +365,50 @@ public class StudyService {
     }
 
     @Transactional
+    public StudyPlace updateStudyPlaceOrder(Long studyPlaceId, Integer orderNum, Member member) {
+        if (orderNum < 1) {
+            throw new StudyHandler(ErrorStatus.INVALID_ORDER_NUMBER);
+        }
+
+        StudyPlace studyPlace = studyPlaceRepository.findById(studyPlaceId)
+            .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_PLACE_NOT_FOUND));
+
+        // 해당 studyPlace가 본인 것인지 검증
+        if (!member.equals(studyPlace.getMember())) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_PLACE_OWNER);
+        }
+
+        // 활성화된 studyPlace 리스트 추출 및 정렬
+        List<StudyPlace> studyPlaceList = member.getStudyPlaceList().stream()
+            .filter(place -> place.getStatus().equals(CategoryStatus.ACTIVE))
+            .sorted(Comparator.comparingInt(StudyPlace::getOrderNum))
+            .collect(Collectors.toList());
+
+        int targetIndex = orderNum - 1; // orderNum은 1부터 시작하므로
+
+        // studyPlaceList에서 해당 studyPlace 제거
+        studyPlaceList.removeIf(place -> place.getId().equals(studyPlace.getId()));
+
+        // targetIndex에 studyPlace 삽입
+        if (targetIndex >= studyPlaceList.size()) {
+            // tartetIndex가 리스트 끝을 넘어서면 마지막에 추가
+            studyPlaceList.add(studyPlace);
+        } else {
+            studyPlaceList.add(targetIndex, studyPlace); // 지정된 위치에 추가
+        }
+
+        // 모든 studyPlace의 orderNum 재설정
+        for (int i = 0; i < studyPlaceList.size(); i++) {
+            StudyPlace place = studyPlaceList.get(i);
+            place.updateOrderNum(i + 1); // orderNum은 1부터 시작하도록 설정
+        }
+
+        studyPlaceRepository.saveAll(studyPlaceList);
+
+        return studyPlace;
+    }
+
+    @Transactional
     public void deleteStudyPlace(Long studyPlaceId, Member member) {
         StudyPlace studyPlace = studyPlaceRepository.findByIdAndStatus(studyPlaceId,
                 CategoryStatus.ACTIVE)
