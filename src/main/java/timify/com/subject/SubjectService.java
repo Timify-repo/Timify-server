@@ -131,7 +131,8 @@ public class SubjectService {
 
         validateMember(member, subject);
 
-        List<Subject> subjects = subjectRepository.findAllByMemberAndStatus(member,
+        List<Subject> subjects = subjectRepository.findAllByMemberAndStatusOrderByOrderNumAsc(
+            member,
             subject.getStatus());
 
         if (newOrderNum > subjects.size() || newOrderNum < 1) {
@@ -148,7 +149,7 @@ public class SubjectService {
 
         AtomicInteger index = new AtomicInteger(1);
         subjectList.forEach(subj -> subj.updateOrderNum(index.getAndIncrement()));
-
+        
         return subject;
     }
 

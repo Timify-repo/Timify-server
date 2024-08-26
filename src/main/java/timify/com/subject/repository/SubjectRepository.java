@@ -27,4 +27,6 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
         "AND t.subject.id = s.id")
     List<Subject> findInactiveSubjectsWithTodosOnDate(@Param("date") LocalDate date,
         @Param("memberId") Long memberId);
+
+    List<Subject> findAllByMemberAndStatusOrderByOrderNumAsc(Member member, SubjectStatus status);
 }
