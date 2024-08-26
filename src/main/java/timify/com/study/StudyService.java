@@ -117,9 +117,9 @@ public class StudyService {
             throw new StudyHandler(ErrorStatus.NOT_STUDY_TYPE_OWNER);
         }
 
-        // 활성화/보관함 항목 리스트 추출 및 정렬
+        // 활성화된 studyType 리스트 추출 및 정렬
         List<StudyType> studyTypeList = member.getStudyTypeList().stream()
-            .filter(type -> type.getStatus().equals(studyType.getStatus()))
+            .filter(type -> type.getStatus().equals(CategoryStatus.ACTIVE))
             .sorted(Comparator.comparingInt(StudyType::getOrderNum))
             .collect(Collectors.toList());
 
@@ -142,7 +142,6 @@ public class StudyService {
             type.updateOrderNum(i + 1); // orderNum은 1부터 시작하도록 설정
         }
 
-        // 8. 변경 사항 저장
         studyTypeRepository.saveAll(studyTypeList);
 
         return studyType;
@@ -231,6 +230,50 @@ public class StudyService {
                 studyMethod.updateIsDefault(true);
             }
         }
+
+        return studyMethod;
+    }
+
+    @Transactional
+    public StudyMethod updateStudyMethodOrder(Long studyMethodId, Integer orderNum, Member member) {
+        if (orderNum < 1) {
+            throw new StudyHandler(ErrorStatus.INVALID_ORDER_NUMBER);
+        }
+
+        StudyMethod studyMethod = studyMethodRepository.findById(studyMethodId)
+            .orElseThrow(() -> new StudyHandler(ErrorStatus.STUDY_METHOD_NOT_FOUND));
+
+        // 해당 studyMethod가 본인 것인지 검증
+        if (!member.equals(studyMethod.getMember())) {
+            throw new StudyHandler(ErrorStatus.NOT_STUDY_METHOD_OWNER);
+        }
+
+        // 활성화된 studyMethod 리스트 추출 및 정렬
+        List<StudyMethod> studyMethodList = member.getStudyMethodList().stream()
+            .filter(method -> method.getStatus().equals(CategoryStatus.ACTIVE))
+            .sorted(Comparator.comparingInt(StudyMethod::getOrderNum))
+            .collect(Collectors.toList());
+
+        int targetIndex = orderNum - 1; // orderNum은 1부터 시작하므로
+
+        // studyMethodList에서 해당 studyMethod 제거
+        studyMethodList.removeIf(method -> method.getId().equals(studyMethod.getId()));
+
+        // targetIndex에 studyMethod 삽입
+        if (targetIndex >= studyMethodList.size()) {
+            // tartetIndex가 리스트 끝을 넘어서면 마지막에 추가
+            studyMethodList.add(studyMethod);
+        } else {
+            studyMethodList.add(targetIndex, studyMethod); // 지정된 위치에 추가
+        }
+
+        // 모든 studyMethod의 orderNum 재설정
+        for (int i = 0; i < studyMethodList.size(); i++) {
+            StudyMethod method = studyMethodList.get(i);
+            method.updateOrderNum(i + 1); // orderNum은 1부터 시작하도록 설정
+        }
+
+        studyMethodRepository.saveAll(studyMethodList);
 
         return studyMethod;
     }

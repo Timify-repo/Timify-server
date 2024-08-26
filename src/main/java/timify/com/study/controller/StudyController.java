@@ -76,6 +76,18 @@ public interface StudyController {
         @PathVariable(name = "studyMethodId") Long studyMethodId
     );
 
+    @Operation(summary = "공부 방법 순서 변경 API", description = "특정 공부 방법의 순서를 변경하는 API 입니다.")
+    @Parameters({
+        @Parameter(name = "studyMethodId", description = "공부 방법의 id 입니다."),
+        @Parameter(name = "orderNum", description = "변경할 순서 번호 입니다. 1 이상의 int를 입력해주세요.")
+
+    })
+    ApiResponse<StudyResponse.studyMethodDto> updateStudyMethodOrder(
+        @AuthMember Member member,
+        @PathVariable(name = "studyMethodId") Long studyMethodId,
+        @PathVariable(name = "orderNum") Integer orderNum
+    );
+
     @Operation(summary = "공부 방법 삭제 API", description = "특정 공부 방법을 삭제 처리하는 API 입니다.")
     @Parameters({
         @Parameter(name = "studyMethodId", description = "공부 방법의 id 입니다.")
