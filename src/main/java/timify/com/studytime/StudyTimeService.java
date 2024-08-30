@@ -16,6 +16,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,8 @@ import timify.com.member.domain.Member;
 import timify.com.studytime.domain.StudyTime;
 import timify.com.studytime.domain.StudyTimeGrade;
 import timify.com.studytime.dto.StudyTimeRequest.studyTimeRequest;
+import timify.com.studytime.dto.StudyTimeResponse.studyTimeDto;
+import timify.com.studytime.dto.StudyTimeResponse.studyTimeListDto;
 import timify.com.studytime.repository.StudyTimeRepository;
 import timify.com.todo.domain.Todo;
 import timify.com.todo.repository.TodoRepository;
@@ -111,8 +114,41 @@ public class StudyTimeService {
     }
 
     @Transactional(readOnly = true)
-    public List<StudyTime> getStudyTimes(Member member, Long todoId) {
-        return studyTimeRepository.findByMemberAndTodoId(member, todoId);
+    public studyTimeListDto getStudyTimes(Member member, Long todoId) {
+
+        List<StudyTime> studyTimeList = studyTimeRepository.findByMemberAndTodoId(member, todoId);
+
+        LocalDateTime startTime = studyTimeList.stream()
+            .map(StudyTime::getStartTime)
+            .min(LocalDateTime::compareTo)
+            .orElse(null); // 첫 기록 시간
+
+        LocalDateTime endTime = studyTimeList.stream()
+            .map(StudyTime::getEndTime)
+            .max(LocalDateTime::compareTo)
+            .orElse(null); // 마지막 기록 종료 시간
+
+        int totalTime = studyTimeList.stream()
+            .mapToInt(studyTime -> (int) Duration.between(studyTime.getStartTime(), studyTime.getEndTime()).toMinutes())
+            .sum();
+
+        double totalTemp = studyTimeList.stream()
+            .mapToDouble(StudyTime::getTemp)
+            .sum();
+
+        List<studyTimeDto> studyTimeDtoList = studyTimeList.stream()
+            .map(StudyTimeConverter::toStudyTimeDto)
+            .collect(Collectors.toList());
+
+        return studyTimeListDto.builder()
+            .todoDate(studyTimeList.get(0).getTodo().getDate())
+            .startTime(startTime)
+            .endTime(endTime)
+            .totalTime(totalTime)
+            .totalTemp(totalTemp)
+            .studyTimeDtoList(studyTimeDtoList)
+            .build();
+
     }
 
     @Transactional

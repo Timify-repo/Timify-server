@@ -57,15 +57,10 @@ public class StudyTimeControllerImpl implements StudyTimeController{
     }
 
     @GetMapping("/{todoId}")
-    public ApiResponse<List<studyTimeDto>> getStudyTimes(@AuthMember Member member,
+    public ApiResponse<studyTimeListDto> getStudyTimeList(@AuthMember Member member,
         @PathVariable Long todoId) {
 
-        List<StudyTime> studyTimes = studyTimeService.getStudyTimes(member, todoId);
-        List<studyTimeDto> dtoList = studyTimes.stream()
-            .map(StudyTimeConverter::toStudyTimeDto)
-            .collect(Collectors.toList());
-
-        return ApiResponse.onSuccess(dtoList);
+        return ApiResponse.onSuccess(studyTimeService.getStudyTimes(member, todoId));
     }
 
     @PatchMapping("/study/{studyTimeId}/update-status")
