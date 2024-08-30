@@ -107,6 +107,10 @@ public class StudyTimeService {
     public List<StudyTime> updateStudyTime(Member member, Long studyTimeId,
         studyTimeRequest request) {
 
+        if(studyTimeId == -1) {
+            return null;
+        }
+
         StudyTime studyTime = validateStudyTimeOwner(member, studyTimeId);
 
         LocalDateTime startTime = stringToLocalTime(request.getStartTime());

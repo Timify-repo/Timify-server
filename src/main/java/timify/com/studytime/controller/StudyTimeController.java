@@ -41,7 +41,7 @@ public interface StudyTimeController {
 
     @Operation(summary = "몰입 시간 수정 API", description = "몰입 시간을 수정하는 API 입니다.")
     @Parameters(value = {
-        @Parameter(name = "studyTimeId", description = "몰입 시간을 수정할 studyTimeId 을 입력해 주세요.")
+        @Parameter(name = "studyTimeId", description = "몰입 시간을 수정할 studyTimeId 을 입력해 주세요. 수정하지 않을 경우 ID 값에 -1을 입력해 주세요 ")
     })
     ApiResponse<List<studyTimeDto>> updateStudyTime(@AuthMember Member member,
         @PathVariable Long studyTimeId,
