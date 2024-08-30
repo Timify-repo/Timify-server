@@ -70,6 +70,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_TODO_OWNER(HttpStatus.BAD_REQUEST, "TODO4009", "해당 회원의 할 일이 아닙니다."),
 
     // 몰입도 관련
+    NOT_FIND_STUDY_GRADE(HttpStatus.BAD_REQUEST, "STUDY_TIME4005", "해당하는 몰입도의 상태입니다."),
     NOT_STUDY_TIME_OWNER(HttpStatus.BAD_REQUEST, "STUDY_TIME4001", "해당 회원의 몰입도 기록이 아닙니다."),
     OVERLAP_STUDY_TIME(HttpStatus.BAD_REQUEST, "STUDY_TIME4002", "겹치는 기록 시간이 존재합니다."),
     NOT_POSSIBLE_STUDY_TIME(HttpStatus.BAD_REQUEST, "STUDY_TIME4003", "시간 설정이 올바르지 않습니다."),

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import timify.com.common.validation.NotBlankJsonNullable;
 import timify.com.studytime.domain.StudyTimeGrade;
 
 public class StudyTimeRequest {
@@ -13,13 +14,12 @@ public class StudyTimeRequest {
     @AllArgsConstructor
     public static class studyTimeRequest {
 
-        @NotBlank
+        @NotBlankJsonNullable
         String startTime;
 
-        @NotBlank
+        @NotBlankJsonNullable
         String endTime;
 
-        @NotBlank
         StudyTimeGrade grade; //최상
     }
 }
