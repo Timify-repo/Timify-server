@@ -1,6 +1,7 @@
 package timify.com.todo.controller;
 
 import static timify.com.common.apiPayload.code.status.SuccessStatus.TODO_DELETE_SUCCESS;
+import static timify.com.todo.dto.TodoRequest.*;
 import static timify.com.todo.dto.TodoRequest.copyTodoRequest;
 import static timify.com.todo.dto.TodoRequest.todoRequest;
 
@@ -25,6 +26,7 @@ import timify.com.member.domain.Member;
 import timify.com.todo.TodoConverter;
 import timify.com.todo.TodoService;
 import timify.com.todo.domain.Todo;
+import timify.com.todo.dto.TodoRequest;
 import timify.com.todo.dto.TodoResponse;
 import timify.com.todo.dto.TodoResponse.todoDto;
 
@@ -56,7 +58,7 @@ public class TodoControllerImpl implements TodoController {
     @PatchMapping("/todo/{todoId}/update")
     public ApiResponse<todoDto> updateTodo(@AuthMember Member member,
         @PathVariable(name = "todoId") Long todoId,
-        @RequestBody @Valid todoRequest request) {
+        @RequestBody @Valid updateTodoRequest request) {
 
         Todo updateTodo = todoService.updateTodo(member, todoId, request);
 

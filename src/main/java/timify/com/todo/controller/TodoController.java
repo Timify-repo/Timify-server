@@ -1,5 +1,6 @@
 package timify.com.todo.controller;
 
+import static timify.com.todo.dto.TodoRequest.*;
 import static timify.com.todo.dto.TodoRequest.copyTodoRequest;
 import static timify.com.todo.dto.TodoRequest.todoRequest;
 
@@ -16,6 +17,7 @@ import timify.com.auth.annotation.AuthMember;
 import timify.com.common.apiPayload.ApiResponse;
 import timify.com.common.apiPayload.code.status.SuccessStatus;
 import timify.com.member.domain.Member;
+import timify.com.todo.dto.TodoRequest;
 import timify.com.todo.dto.TodoResponse;
 import timify.com.todo.dto.TodoResponse.todoDto;
 
@@ -45,12 +47,12 @@ public interface TodoController {
 
     @Operation(summary = "할 일 수정 API", description = "할 일 수정 API 입니다.")
     @Parameters(value = {
-        @Parameter(name = "todoId", description = "수정할 할 일의 todoId 을 입력해 주세요.")
+        @Parameter(name = "todoId", description = "수정할 할 일의 todoId 을 입력해 주세요. date는 YYYYMMDD 형식으로 입력해 주세요")
     })
     ApiResponse<todoDto> updateTodo(
         @AuthMember Member member,
         @PathVariable(name = "todoId") Long todoId,
-        @RequestBody @Valid todoRequest request);
+        @RequestBody @Valid updateTodoRequest request);
 
 
     @Operation(summary = "할 일 삭제 API", description = "할 일 삭제 API 입니다.")

@@ -14,8 +14,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import timify.com.common.apiPayload.code.status.ErrorStatus;
@@ -36,10 +38,10 @@ import timify.com.subject.repository.SubjectRepository;
 import timify.com.todo.domain.Todo;
 import timify.com.todo.domain.TodoStatus;
 import timify.com.todo.dto.TodoRequest.copyTodoRequest;
+import timify.com.todo.dto.TodoRequest.updateTodoRequest;
 import timify.com.todo.dto.TodoResponse;
 import timify.com.todo.dto.TodoResponse.todoDto;
 import timify.com.todo.repository.TodoRepository;
-import timify.com.utils.DateTimeUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -116,20 +118,16 @@ public class TodoService {
     }
 
     @Transactional
-    public Todo updateTodo(Member member, Long todoId, todoRequest request) {
+    public Todo updateTodo(Member member, Long todoId, updateTodoRequest request) {
 
         Todo updateTodo = validateTodoOwner(member, todoId);
         validateSubjectIsActive(updateTodo.getSubject());
 
-        StudyType studyType = validateStudyType(request.getStudyTypeId(), member);
-        StudyMethod studyMethod = validateStudyMethod(request.getStudyMethodId(), member);
-        StudyPlace studyPlace = validateStudyPlace(request.getStudyPlaceId(), member);
-
-        updateTodo.updateContent(request.getContent());
-        updateTodo.updateDate(request.getDate());
-        updateTodo.updateStudyType(studyType);
-        updateTodo.updateStudyMethod(studyMethod);
-        updateTodo.updateStudyPlace(studyPlace);
+        updateField(request.getContent(), updateTodo::updateContent);
+        updateField(request.getDate(), updateTodo::updateDate);
+        updateField(request.getStudyTypeId(), id -> updateTodo.updateStudyType(validateStudyType(id, member)));
+        updateField(request.getStudyMethodId(), id -> updateTodo.updateStudyMethod(validateStudyMethod(id, member)));
+        updateField(request.getStudyPlaceId(), id -> updateTodo.updateStudyPlace(validateStudyPlace(id, member)));
 
         return todoRepository.save(updateTodo);
     }
@@ -171,7 +169,7 @@ public class TodoService {
             .findFirst()
             .orElseThrow(() -> new TodoHandler(ErrorStatus.NOT_CHANGE_STATUS));
 
-        if(todo.getStatus() == newStatus) {
+        if (todo.getStatus() == newStatus) {
             throw new TodoHandler(ErrorStatus.NOT_CHANGE_STATUS);
         }
 
@@ -185,12 +183,18 @@ public class TodoService {
         Todo todo = validateTodoOwner(member, todoId);
         LocalDate localDate = stringToLocalDate(date);
 
-        if(todo.getDate().equals(localDate)) {
+        if (todo.getDate().equals(localDate)) {
             throw new TodoHandler(ErrorStatus.NOT_CHANGE_DATE);
         }
 
         todo.updateDateAndClearStudyTime(localDate);
         return todo;
+    }
+
+    private <T> void updateField(T value, Consumer<T> updateFunction) {
+        if (value != null && !value.equals("")) {
+            updateFunction.accept(value);
+        }
     }
 
     private void validateSubjectIsActive(Subject subject) {
