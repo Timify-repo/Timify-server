@@ -43,6 +43,10 @@ public class StudyTimeService {
     public List<StudyTime> recordStudyTime(Member member, Long todoId, studyTimeRequest request) {
         Todo todo = validateTodoOwner(member, todoId);
 
+        if(request.getStartTime() == null || request.getEndTime() == null || request.getGrade() == null) {
+            throw new StudyTimeHandler(NOT_NULL_STUDY_TIME);
+        }
+
         LocalDateTime startTime = stringToLocalTime(request.getStartTime());
         LocalDateTime endTime = stringToLocalTime(request.getEndTime());
 

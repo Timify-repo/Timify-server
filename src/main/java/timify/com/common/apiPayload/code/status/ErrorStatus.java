@@ -75,6 +75,7 @@ public enum ErrorStatus implements BaseErrorCode {
     OVERLAP_STUDY_TIME(HttpStatus.BAD_REQUEST, "STUDY_TIME4002", "겹치는 기록 시간이 존재합니다."),
     NOT_POSSIBLE_STUDY_TIME(HttpStatus.BAD_REQUEST, "STUDY_TIME4003", "시간 설정이 올바르지 않습니다."),
     OVER_24H_STUDY_TIME(HttpStatus.BAD_REQUEST, "STUDY_TIME4004", "최대 24시간까지 기록할 수 있습니다."),
+    NOT_NULL_STUDY_TIME(HttpStatus.BAD_REQUEST, "STUDY_TIME4005", "잘못된 몰입시간 기록 요청입니다. 다시 입력해 주세요"),
     NO_STUDY_TIME_FOUND(HttpStatus.NOT_FOUND, "STUDY_TIME4040", "해당 몰입도 기록을 찾지 못하였습니다.");
 
     private final HttpStatus httpStatus;
