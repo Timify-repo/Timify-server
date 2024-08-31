@@ -12,6 +12,7 @@ import timify.com.common.apiPayload.ApiResponse;
 import timify.com.member.domain.Member;
 import timify.com.studytime.dto.StudyTimeRequest.studyTimeRequest;
 import timify.com.studytime.dto.StudyTimeResponse.studyTimeDto;
+import timify.com.studytime.dto.StudyTimeResponse.studyTimeListDto;
 
 @Tag(name = "StudyTime", description = "StudyTime 관련 API")
 public interface StudyTimeController {
@@ -36,12 +37,12 @@ public interface StudyTimeController {
     @Parameters(value = {
         @Parameter(name = "todoId", description = "시간 기록을 조회할 할 일에 해당하는 todoId 을 입력해 주세요.")
     })
-    ApiResponse<List<studyTimeDto>> getStudyTimes(@AuthMember Member member,
+    ApiResponse<studyTimeListDto> getStudyTimeList(@AuthMember Member member,
         @PathVariable Long todoId);
 
     @Operation(summary = "몰입 시간 수정 API", description = "몰입 시간을 수정하는 API 입니다.")
     @Parameters(value = {
-        @Parameter(name = "studyTimeId", description = "몰입 시간을 수정할 studyTimeId 을 입력해 주세요.")
+        @Parameter(name = "studyTimeId", description = "몰입 시간을 수정할 studyTimeId 을 입력해 주세요. 수정하지 않을 필드에 null 입력해 주세요 ")
     })
     ApiResponse<List<studyTimeDto>> updateStudyTime(@AuthMember Member member,
         @PathVariable Long studyTimeId,

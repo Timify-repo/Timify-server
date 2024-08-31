@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.cglib.core.Local;
+import timify.com.common.validation.NotBlankJsonNullable;
 
 
 public class TodoRequest {
@@ -19,16 +20,31 @@ public class TodoRequest {
         @NotBlank
         String content;
 
-        @NotNull
+        @NotBlank
         LocalDate date;
 
-        @NotNull
+        @NotBlank
         Long studyTypeId;
 
-        @NotNull
+        @NotBlank
         Long studyMethodId;
 
-        @NotNull
+        @NotBlank
+        Long studyPlaceId;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class updateTodoRequest {
+
+        String content;
+
+        LocalDate date;
+
+        Long studyTypeId;
+
+        Long studyMethodId;
+
         Long studyPlaceId;
     }
 

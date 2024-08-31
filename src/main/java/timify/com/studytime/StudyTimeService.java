@@ -1,5 +1,6 @@
 package timify.com.studytime;
 
+import static timify.com.common.apiPayload.code.status.ErrorStatus.*;
 import static timify.com.common.apiPayload.code.status.ErrorStatus.NOT_POSSIBLE_STUDY_TIME;
 import static timify.com.common.apiPayload.code.status.ErrorStatus.NOT_STUDY_TIME_OWNER;
 import static timify.com.common.apiPayload.code.status.ErrorStatus.NOT_TODO_OWNER;
@@ -12,19 +13,23 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import timify.com.common.apiPayload.exception.handler.StudyHandler;
 import timify.com.common.apiPayload.exception.handler.StudyTimeHandler;
+import timify.com.common.apiPayload.exception.handler.SubjectHandler;
 import timify.com.common.apiPayload.exception.handler.TodoHandler;
 import timify.com.member.domain.Member;
 import timify.com.studytime.domain.StudyTime;
 import timify.com.studytime.domain.StudyTimeGrade;
 import timify.com.studytime.dto.StudyTimeRequest.studyTimeRequest;
+import timify.com.studytime.dto.StudyTimeResponse.studyTimeDto;
+import timify.com.studytime.dto.StudyTimeResponse.studyTimeListDto;
 import timify.com.studytime.repository.StudyTimeRepository;
 import timify.com.todo.domain.Todo;
 import timify.com.todo.repository.TodoRepository;
@@ -41,8 +46,17 @@ public class StudyTimeService {
     public List<StudyTime> recordStudyTime(Member member, Long todoId, studyTimeRequest request) {
         Todo todo = validateTodoOwner(member, todoId);
 
+        if(request.getStartTime() == null || request.getEndTime() == null || request.getGrade() == null) {
+            throw new StudyTimeHandler(NOT_NULL_STUDY_TIME);
+        }
+
         LocalDateTime startTime = stringToLocalTime(request.getStartTime());
         LocalDateTime endTime = stringToLocalTime(request.getEndTime());
+
+        StudyTimeGrade grade = Arrays.stream(StudyTimeGrade.values())
+            .filter(s -> s.name().equalsIgnoreCase(request.getGrade().name()))
+            .findFirst()
+            .orElseThrow(() -> new SubjectHandler(NOT_FIND_STUDY_GRADE));
 
         validateStudyTimeRange(todo, startTime, endTime);
 
@@ -70,13 +84,14 @@ public class StudyTimeService {
 
         // 4 AM 넘는 경우
         if (isCrossingBoundary(startTime, endTime, boundaryDateTime)) {
-            studyTimes.add(saveStudyTimePart(member, todo, startTime, boundaryDateTime, request));
             studyTimes.add(
-                saveStudyTimePartForNextDay(member, todo, boundaryDateTime, endTime, request));
+                saveStudyTimePart(member, todo, startTime, boundaryDateTime, grade));
+            studyTimes.add(
+                saveStudyTimePartForNextDay(member, todo, boundaryDateTime, endTime, grade));
             return studyTimes;
         }
 
-        studyTimes.add(saveStudyTime(member, todo, startTime, endTime, request));
+        studyTimes.add(saveStudyTime(member, todo, startTime, endTime, grade));
         return studyTimes;
     }
 
@@ -99,8 +114,41 @@ public class StudyTimeService {
     }
 
     @Transactional(readOnly = true)
-    public List<StudyTime> getStudyTimes(Member member, Long todoId) {
-        return studyTimeRepository.findByMemberAndTodoId(member, todoId);
+    public studyTimeListDto getStudyTimes(Member member, Long todoId) {
+
+        List<StudyTime> studyTimeList = studyTimeRepository.findByMemberAndTodoId(member, todoId);
+
+        LocalDateTime startTime = studyTimeList.stream()
+            .map(StudyTime::getStartTime)
+            .min(LocalDateTime::compareTo)
+            .orElse(null); // 첫 기록 시간
+
+        LocalDateTime endTime = studyTimeList.stream()
+            .map(StudyTime::getEndTime)
+            .max(LocalDateTime::compareTo)
+            .orElse(null); // 마지막 기록 종료 시간
+
+        int totalTime = studyTimeList.stream()
+            .mapToInt(studyTime -> (int) Duration.between(studyTime.getStartTime(), studyTime.getEndTime()).toMinutes())
+            .sum();
+
+        double totalTemp = studyTimeList.stream()
+            .mapToDouble(StudyTime::getTemp)
+            .sum();
+
+        List<studyTimeDto> studyTimeDtoList = studyTimeList.stream()
+            .map(StudyTimeConverter::toStudyTimeDto)
+            .collect(Collectors.toList());
+
+        return studyTimeListDto.builder()
+            .todoDate(studyTimeList.get(0).getTodo().getDate())
+            .startTime(startTime)
+            .endTime(endTime)
+            .totalTime(totalTime)
+            .totalTemp(totalTemp)
+            .studyTimeDtoList(studyTimeDtoList)
+            .build();
+
     }
 
     @Transactional
@@ -109,8 +157,26 @@ public class StudyTimeService {
 
         StudyTime studyTime = validateStudyTimeOwner(member, studyTimeId);
 
-        LocalDateTime startTime = stringToLocalTime(request.getStartTime());
-        LocalDateTime endTime = stringToLocalTime(request.getEndTime());
+        // 기존 값 가져오기
+        LocalDateTime startTime = studyTime.getStartTime();
+        LocalDateTime endTime = studyTime.getEndTime();
+        StudyTimeGrade grade = studyTime.getGrade();
+
+        // 요청(request) 객체에서 null이 아닌 필드만 업데이트
+        if (request.getStartTime() != null) {
+            startTime = stringToLocalTime(request.getStartTime());
+        }
+
+        if (request.getEndTime() != null) {
+            endTime = stringToLocalTime(request.getEndTime());
+        }
+
+        if (request.getGrade() != null) {
+            grade = Arrays.stream(StudyTimeGrade.values())
+                .filter(s -> s.name().equalsIgnoreCase(request.getGrade().name()))
+                .findFirst()
+                .orElseThrow(() -> new SubjectHandler(NOT_FIND_STUDY_GRADE));;
+        }
 
         validateStudyTimeRange(studyTime.getTodo(), startTime, endTime);
 
@@ -142,14 +208,14 @@ public class StudyTimeService {
         if (isCrossingBoundary(startTime, endTime, boundaryDateTime)) {
             studyTimes.add(
                 saveStudyTimePart(member, studyTime.getTodo(), startTime, boundaryDateTime,
-                    request));
+                    grade));
             studyTimes.add(
                 saveStudyTimePartForNextDay(member, studyTime.getTodo(), boundaryDateTime, endTime,
-                    request));
+                    grade));
             return studyTimes;
         }
 
-        studyTimes.add(saveStudyTime(member, studyTime.getTodo(), startTime, endTime, request));
+        studyTimes.add(saveStudyTime(member, studyTime.getTodo(), startTime, endTime, grade));
         return studyTimes;
     }
 
@@ -176,12 +242,14 @@ public class StudyTimeService {
     }
 
     private StudyTime saveStudyTimePart(Member member, Todo todo, LocalDateTime startTime,
-        LocalDateTime boundaryDateTime, studyTimeRequest request) {
-        StudyTime studyTime = StudyTimeConverter.toStudyTime(
-            new studyTimeRequest(request.getStartTime(),
-                boundaryDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
-                request.getGrade()),
-            calculateTemp(todo, startTime, boundaryDateTime, request.getGrade()));
+        LocalDateTime boundaryDateTime, StudyTimeGrade grade) {
+        StudyTime studyTime = StudyTime.builder()
+            .startTime(startTime)
+            .endTime(boundaryDateTime)
+            .grade(grade)
+            .temp(calculateTemp(todo, startTime, boundaryDateTime, grade))
+            .build();
+
         studyTime.associateMember(member);
         studyTime.associateSubject(todo.getSubject());
         studyTime.associateTodo(todo);
@@ -189,7 +257,7 @@ public class StudyTimeService {
     }
 
     private StudyTime saveStudyTimePartForNextDay(Member member, Todo todo,
-        LocalDateTime boundaryDateTime, LocalDateTime endTime, studyTimeRequest request) {
+        LocalDateTime boundaryDateTime, LocalDateTime endTime, StudyTimeGrade grade) {
 
         Todo nextDayTodo = Todo.builder()
             .content(todo.getContent())
@@ -205,12 +273,12 @@ public class StudyTimeService {
         nextDayTodo.associateSubject(todo.getSubject());
         nextDayTodo = todoRepository.save(nextDayTodo);
 
-        StudyTime studyTime = StudyTimeConverter.toStudyTime(
-            new studyTimeRequest(
-                boundaryDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
-                request.getEndTime(), request.getGrade()),
-            calculateTemp(nextDayTodo, boundaryDateTime, endTime, request.getGrade())
-        );
+        StudyTime studyTime = StudyTime.builder()
+            .startTime(boundaryDateTime)
+            .endTime(endTime)
+            .grade(grade)
+            .temp(calculateTemp(todo, boundaryDateTime, endTime, grade))
+            .build();
 
         studyTime.associateMember(member);
         studyTime.associateSubject(nextDayTodo.getSubject());
@@ -219,9 +287,13 @@ public class StudyTimeService {
     }
 
     private StudyTime saveStudyTime(Member member, Todo todo, LocalDateTime startTime,
-        LocalDateTime endTime, studyTimeRequest request) {
-        StudyTime studyTime = StudyTimeConverter.toStudyTime(request,
-            calculateTemp(todo, startTime, endTime, request.getGrade()));
+        LocalDateTime endTime, StudyTimeGrade grade) {
+        StudyTime studyTime = StudyTime.builder()
+            .startTime(startTime)
+            .endTime(endTime)
+            .grade(grade)
+            .temp(calculateTemp(todo, startTime, endTime, grade))
+            .build();
 
         studyTime.associateMember(member);
         studyTime.associateSubject(todo.getSubject());
